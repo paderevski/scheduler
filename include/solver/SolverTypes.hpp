@@ -15,10 +15,26 @@ struct SolverOptions {
 
 struct StudentAssignment {
   std::string studentId;
-  std::string studentName;
+  std::string firstName;
+  std::string lastName;
+  std::string grade;
+  std::string day;
   std::string activity;
   int choiceRank = -1; // 0-based index into the student's preference list
   double score = 0.0;
+
+  std::string fullName() const {
+    if (firstName.empty() && lastName.empty()) {
+      return "";
+    }
+    if (firstName.empty()) {
+      return lastName;
+    }
+    if (lastName.empty()) {
+      return firstName;
+    }
+    return firstName + " " + lastName;
+  }
 };
 
 struct ActivitySummaryRow {

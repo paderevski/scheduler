@@ -196,7 +196,10 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       if (varInfo.var->solution_value() >= 0.5) {
         StudentAssignment assignment;
         assignment.studentId = toStdString(row.studentId);
-        assignment.studentName = toStdString(row.studentName);
+        assignment.firstName = toStdString(row.firstName);
+        assignment.lastName = toStdString(row.lastName);
+        assignment.grade = toStdString(row.grade);
+        assignment.day = toStdString(row.day);
         assignment.activity = toStdString(activities[varInfo.activityIndex]);
         assignment.choiceRank = varInfo.choiceRank;
 
@@ -209,11 +212,14 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         } else {
           // Non-preferred fallback activity
           assignment.score = varInfo.var->solution_value() * 1.0;
+          QString displayName = row.fullName();
+          if (displayName.isEmpty()) {
+            displayName = row.studentId;
+          }
           result.warnings.push_back(
               QStringLiteral(
                   "Student %1 assigned to non-preferred activity: %2")
-                  .arg(row.studentName.isEmpty() ? row.studentId
-                                                 : row.studentName)
+                  .arg(displayName)
                   .arg(activities[varInfo.activityIndex])
                   .toStdString());
         }
@@ -230,15 +236,22 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       // assignment
       StudentAssignment assignment;
       assignment.studentId = toStdString(row.studentId);
-      assignment.studentName = toStdString(row.studentName);
+      assignment.firstName = toStdString(row.firstName);
+      assignment.lastName = toStdString(row.lastName);
+      assignment.grade = toStdString(row.grade);
+      assignment.day = toStdString(row.day);
       assignment.activity = "ERROR: Not assigned";
       assignment.choiceRank = -1;
       assignment.score = 0.0;
       result.assignments.push_back(std::move(assignment));
+      QString displayName = row.fullName();
+      if (displayName.isEmpty()) {
+        displayName = row.studentId;
+      }
       result.warnings.push_back(
           QStringLiteral(
               "ERROR: Student %1 could not be assigned (solver bug).")
-              .arg(row.studentName.isEmpty() ? row.studentId : row.studentName)
+              .arg(displayName)
               .toStdString());
     }
   }
@@ -300,7 +313,10 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         usage[activityName] += 1;
         StudentAssignment assignment;
         assignment.studentId = toStdString(row.studentId);
-        assignment.studentName = toStdString(row.studentName);
+        assignment.firstName = toStdString(row.firstName);
+        assignment.lastName = toStdString(row.lastName);
+        assignment.grade = toStdString(row.grade);
+        assignment.day = toStdString(row.day);
         assignment.activity = toStdString(activityName);
         assignment.choiceRank = choiceIdx;
         assignment.score = weightForRank(choiceIdx);
@@ -314,14 +330,21 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
     if (!assigned) {
       StudentAssignment assignment;
       assignment.studentId = toStdString(row.studentId);
-      assignment.studentName = toStdString(row.studentName);
+      assignment.firstName = toStdString(row.firstName);
+      assignment.lastName = toStdString(row.lastName);
+      assignment.grade = toStdString(row.grade);
+      assignment.day = toStdString(row.day);
       assignment.activity = "";
       assignment.choiceRank = -1;
       assignment.score = 0.0;
       result.assignments.push_back(std::move(assignment));
+      QString displayName = row.fullName();
+      if (displayName.isEmpty()) {
+        displayName = row.studentId;
+      }
       result.warnings.push_back(
           QStringLiteral("Student %1 could not be greedily assigned.")
-              .arg(row.studentName.isEmpty() ? row.studentId : row.studentName)
+              .arg(displayName)
               .toStdString());
     }
   }

@@ -1,19 +1,5 @@
 Coding Bootcamp
-Enrollment: 15
-Capacity: 20
+Enrollment: 1
+Capacity: 1
 
-Aubrey Rodriguez
-Audrey Thomas
-Aurora King
-Avery Torres
-Ella Nguyen
-Ellie Gonzalez
-Emma Torres
-Hunter Campbell
-Jack Thomas
-John Allen
-Lincoln Clark
-Lucas Green
-Natalie Nguyen
-Nora Perez
-Zoe White
+Avery Torres Avery Torres

@@ -1,12 +1,14 @@
 Drone Programming
-Enrollment: 8
-Capacity: 20
+Enrollment: 10
+Capacity: 10
 
-Aria Green
-Aubrey King
-Dylan Young
-Eleanor Ramirez
-Luke Harris
-Mia Hill
-Natalie Robinson
-Skylar Nguyen
+Aria Green Aria Green
+Dylan Young Dylan Young
+Eleanor Ramirez Eleanor Ramirez
+Jack Harris Jack Harris
+Luke Harris Luke Harris
+Mateo Clark Mateo Clark
+Mia Hill Mia Hill
+Natalie Robinson Natalie Robinson
+Olivia Thompson Olivia Thompson
+Skylar Nguyen Skylar Nguyen

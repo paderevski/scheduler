@@ -1,14 +1,14 @@
 Robotics Workshop
 Enrollment: 10
-Capacity: 20
+Capacity: 10
 
-Avery King
-Caroline King
-Christopher Nelson
-Dylan Miller
-Eli King
-Ella Rivera
-Grace Young
-Luna Thompson
-Mason White
-Sofia Wilson
+Caroline King Caroline King
+Christopher Nelson Christopher Nelson
+Eli King Eli King
+Ella Rivera Ella Rivera
+Grace Young Grace Young
+Jack Thomas Jack Thomas
+John Allen John Allen
+Luna Thompson Luna Thompson
+Mason White Mason White
+Sofia Wilson Sofia Wilson

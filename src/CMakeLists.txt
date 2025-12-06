@@ -1,6 +1,7 @@
 set(SCHEDULER_SOURCES
     main.cpp
     ui/MainWindow.cpp
+    ui/ColumnMapDialog.cpp
     models/PreferenceModel.cpp
     solver/SolverEngine.cpp
     utils/SpreadsheetBridge.cpp
@@ -8,6 +9,7 @@ set(SCHEDULER_SOURCES
 
 set(SCHEDULER_HEADERS
     ${CMAKE_SOURCE_DIR}/include/ui/MainWindow.hpp
+    ${CMAKE_SOURCE_DIR}/include/ui/ColumnMapDialog.hpp
     ${CMAKE_SOURCE_DIR}/include/models/PreferenceModel.hpp
     ${CMAKE_SOURCE_DIR}/include/solver/SolverEngine.hpp
     ${CMAKE_SOURCE_DIR}/include/solver/SolverTypes.hpp

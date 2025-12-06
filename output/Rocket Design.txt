@@ -1,9 +1,14 @@
 Rocket Design
-Enrollment: 5
-Capacity: 20
+Enrollment: 10
+Capacity: 10
 
-Andrew Robinson
-Liam Scott
-Sebastian Allen
-Sophia Harris
-Stella Clark
+Aurora King Aurora King
+Dylan Miller Dylan Miller
+Ella Nguyen Ella Nguyen
+Liam Scott Liam Scott
+Natalie Nguyen Natalie Nguyen
+Nora Perez Nora Perez
+Sebastian Allen Sebastian Allen
+Sophia Harris Sophia Harris
+Stella Clark Stella Clark
+Zoe White Zoe White

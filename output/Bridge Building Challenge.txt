@@ -1,10 +1,14 @@
 Bridge Building Challenge
-Enrollment: 6
-Capacity: 20
+Enrollment: 10
+Capacity: 10
 
-Aria Hall
-Avery Miller
-Chloe Allen
-Hannah White
-James Walker
-Michael Jones
+Aria Hall Aria Hall
+Avery Miller Avery Miller
+Carter Harris Carter Harris
+Chloe Allen Chloe Allen
+Emma Torres Emma Torres
+Hannah White Hannah White
+Henry White Henry White
+James Walker James Walker
+Lucas King Lucas King
+Michael Jones Michael Jones

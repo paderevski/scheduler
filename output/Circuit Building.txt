@@ -1,14 +1,23 @@
 Circuit Building
-Enrollment: 10
-Capacity: 20
+Enrollment: 19
+Capacity: 19
 
-Aaron Roberts
-Caleb Thompson
-Caroline Harris
-Caroline Hernandez
-Dylan Scott
-Elizabeth Moore
-Grayson Lewis
-Grayson Martinez
-James Martin
-Sophia White
+Aaron Roberts Aaron Roberts
+Andrew Robinson Andrew Robinson
+Aubrey King Aubrey King
+Audrey Thomas Audrey Thomas
+Avery King Avery King
+Caleb Thompson Caleb Thompson
+Caroline Harris Caroline Harris
+Caroline Hernandez Caroline Hernandez
+Dylan Scott Dylan Scott
+Dylan Torres Dylan Torres
+Elizabeth Moore Elizabeth Moore
+Grayson Lewis Grayson Lewis
+Grayson Martinez Grayson Martinez
+Hunter Campbell Hunter Campbell
+James Martin James Martin
+Joseph Baker Joseph Baker
+Luke Flores Luke Flores
+Matthew Rivera Matthew Rivera
+Sophia White Sophia White

@@ -2,6 +2,7 @@
 
 #include "models/PreferenceModel.hpp"
 #include "solver/SolverEngine.hpp"
+#include "ui/ColumnMapDialog.hpp"
 #include "utils/SpreadsheetBridge.hpp"
 
 #include <QAbstractItemView>
@@ -41,9 +42,10 @@
 
 namespace {
 QStringList defaultHeaders() {
-  return {QStringLiteral("Student ID"), QStringLiteral("Student Name"),
-          QStringLiteral("Choice 1"), QStringLiteral("Choice 2"),
-          QStringLiteral("Choice 3")};
+  return {QStringLiteral("Student ID"), QStringLiteral("First Name"),
+          QStringLiteral("Last Name"), QStringLiteral("Grade"),
+          QStringLiteral("Day"), QStringLiteral("Choice 1"),
+          QStringLiteral("Choice 2"), QStringLiteral("Choice 3")};
 }
 
 QString toQString(const std::string &value) {
@@ -67,10 +69,19 @@ SpreadsheetTable modelToTable(const PreferenceModel &model) {
       line[0] = row.studentId.trimmed().toStdString();
     }
     if (columnCount > 1) {
-      line[1] = row.studentName.trimmed().toStdString();
+      line[1] = row.firstName.trimmed().toStdString();
     }
-    for (int col = 2; col < columnCount; ++col) {
-      const int choiceIndex = col - 2;
+    if (columnCount > 2) {
+      line[2] = row.lastName.trimmed().toStdString();
+    }
+    if (columnCount > 3) {
+      line[3] = row.grade.trimmed().toStdString();
+    }
+    if (columnCount > 4) {
+      line[4] = row.day.trimmed().toStdString();
+    }
+    for (int col = 5; col < columnCount; ++col) {
+      const int choiceIndex = col - 5;
       if (choiceIndex < row.choices.size()) {
         line[col] = row.choices[choiceIndex].trimmed().toStdString();
       } else {
@@ -82,54 +93,71 @@ SpreadsheetTable modelToTable(const PreferenceModel &model) {
   return table;
 }
 
-std::vector<StudentPreferenceRow> rowsFromTable(const SpreadsheetTable &table,
-                                                QStringList &headersOut) {
-  headersOut.clear();
-  if (!table.headers.empty()) {
-    for (const auto &header : table.headers) {
-      headersOut.append(QString::fromStdString(header));
-    }
-  }
-  if (headersOut.size() < 2) {
-    headersOut = defaultHeaders();
-  }
-
-  int maxColumns = headersOut.size();
-  for (const auto &row : table.rows) {
-    maxColumns = std::max(maxColumns, static_cast<int>(row.size()));
-  }
-  while (headersOut.size() < maxColumns) {
-    const int columnIndex = headersOut.size();
-    if (columnIndex == 0) {
-      headersOut.append(QStringLiteral("Student ID"));
-    } else if (columnIndex == 1) {
-      headersOut.append(QStringLiteral("Student Name"));
-    } else {
-      headersOut.append(QStringLiteral("Choice %1").arg(columnIndex - 1));
-    }
-  }
+std::optional<std::vector<StudentPreferenceRow>>
+rowsFromTableWithMapping(const SpreadsheetTable &table,
+                        const ColumnMapping &mapping,
+                        QStringList &headersOut) {
+  headersOut = defaultHeaders();
 
   std::vector<StudentPreferenceRow> rows;
   rows.reserve(table.rows.size());
+
   for (const auto &line : table.rows) {
     if (line.empty()) {
       continue;
     }
+
     StudentPreferenceRow row;
-    if (!line.empty()) {
-      row.studentId = QString::fromStdString(line[0]).trimmed();
+
+    // Extract required fields
+    if (mapping.studentIdColumn >= 0 &&
+        mapping.studentIdColumn < static_cast<int>(line.size())) {
+      row.studentId = QString::fromStdString(line[mapping.studentIdColumn]).trimmed();
     }
-    if (line.size() > 1) {
-      row.studentName = QString::fromStdString(line[1]).trimmed();
+
+    if (mapping.firstNameColumn >= 0 &&
+        mapping.firstNameColumn < static_cast<int>(line.size())) {
+      row.firstName = QString::fromStdString(line[mapping.firstNameColumn]).trimmed();
     }
-    const int headerCount = headersOut.size();
-    for (int col = 2; col < headerCount; ++col) {
-      if (col < static_cast<int>(line.size())) {
-        row.choices.append(QString::fromStdString(line[col]).trimmed());
-      } else {
-        row.choices.append(QString());
-      }
+
+    if (mapping.lastNameColumn >= 0 &&
+        mapping.lastNameColumn < static_cast<int>(line.size())) {
+      row.lastName = QString::fromStdString(line[mapping.lastNameColumn]).trimmed();
     }
+
+    // Extract optional fields
+    if (mapping.gradeColumn >= 0 &&
+        mapping.gradeColumn < static_cast<int>(line.size())) {
+      row.grade = QString::fromStdString(line[mapping.gradeColumn]).trimmed();
+    }
+
+    if (mapping.dayColumn >= 0 &&
+        mapping.dayColumn < static_cast<int>(line.size())) {
+      row.day = QString::fromStdString(line[mapping.dayColumn]).trimmed();
+    }
+
+    // Extract choices
+    if (mapping.choice1Column >= 0 &&
+        mapping.choice1Column < static_cast<int>(line.size())) {
+      row.choices.append(QString::fromStdString(line[mapping.choice1Column]).trimmed());
+    } else {
+      row.choices.append(QString());
+    }
+
+    if (mapping.choice2Column >= 0 &&
+        mapping.choice2Column < static_cast<int>(line.size())) {
+      row.choices.append(QString::fromStdString(line[mapping.choice2Column]).trimmed());
+    } else {
+      row.choices.append(QString());
+    }
+
+    if (mapping.choice3Column >= 0 &&
+        mapping.choice3Column < static_cast<int>(line.size())) {
+      row.choices.append(QString::fromStdString(line[mapping.choice3Column]).trimmed());
+    } else {
+      row.choices.append(QString());
+    }
+
     rows.push_back(std::move(row));
   }
 
@@ -138,13 +166,16 @@ std::vector<StudentPreferenceRow> rowsFromTable(const SpreadsheetTable &table,
 
 SpreadsheetTable resultsToTable(const SolverResult &result) {
   SpreadsheetTable table;
-  table.headers = {"Student ID", "Student Name", "Assigned Activity",
-                   "Choice Rank", "Score"};
+  table.headers = {"Student ID", "First Name", "Last Name", "Grade", "Day",
+                   "Assigned Activity", "Choice Rank", "Score"};
   for (const auto &assignment : result.assignments) {
     std::vector<std::string> row;
-    row.reserve(5);
+    row.reserve(8);
     row.push_back(assignment.studentId);
-    row.push_back(assignment.studentName);
+    row.push_back(assignment.firstName);
+    row.push_back(assignment.lastName);
+    row.push_back(assignment.grade);
+    row.push_back(assignment.day);
     row.push_back(assignment.activity);
     if (assignment.choiceRank >= 0) {
       row.push_back(std::to_string(assignment.choiceRank + 1));
@@ -263,11 +294,12 @@ public:
     auto *optionsWidget = new QWidget(q_ptr);
     optionsWidget->setLayout(optionsMainLayout);
 
-    resultsTable->setColumnCount(5);
+    resultsTable->setColumnCount(8);
     resultsTable->setHorizontalHeaderLabels(
-        {QStringLiteral("Student ID"), QStringLiteral("Student Name"),
-         QStringLiteral("Activity"), QStringLiteral("Choice"),
-         QStringLiteral("Score")});
+        {QStringLiteral("Student ID"), QStringLiteral("First Name"),
+         QStringLiteral("Last Name"), QStringLiteral("Grade"),
+         QStringLiteral("Day"), QStringLiteral("Activity"),
+         QStringLiteral("Choice"), QStringLiteral("Score")});
     resultsTable->horizontalHeader()->setSectionResizeMode(
         QHeaderView::Stretch);
     resultsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -504,18 +536,45 @@ public:
       return false;
     }
 
-    QStringList headers;
-    auto rows = rowsFromTable(table, headers);
-    if (rows.empty()) {
+    if (table.rows.empty()) {
       QMessageBox::warning(
           q_ptr, QStringLiteral("Empty data"),
           QStringLiteral("The selected file contained no rows."));
       return false;
     }
 
+    // Convert headers to QStringList
+    QStringList columnHeaders;
+    for (const auto &header : table.headers) {
+      columnHeaders.append(QString::fromStdString(header));
+    }
+
+    // Show column mapping dialog
+    ColumnMapDialog dialog(columnHeaders, q_ptr);
+    if (dialog.exec() != QDialog::Accepted) {
+      return false;
+    }
+
+    ColumnMapping mapping = dialog.getMapping();
+    if (!mapping.isValid()) {
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("Invalid mapping"),
+          QStringLiteral("Please map all required fields."));
+      return false;
+    }
+
+    QStringList headers;
+    auto rowsOpt = rowsFromTableWithMapping(table, mapping, headers);
+    if (!rowsOpt || rowsOpt->empty()) {
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("No data"),
+          QStringLiteral("No valid student records found in the file."));
+      return false;
+    }
+
     diagnostics->clear();
     model->setHeaders(headers);
-    model->setRows(std::move(rows));
+    model->setRows(std::move(*rowsOpt));
     lastDataPath = path;
     appendDiagnostic(QStringLiteral("Loaded %1 students from %2.")
                          .arg(model->rowCount())
@@ -665,7 +724,10 @@ public:
     int rowIndex = 0;
     for (const auto &assignment : result.assignments) {
       const auto studentId = toQString(assignment.studentId);
-      const auto studentName = toQString(assignment.studentName);
+      const auto firstName = toQString(assignment.firstName);
+      const auto lastName = toQString(assignment.lastName);
+      const auto grade = toQString(assignment.grade);
+      const auto day = toQString(assignment.day);
       const auto activity = toQString(assignment.activity);
       const QString rank = assignment.choiceRank >= 0
                                ? QString::number(assignment.choiceRank + 1)
@@ -679,10 +741,13 @@ public:
       };
 
       resultsTable->setItem(rowIndex, 0, makeItem(studentId));
-      resultsTable->setItem(rowIndex, 1, makeItem(studentName));
-      resultsTable->setItem(rowIndex, 2, makeItem(activity));
-      resultsTable->setItem(rowIndex, 3, makeItem(rank));
-      resultsTable->setItem(rowIndex, 4, makeItem(score));
+      resultsTable->setItem(rowIndex, 1, makeItem(firstName));
+      resultsTable->setItem(rowIndex, 2, makeItem(lastName));
+      resultsTable->setItem(rowIndex, 3, makeItem(grade));
+      resultsTable->setItem(rowIndex, 4, makeItem(day));
+      resultsTable->setItem(rowIndex, 5, makeItem(activity));
+      resultsTable->setItem(rowIndex, 6, makeItem(rank));
+      resultsTable->setItem(rowIndex, 7, makeItem(score));
       ++rowIndex;
     }
 
@@ -785,7 +850,7 @@ public:
       QStringList studentNames;
       for (const auto &assignment : lastResult->assignments) {
         if (assignment.activity == activitySum.activity) {
-          QString name = toQString(assignment.studentName);
+          QString name = toQString(assignment.fullName());
           if (name.isEmpty()) {
             name = toQString(assignment.studentId);
           }
@@ -871,7 +936,7 @@ public:
       QStringList studentNames;
       for (const auto &assignment : lastResult->assignments) {
         if (assignment.activity == activitySum.activity) {
-          QString name = toQString(assignment.studentName);
+          QString name = toQString(assignment.fullName());
           if (name.isEmpty()) {
             name = toQString(assignment.studentId);
           }

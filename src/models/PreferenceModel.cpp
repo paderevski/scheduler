@@ -32,9 +32,18 @@ QVariant PreferenceModel::data(const QModelIndex &index, int role) const {
       return row.studentId;
     }
     if (index.column() == 1) {
-      return row.studentName;
+      return row.firstName;
     }
-    const auto choiceIndex = index.column() - 2;
+    if (index.column() == 2) {
+      return row.lastName;
+    }
+    if (index.column() == 3) {
+      return row.grade;
+    }
+    if (index.column() == 4) {
+      return row.day;
+    }
+    const auto choiceIndex = index.column() - 5;
     if (choiceIndex >= 0 && choiceIndex < row.choices.size()) {
       return row.choices[choiceIndex];
     }
@@ -51,8 +60,8 @@ QVariant PreferenceModel::data(const QModelIndex &index, int role) const {
           m_duplicateIdCounts[static_cast<std::size_t>(index.row())] > 1) {
         return QColor(255, 210, 210);
       }
-    } else if (index.column() >= 2) {
-      const auto choiceIndex = index.column() - 2;
+    } else if (index.column() >= 5) {
+      const auto choiceIndex = index.column() - 5;
       QString choice;
       if (choiceIndex >= 0 && choiceIndex < row.choices.size()) {
         choice = row.choices[choiceIndex];
@@ -96,9 +105,15 @@ bool PreferenceModel::setData(const QModelIndex &index, const QVariant &value,
   if (index.column() == 0) {
     row.studentId = stringValue;
   } else if (index.column() == 1) {
-    row.studentName = stringValue;
+    row.firstName = stringValue;
+  } else if (index.column() == 2) {
+    row.lastName = stringValue;
+  } else if (index.column() == 3) {
+    row.grade = stringValue;
+  } else if (index.column() == 4) {
+    row.day = stringValue;
   } else {
-    const auto choiceIndex = index.column() - 2;
+    const auto choiceIndex = index.column() - 5;
     if (choiceIndex >= 0) {
       if (choiceIndex >= row.choices.size()) {
         row.choices.reserve(choiceIndex + 1);

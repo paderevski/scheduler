@@ -1,17 +1,14 @@
 3D Printing Lab
-Enrollment: 13
-Capacity: 20
+Enrollment: 10
+Capacity: 10
 
-Aurora Gonzalez
-Aurora Thompson
-Dylan Torres
-Grace Brown
-Isaac Wilson
-Joseph Baker
-Joseph Smith
-Lucas King
-Nora Young
-Olivia Thompson
-Savannah Rodriguez
-Thomas Nguyen
-William Rivera
+Aubrey Rodriguez Aubrey Rodriguez
+Aurora Gonzalez Aurora Gonzalez
+Aurora Thompson Aurora Thompson
+Grace Brown Grace Brown
+Isaac Wilson Isaac Wilson
+Joseph Smith Joseph Smith
+Nora Young Nora Young
+Savannah Rodriguez Savannah Rodriguez
+Thomas Nguyen Thomas Nguyen
+William Rivera William Rivera

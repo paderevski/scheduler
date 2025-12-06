@@ -11,8 +11,25 @@
 
 struct StudentPreferenceRow {
   QString studentId;
-  QString studentName;
+  QString firstName;
+  QString lastName;
+  QString grade;
+  QString day; // A or B
   QStringList choices; // ordered by priority (choice1, choice2, ...)
+
+  // Helper to get full name
+  QString fullName() const {
+    if (firstName.isEmpty() && lastName.isEmpty()) {
+      return QString();
+    }
+    if (firstName.isEmpty()) {
+      return lastName;
+    }
+    if (lastName.isEmpty()) {
+      return firstName;
+    }
+    return firstName + " " + lastName;
+  }
 };
 
 struct PreferenceSummary {
