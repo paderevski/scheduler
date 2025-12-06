@@ -33,4 +33,6 @@ else()
     message(STATUS "Qt6::Charts not found - chart visualizations will be disabled.")
 endif()
 
+set(QT_HAS_CHARTS FALSE)
+
 add_subdirectory(src)
