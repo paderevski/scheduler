@@ -239,6 +239,7 @@ public:
         activityCountLabel(new QLabel(q)), capacityTable(new QTableWidget(q)),
         totalCapacityLabel(new QLabel(q)), defaultCapacitySpin(new QSpinBox(q)),
         setAllCapacitiesButton(new QPushButton(QStringLiteral("Set All"), q)),
+        autoCapacityButton(new QPushButton(QStringLiteral("Auto"), q)),
         dayFilterCombo(new QComboBox(q)),
         runButton(new QPushButton(QStringLiteral("Calculate"), q)),
         resultsStatus(new QLabel(QStringLiteral("No solver run yet."), q)),
@@ -277,10 +278,13 @@ public:
         1, QHeaderView::ResizeToContents);
     capacityTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    defaultCapacitySpin->setRange(1, 500);
-    defaultCapacitySpin->setValue(20);
+    defaultCapacitySpin->setRange(0, 500);
+    defaultCapacitySpin->setValue(0);
     defaultCapacitySpin->setToolTip(
         QStringLiteral("Default capacity for all activities"));
+
+    autoCapacityButton->setToolTip(
+        QStringLiteral("Calculate: (filtered students) / (# activities), rounded up"));
 
     auto *dataLayout = new QVBoxLayout();
     dataLayout->addWidget(tableView);
@@ -318,6 +322,7 @@ public:
     setAllLayout->addWidget(
         new QLabel(QStringLiteral("Default capacity:"), q_ptr));
     setAllLayout->addWidget(defaultCapacitySpin);
+    setAllLayout->addWidget(autoCapacityButton);
     setAllLayout->addWidget(setAllCapacitiesButton);
     setAllLayout->addStretch();
     rightLayout->addLayout(setAllLayout);
@@ -399,6 +404,8 @@ public:
                      [this]() { onRunClicked(); });
     QObject::connect(setAllCapacitiesButton, &QPushButton::clicked, q_ptr,
                      [this]() { setAllCapacities(); });
+    QObject::connect(autoCapacityButton, &QPushButton::clicked, q_ptr,
+                     [this]() { autoSetCapacity(); });
     QObject::connect(exportResultsCsvButton, &QPushButton::clicked, q_ptr,
                      [this]() { exportResultsCsv(); });
     QObject::connect(exportResultsXlsxButton, &QPushButton::clicked, q_ptr,
@@ -525,7 +532,7 @@ public:
       capacityTable->setItem(row, 0, activityItem);
 
       auto *spinBox = new QSpinBox(q_ptr);
-      spinBox->setRange(1, 500);
+      spinBox->setRange(0, 500);
       // Use stored capacity if available, otherwise use default
       int capacity =
           currentCapacities.value(activity, defaultCapacitySpin->value());
@@ -587,6 +594,24 @@ public:
     }
 
     totalCapacityLabel->setText(labelText);
+  }
+
+  void autoSetCapacity() {
+    // Count filtered students
+    const QString dayFilter = dayFilterCombo->currentData().toString();
+    int filteredStudentCount = 0;
+    for (const auto &row : model->rows()) {
+      if (dayFilter.isEmpty() || row.day == dayFilter) {
+        filteredStudentCount++;
+      }
+    }
+
+    int activityCount = capacityTable->rowCount();
+    if (activityCount > 0 && filteredStudentCount > 0) {
+      // Calculate: students / activities, rounded up
+      int autoCapacity = (filteredStudentCount + activityCount - 1) / activityCount;
+      defaultCapacitySpin->setValue(autoCapacity);
+    }
   }
 
   void setAllCapacities() {
@@ -1211,6 +1236,7 @@ public:
   QLabel *totalCapacityLabel;
   QSpinBox *defaultCapacitySpin;
   QPushButton *setAllCapacitiesButton;
+  QPushButton *autoCapacityButton;
   QComboBox *dayFilterCombo;
   QPushButton *runButton;
   QLabel *resultsStatus;
