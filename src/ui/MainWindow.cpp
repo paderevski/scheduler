@@ -354,10 +354,12 @@ public:
         QHeaderView::Stretch);
     resultsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    activitySummary->setColumnCount(4);
+    activitySummary->setColumnCount(7);
     activitySummary->setHeaderLabels(
         {QStringLiteral("Activity"), QStringLiteral("Assigned"),
-         QStringLiteral("Capacity"), QStringLiteral("Utilization")});
+         QStringLiteral("Capacity"), QStringLiteral("Yes"),
+         QStringLiteral("Maybe"), QStringLiteral("No"),
+         QStringLiteral("Expected Util.")});
 
     auto *resultsLayout = new QVBoxLayout();
     resultsLayout->addWidget(resultsStatus);
@@ -406,6 +408,7 @@ public:
   void setupMenu() {
     auto *fileMenu = q_ptr->menuBar()->addMenu(QStringLiteral("File"));
     auto *openAction = fileMenu->addAction(QStringLiteral("Open Data..."));
+    openAction->setShortcut(QKeySequence::Open);
     QObject::connect(openAction, &QAction::triggered, q_ptr,
                      [this]() { openDataFile(); });
 
@@ -421,6 +424,7 @@ public:
 
     fileMenu->addSeparator();
     auto *quitAction = fileMenu->addAction(QStringLiteral("Quit"));
+    quitAction->setShortcut(QKeySequence::Quit);
     QObject::connect(quitAction, &QAction::triggered, q_ptr, &QWidget::close);
   }
 
@@ -864,12 +868,17 @@ public:
       item->setText(0, toQString(summary.activity));
       item->setText(1, QString::number(summary.assigned));
       item->setText(2, QString::number(summary.capacity));
-      const double utilization =
+      item->setText(3, QString::number(summary.presentYes));
+      item->setText(4, QString::number(summary.presentMaybe));
+      item->setText(5, QString::number(summary.presentNo));
+
+      // Calculate expected utilization: yes=1.0, maybe=0.5, no=0.0
+      const double expectedAttendance = summary.presentYes + (summary.presentMaybe * 0.5);
+      const double expectedUtil =
           summary.capacity == 0 ? 0.0
-                                : static_cast<double>(summary.assigned) /
-                                      static_cast<double>(summary.capacity);
-      item->setText(3,
-                    QStringLiteral("%1%").arg(utilization * 100.0, 0, 'f', 1));
+                                : expectedAttendance / static_cast<double>(summary.capacity);
+      item->setText(6,
+                    QStringLiteral("%1%").arg(expectedUtil * 100.0, 0, 'f', 1));
     }
     activitySummary->resizeColumnToContents(0);
 

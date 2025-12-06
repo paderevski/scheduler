@@ -44,6 +44,9 @@ struct ActivitySummaryRow {
   std::string activity;
   int assigned = 0;
   int capacity = 0;
+  int presentYes = 0;
+  int presentNo = 0;
+  int presentMaybe = 0;
 };
 
 struct SolverResult {

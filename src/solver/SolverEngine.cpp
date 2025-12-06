@@ -262,12 +262,37 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
     }
   }
 
+  // Count yes/no/maybe for each activity
+  std::vector<int> activityYes(activities.size(), 0);
+  std::vector<int> activityNo(activities.size(), 0);
+  std::vector<int> activityMaybe(activities.size(), 0);
+
+  for (const auto &assignment : result.assignments) {
+    // Find which activity index this assignment belongs to
+    for (int idx = 0; idx < static_cast<int>(activities.size()); ++idx) {
+      if (assignment.activity == toStdString(activities[idx])) {
+        QString present = QString::fromStdString(assignment.present).trimmed().toLower();
+        if (present == "yes" || present == "y") {
+          ++activityYes[idx];
+        } else if (present == "no" || present == "n") {
+          ++activityNo[idx];
+        } else if (present == "maybe" || present == "m") {
+          ++activityMaybe[idx];
+        }
+        break;
+      }
+    }
+  }
+
   for (int idx = 0; idx < static_cast<int>(activities.size()); ++idx) {
     ActivitySummaryRow summary;
     summary.activity = toStdString(activities[idx]);
     summary.assigned = activityAssignments[idx];
     summary.capacity =
         activityCapacityMap.value(activities[idx], options.defaultCapacity);
+    summary.presentYes = activityYes[idx];
+    summary.presentNo = activityNo[idx];
+    summary.presentMaybe = activityMaybe[idx];
     result.activitySummary.push_back(std::move(summary));
   }
 
@@ -361,11 +386,32 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
     }
   }
 
+  // Count yes/no/maybe for each activity
+  QMap<QString, int> activityYes;
+  QMap<QString, int> activityNo;
+  QMap<QString, int> activityMaybe;
+
+  for (const auto &assignment : result.assignments) {
+    QString activityName = QString::fromStdString(assignment.activity);
+    QString present = QString::fromStdString(assignment.present).trimmed().toLower();
+
+    if (present == "yes" || present == "y") {
+      activityYes[activityName]++;
+    } else if (present == "no" || present == "n") {
+      activityNo[activityName]++;
+    } else if (present == "maybe" || present == "m") {
+      activityMaybe[activityName]++;
+    }
+  }
+
   for (const auto &activityName : activityList) {
     ActivitySummaryRow summary;
     summary.activity = toStdString(activityName);
     summary.assigned = usage.value(activityName, 0);
     summary.capacity = options.activityCapacity;
+    summary.presentYes = activityYes.value(activityName, 0);
+    summary.presentNo = activityNo.value(activityName, 0);
+    summary.presentMaybe = activityMaybe.value(activityName, 0);
     result.activitySummary.push_back(std::move(summary));
   }
 
