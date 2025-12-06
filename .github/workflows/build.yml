@@ -85,32 +85,76 @@ jobs:
       - name: Build
         run: cmake --build build --config Release -j
 
+      - name: Prepare distribution (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir -p dist
+          cp build/src/EngineeringWeekScheduler dist/
+          cp README.md dist/
+          # Bundle OR-Tools shared libraries
+          cp ${ORTOOLS_ROOT}/lib/libortools.so.9 dist/
+          cp ${ORTOOLS_ROOT}/lib/libortools_flatzinc.so.9 dist/ || true
+          # Create launcher script that sets LD_LIBRARY_PATH
+          cat > dist/run-scheduler.sh << 'EOF'
+          #!/bin/bash
+          SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          export LD_LIBRARY_PATH="${SCRIPT_DIR}:${LD_LIBRARY_PATH}"
+          exec "${SCRIPT_DIR}/EngineeringWeekScheduler" "$@"
+          EOF
+          chmod +x dist/run-scheduler.sh
+          chmod +x dist/EngineeringWeekScheduler
+
       - name: Upload artifacts (Linux)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-linux
-          path: |
-            build/src/EngineeringWeekScheduler
-            README.md
+          path: dist/
+
+      - name: Prepare distribution (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p dist
+          cp build/src/EngineeringWeekScheduler dist/
+          cp README.md dist/
+          # Bundle OR-Tools shared libraries
+          cp ${ORTOOLS_ROOT}/lib/libortools.9.dylib dist/ || true
+          cp ${ORTOOLS_ROOT}/lib/libortools_flatzinc.9.dylib dist/ || true
+          # Fix library paths in binary
+          install_name_tool -add_rpath @executable_path dist/EngineeringWeekScheduler || true
+          # Create launcher script
+          cat > dist/run-scheduler.sh << 'EOF'
+          #!/bin/bash
+          SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          export DYLD_LIBRARY_PATH="${SCRIPT_DIR}:${DYLD_LIBRARY_PATH}"
+          exec "${SCRIPT_DIR}/EngineeringWeekScheduler" "$@"
+          EOF
+          chmod +x dist/run-scheduler.sh
+          chmod +x dist/EngineeringWeekScheduler
 
       - name: Upload artifacts (macOS)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-macos
-          path: |
-            build/src/EngineeringWeekScheduler
-            README.md
+          path: dist/
+
+      - name: Prepare distribution (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist
+          Copy-Item build/src/Release/EngineeringWeekScheduler.exe dist/
+          Copy-Item README.md dist/
+          # Bundle OR-Tools DLLs
+          Copy-Item "$env:ORTOOLS_ROOT/bin/*.dll" dist/ -ErrorAction SilentlyContinue
 
       - name: Upload artifacts (Windows)
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-windows
-          path: |
-            build/src/Release/EngineeringWeekScheduler.exe
-            README.md
+          path: dist/
 
   release:
     needs: build
@@ -132,31 +176,11 @@ jobs:
       - name: Prepare release assets
         run: |
           mkdir -p release-assets
-          # Find and copy binaries - paths depend on upload-artifact behavior
-          # Try both possible locations (with and without build/src/ prefix)
-          if [ -f "artifacts/scheduler-linux/build/src/EngineeringWeekScheduler" ]; then
-            cp artifacts/scheduler-linux/build/src/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-linux
-          elif [ -f "artifacts/scheduler-linux/EngineeringWeekScheduler" ]; then
-            cp artifacts/scheduler-linux/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-linux
-          else
-            echo "ERROR: Linux binary not found!" && exit 1
-          fi
 
-          if [ -f "artifacts/scheduler-macos/build/src/EngineeringWeekScheduler" ]; then
-            cp artifacts/scheduler-macos/build/src/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-macos
-          elif [ -f "artifacts/scheduler-macos/EngineeringWeekScheduler" ]; then
-            cp artifacts/scheduler-macos/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-macos
-          else
-            echo "ERROR: macOS binary not found!" && exit 1
-          fi
-
-          if [ -f "artifacts/scheduler-windows/build/src/Release/EngineeringWeekScheduler.exe" ]; then
-            cp artifacts/scheduler-windows/build/src/Release/EngineeringWeekScheduler.exe release-assets/EngineeringWeekScheduler-windows.exe
-          elif [ -f "artifacts/scheduler-windows/EngineeringWeekScheduler.exe" ]; then
-            cp artifacts/scheduler-windows/EngineeringWeekScheduler.exe release-assets/EngineeringWeekScheduler-windows.exe
-          else
-            echo "ERROR: Windows binary not found!" && exit 1
-          fi
+          # Create zip archives for each platform (includes all bundled libraries)
+          cd artifacts/scheduler-linux && zip -r ../../release-assets/EngineeringWeekScheduler-linux.zip . && cd ../..
+          cd artifacts/scheduler-macos && zip -r ../../release-assets/EngineeringWeekScheduler-macos.zip . && cd ../..
+          cd artifacts/scheduler-windows && zip -r ../../release-assets/EngineeringWeekScheduler-windows.zip . && cd ../..
 
           echo "=== Release assets prepared ==="
           ls -la release-assets/
@@ -166,6 +190,14 @@ jobs:
         with:
           tag: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
+          body: |
+            ## Installation
+
+            Download the zip file for your platform and extract it.
+
+            **Linux/macOS:** Run `./run-scheduler.sh` (this sets up library paths automatically)
+
+            **Windows:** Run `EngineeringWeekScheduler.exe` directly
           artifacts: "release-assets/*"
           allowUpdates: true
           removeArtifacts: true
