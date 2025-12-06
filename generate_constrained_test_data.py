@@ -11,7 +11,7 @@ first_names = [
     "Ethan",
     "Sophia",
     "Mason",
-    "Isabella",
+    "Isabelle",
     "William",
     "Mia",
     "James",
