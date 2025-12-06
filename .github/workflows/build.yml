@@ -85,76 +85,141 @@ jobs:
       - name: Build
         run: cmake --build build --config Release -j
 
-      - name: Prepare distribution (Linux)
+      - name: Create AppImage (Linux)
         if: runner.os == 'Linux'
         run: |
-          mkdir -p dist
-          cp build/src/EngineeringWeekScheduler dist/
-          cp README.md dist/
-          # Bundle OR-Tools shared libraries
-          cp ${ORTOOLS_ROOT}/lib/libortools.so.9 dist/
-          cp ${ORTOOLS_ROOT}/lib/libortools_flatzinc.so.9 dist/ || true
-          # Create launcher script that sets LD_LIBRARY_PATH
-          cat > dist/run-scheduler.sh << 'EOF'
-          #!/bin/bash
-          SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-          export LD_LIBRARY_PATH="${SCRIPT_DIR}:${LD_LIBRARY_PATH}"
-          exec "${SCRIPT_DIR}/EngineeringWeekScheduler" "$@"
+          # Install dependencies for AppImage creation
+          sudo apt-get update
+          sudo apt-get install -y libfuse2 imagemagick
+
+          # Install linuxdeploy and Qt plugin
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy*.AppImage
+
+          # Create AppDir structure
+          mkdir -p AppDir/usr/bin AppDir/usr/lib AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/256x256/apps
+          cp build/src/EngineeringWeekScheduler AppDir/usr/bin/
+
+          # Copy OR-Tools libraries
+          cp ${ORTOOLS_ROOT}/lib/libortools.so* AppDir/usr/lib/
+          cp ${ORTOOLS_ROOT}/lib/libortools_flatzinc.so* AppDir/usr/lib/ || true
+
+          # Create desktop file
+          cat > AppDir/usr/share/applications/EngineeringWeekScheduler.desktop << EOF
+          [Desktop Entry]
+          Type=Application
+          Name=Engineering Week Scheduler
+          Exec=EngineeringWeekScheduler
+          Icon=EngineeringWeekScheduler
+          Categories=Office;
           EOF
-          chmod +x dist/run-scheduler.sh
-          chmod +x dist/EngineeringWeekScheduler
+
+          # Create a simple icon (or copy yours if you have one)
+          convert -size 256x256 xc:steelblue -fill white -gravity center -pointsize 48 -annotate 0 "EWS" AppDir/usr/share/icons/hicolor/256x256/apps/EngineeringWeekScheduler.png || \
+            wget -q -O AppDir/usr/share/icons/hicolor/256x256/apps/EngineeringWeekScheduler.png "https://via.placeholder.com/256/4682B4/FFFFFF?text=EWS"
+
+          # Build AppImage
+          export QMAKE=${Qt6_DIR}/bin/qmake
+          export LD_LIBRARY_PATH="${ORTOOLS_ROOT}/lib:${Qt6_DIR}/lib:$LD_LIBRARY_PATH"
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage
+
+          mkdir -p dist
+          mv Engineering*.AppImage dist/EngineeringWeekScheduler-x86_64.AppImage
 
       - name: Upload artifacts (Linux)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-linux
-          path: dist/
+          path: dist/EngineeringWeekScheduler-x86_64.AppImage
 
-      - name: Prepare distribution (macOS)
+      - name: Create macOS App Bundle
         if: runner.os == 'macOS'
         run: |
           mkdir -p dist
-          cp build/src/EngineeringWeekScheduler dist/
-          cp README.md dist/
-          # Bundle OR-Tools shared libraries
-          cp ${ORTOOLS_ROOT}/lib/libortools.9.dylib dist/ || true
-          cp ${ORTOOLS_ROOT}/lib/libortools_flatzinc.9.dylib dist/ || true
-          # Fix library paths in binary
-          install_name_tool -add_rpath @executable_path dist/EngineeringWeekScheduler || true
-          # Create launcher script
-          cat > dist/run-scheduler.sh << 'EOF'
-          #!/bin/bash
-          SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-          export DYLD_LIBRARY_PATH="${SCRIPT_DIR}:${DYLD_LIBRARY_PATH}"
-          exec "${SCRIPT_DIR}/EngineeringWeekScheduler" "$@"
+
+          # Create app bundle structure
+          APP_DIR="dist/EngineeringWeekScheduler.app"
+          mkdir -p "${APP_DIR}/Contents/MacOS"
+          mkdir -p "${APP_DIR}/Contents/Frameworks"
+          mkdir -p "${APP_DIR}/Contents/Resources"
+
+          cp build/src/EngineeringWeekScheduler "${APP_DIR}/Contents/MacOS/"
+
+          # Create Info.plist
+          cat > "${APP_DIR}/Contents/Info.plist" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>EngineeringWeekScheduler</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.scheduler.engineeringweek</string>
+              <key>CFBundleName</key>
+              <string>Engineering Week Scheduler</string>
+              <key>CFBundleVersion</key>
+              <string>1.0</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>LSMinimumSystemVersion</key>
+              <string>11.0</string>
+              <key>NSHighResolutionCapable</key>
+              <true/>
+          </dict>
+          </plist>
           EOF
-          chmod +x dist/run-scheduler.sh
-          chmod +x dist/EngineeringWeekScheduler
+
+          # Copy OR-Tools libraries
+          cp ${ORTOOLS_ROOT}/lib/libortools*.dylib "${APP_DIR}/Contents/Frameworks/" || true
+
+          # Use macdeployqt to bundle Qt frameworks
+          ${Qt6_DIR}/bin/macdeployqt "${APP_DIR}" -verbose=2
+
+          # Fix OR-Tools library paths
+          for lib in "${APP_DIR}/Contents/Frameworks"/libortools*.dylib; do
+            if [ -f "$lib" ]; then
+              install_name_tool -add_rpath @executable_path/../Frameworks "${APP_DIR}/Contents/MacOS/EngineeringWeekScheduler" 2>/dev/null || true
+              # Update library ID
+              install_name_tool -id "@rpath/$(basename $lib)" "$lib" 2>/dev/null || true
+            fi
+          done
+
+          # Create DMG
+          hdiutil create -volname "EngineeringWeekScheduler" -srcfolder dist/EngineeringWeekScheduler.app -ov -format UDZO dist/EngineeringWeekScheduler.dmg
 
       - name: Upload artifacts (macOS)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-macos
-          path: dist/
+          path: dist/EngineeringWeekScheduler.dmg
 
-      - name: Prepare distribution (Windows)
+      - name: Create Windows Distribution
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist
           Copy-Item build/src/Release/EngineeringWeekScheduler.exe dist/
-          Copy-Item README.md dist/
+
+          # Use windeployqt to bundle Qt DLLs
+          & "$env:Qt6_DIR/bin/windeployqt.exe" --release --no-translations dist/EngineeringWeekScheduler.exe
+
           # Bundle OR-Tools DLLs
           Copy-Item "$env:ORTOOLS_ROOT/bin/*.dll" dist/ -ErrorAction SilentlyContinue
+
+          # Create a zip file
+          Compress-Archive -Path dist/* -DestinationPath EngineeringWeekScheduler-windows.zip
 
       - name: Upload artifacts (Windows)
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-windows
-          path: dist/
+          path: EngineeringWeekScheduler-windows.zip
 
   release:
     needs: build
@@ -177,10 +242,10 @@ jobs:
         run: |
           mkdir -p release-assets
 
-          # Create zip archives for each platform (includes all bundled libraries)
-          cd artifacts/scheduler-linux && zip -r ../../release-assets/EngineeringWeekScheduler-linux.zip . && cd ../..
-          cd artifacts/scheduler-macos && zip -r ../../release-assets/EngineeringWeekScheduler-macos.zip . && cd ../..
-          cd artifacts/scheduler-windows && zip -r ../../release-assets/EngineeringWeekScheduler-windows.zip . && cd ../..
+          # Copy single-file artifacts directly
+          cp artifacts/scheduler-linux/*.AppImage release-assets/ || true
+          cp artifacts/scheduler-macos/*.dmg release-assets/ || true
+          cp artifacts/scheduler-windows/*.zip release-assets/ || true
 
           echo "=== Release assets prepared ==="
           ls -la release-assets/
@@ -193,11 +258,11 @@ jobs:
           body: |
             ## Installation
 
-            Download the zip file for your platform and extract it.
+            **Linux:** Download the `.AppImage` file, make it executable (`chmod +x`), and run it.
 
-            **Linux/macOS:** Run `./run-scheduler.sh` (this sets up library paths automatically)
+            **macOS:** Download the `.dmg` file, open it, and drag the app to Applications.
 
-            **Windows:** Run `EngineeringWeekScheduler.exe` directly
+            **Windows:** Download and extract the `.zip` file, then run `EngineeringWeekScheduler.exe`.
           artifacts: "release-assets/*"
           allowUpdates: true
           removeArtifacts: true
