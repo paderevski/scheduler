@@ -123,9 +123,10 @@ jobs:
           path: artifacts
 
       - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: ncipollo/release-action@v1
         with:
-          files: |
-            artifacts/scheduler-linux/*
-            artifacts/scheduler-macos/*
-            artifacts/scheduler-windows/*
+          tag: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          artifacts: "artifacts/scheduler-linux/*,artifacts/scheduler-macos/*,artifacts/scheduler-windows/*"
+          allowUpdates: true
+          artifactErrorsFailBuild: true
