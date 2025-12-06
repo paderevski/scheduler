@@ -344,15 +344,15 @@ public:
     weightGridLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr), 0, 0);
     weightGridLayout->addWidget(weightYesSpin, 0, 1);
     weightGridLayout->addWidget(weightYesNormLabel, 0, 2);
-    
+
     weightGridLayout->addWidget(new QLabel(QStringLiteral("Maybe:"), q_ptr), 1, 0);
     weightGridLayout->addWidget(weightMaybeSpin, 1, 1);
     weightGridLayout->addWidget(weightMaybeNormLabel, 1, 2);
-    
+
     weightGridLayout->addWidget(new QLabel(QStringLiteral("No:"), q_ptr), 2, 0);
     weightGridLayout->addWidget(weightNoSpin, 2, 1);
     weightGridLayout->addWidget(weightNoNormLabel, 2, 2);
-    
+
     weightGridLayout->setColumnStretch(3, 1);
     leftLayout->addLayout(weightGridLayout);
 
@@ -948,7 +948,7 @@ public:
 
     SolverOptions options;
     options.defaultCapacity = defaultCapacitySpin->value();
-    
+
     // If weighting is disabled, set all weights to 1
     if (!weightingEnabledCheck->isChecked()) {
       options.weightYes = 1;
@@ -970,6 +970,10 @@ public:
         options.activityCapacities[activityName] = spinBox->value();
       }
     }
+
+    // Store options and day filter for report generation
+    lastOptions = options;
+    lastDayFilter = dayFilter;
 
     QString filterMsg = dayFilter.isEmpty() ? QStringLiteral("all students")
                                              : QStringLiteral("Day %1 students").arg(dayFilter);
@@ -1205,6 +1209,152 @@ public:
     exportResultsXlsxButton->setEnabled(enabled);
   }
 
+  void exportSummaryReport(const QString &filePath) {
+    if (!hasResult || !lastResult || !lastOptions) {
+      return;
+    }
+
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      appendDiagnostic(QStringLiteral("Warning: Could not create summary report"));
+      return;
+    }
+
+    QTextStream out(&file);
+    out << "ENGINEERING WEEK SCHEDULER - SUMMARY REPORT\n";
+    out << "==========================================\n\n";
+
+    // Solver Options
+    out << "SOLVER OPTIONS\n";
+    out << "--------------\n";
+    out << "Day Filter: " << (lastDayFilter.isEmpty() ? "All Days" : lastDayFilter) << "\n";
+    out << "Default Capacity: " << lastOptions->defaultCapacity << "\n";
+
+    bool weightingEnabled = (lastOptions->weightYes != 1 || lastOptions->weightMaybe != 1 || lastOptions->weightNo != 1) &&
+                           (lastOptions->weightYes != lastOptions->weightMaybe || lastOptions->weightYes != lastOptions->weightNo);
+    out << "Attendance Weighting: " << (weightingEnabled ? "Enabled" : "Disabled") << "\n";
+
+    if (weightingEnabled) {
+      out << "  Yes Weight: " << lastOptions->weightYes << " (×1.00)\n";
+      double normMaybe = lastOptions->weightYes > 0 ?
+                         static_cast<double>(lastOptions->weightMaybe) / lastOptions->weightYes : 0.0;
+      double normNo = lastOptions->weightYes > 0 ?
+                      static_cast<double>(lastOptions->weightNo) / lastOptions->weightYes : 0.0;
+      out << "  Maybe Weight: " << lastOptions->weightMaybe
+          << " (×" << QString::number(normMaybe, 'f', 2) << ")\n";
+      out << "  No Weight: " << lastOptions->weightNo
+          << " (×" << QString::number(normNo, 'f', 2) << ")\n";
+    }
+    out << "\n";
+
+    // Overall Results
+    out << "OVERALL RESULTS\n";
+    out << "---------------\n";
+    out << "Total Students: " << lastResult->totalStudents << "\n";
+    out << "Satisfied Students: " << lastResult->satisfiedStudents << "\n";
+    double satisfactionRate = lastResult->totalStudents > 0 ?
+                              (lastResult->satisfiedStudents * 100.0 / lastResult->totalStudents) : 0.0;
+    out << "Satisfaction Rate: " << QString::number(satisfactionRate, 'f', 1) << "%\n";
+    out << "Runtime: " << lastResult->runtimeMs << " ms\n";
+    out << "\n";
+
+    // Choice Satisfaction Summary
+    out << "CHOICE SATISFACTION SUMMARY\n";
+    out << "---------------------------\n";
+
+    // Count assignments by choice rank and attendance status
+    int choice1Total = 0, choice1Yes = 0, choice1Maybe = 0, choice1No = 0;
+    int choice2Total = 0, choice2Yes = 0, choice2Maybe = 0, choice2No = 0;
+    int choice3Total = 0, choice3Yes = 0, choice3Maybe = 0, choice3No = 0;
+    int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0, notSatisfiedNo = 0;
+
+    for (const auto &assignment : lastResult->assignments) {
+      QString present = toQString(assignment.present).trimmed().toLower();
+      bool isYes = (present == "yes" || present == "y");
+      bool isMaybe = (present == "maybe" || present == "m");
+      bool isNo = (present == "no" || present == "n");
+
+      if (assignment.choiceRank == 0) {
+        choice1Total++;
+        if (isYes) choice1Yes++;
+        else if (isMaybe) choice1Maybe++;
+        else if (isNo) choice1No++;
+      } else if (assignment.choiceRank == 1) {
+        choice2Total++;
+        if (isYes) choice2Yes++;
+        else if (isMaybe) choice2Maybe++;
+        else if (isNo) choice2No++;
+      } else if (assignment.choiceRank == 2) {
+        choice3Total++;
+        if (isYes) choice3Yes++;
+        else if (isMaybe) choice3Maybe++;
+        else if (isNo) choice3No++;
+      } else {
+        notSatisfiedTotal++;
+        if (isYes) notSatisfiedYes++;
+        else if (isMaybe) notSatisfiedMaybe++;
+        else if (isNo) notSatisfiedNo++;
+      }
+    }
+
+    const int totalStudents = lastResult->totalStudents;
+    auto formatRow = [&out, totalStudents](const QString &rank, int total, int yes, int maybe, int no) {
+      double pct = totalStudents > 0 ? (total * 100.0 / totalStudents) : 0.0;
+      out << qSetFieldWidth(15) << Qt::left << rank
+          << qSetFieldWidth(8) << Qt::right << total
+          << qSetFieldWidth(10) << Qt::right << QString::number(pct, 'f', 1) + "%"
+          << qSetFieldWidth(8) << Qt::right << yes
+          << qSetFieldWidth(8) << Qt::right << maybe
+          << qSetFieldWidth(8) << Qt::right << no
+          << qSetFieldWidth(0) << "\n";
+    };
+
+    out << qSetFieldWidth(15) << Qt::left << "Rank"
+        << qSetFieldWidth(8) << Qt::right << "Total"
+        << qSetFieldWidth(10) << Qt::right << "Total %"
+        << qSetFieldWidth(8) << Qt::right << "Yes"
+        << qSetFieldWidth(8) << Qt::right << "Maybe"
+        << qSetFieldWidth(8) << Qt::right << "No"
+        << qSetFieldWidth(0) << "\n";
+    out << QString(63, '-') << "\n";
+
+    formatRow("1st Choice", choice1Total, choice1Yes, choice1Maybe, choice1No);
+    formatRow("2nd Choice", choice2Total, choice2Yes, choice2Maybe, choice2No);
+    formatRow("3rd Choice", choice3Total, choice3Yes, choice3Maybe, choice3No);
+    formatRow("Not Satisfied", notSatisfiedTotal, notSatisfiedYes, notSatisfiedMaybe, notSatisfiedNo);
+    out << "\n";
+
+    // Activity Summary
+    out << "ACTIVITY SUMMARY\n";
+    out << "----------------\n";
+    out << qSetFieldWidth(30) << Qt::left << "Activity"
+        << qSetFieldWidth(10) << Qt::right << "Assigned"
+        << qSetFieldWidth(10) << Qt::right << "Capacity"
+        << qSetFieldWidth(8) << Qt::right << "Yes"
+        << qSetFieldWidth(8) << Qt::right << "Maybe"
+        << qSetFieldWidth(8) << Qt::right << "No"
+        << qSetFieldWidth(12) << Qt::right << "Exp. Util."
+        << qSetFieldWidth(0) << "\n";
+    out << QString(86, '-') << "\n";
+
+    for (const auto &summary : lastResult->activitySummary) {
+      const double expectedAttendance = summary.presentYes + (summary.presentMaybe * 0.5);
+      const double expectedUtil = summary.capacity == 0 ? 0.0
+                                : expectedAttendance / static_cast<double>(summary.capacity);
+
+      out << qSetFieldWidth(30) << Qt::left << toQString(summary.activity)
+          << qSetFieldWidth(10) << Qt::right << summary.assigned
+          << qSetFieldWidth(10) << Qt::right << summary.capacity
+          << qSetFieldWidth(8) << Qt::right << summary.presentYes
+          << qSetFieldWidth(8) << Qt::right << summary.presentMaybe
+          << qSetFieldWidth(8) << Qt::right << summary.presentNo
+          << qSetFieldWidth(12) << Qt::right << QString::number(expectedUtil * 100.0, 'f', 1) + "%"
+          << qSetFieldWidth(0) << "\n";
+    }
+
+    file.close();
+  }
+
   void exportResultsCsv() {
     if (!hasResult) {
       return;
@@ -1330,13 +1480,17 @@ public:
       filesCreated++;
     }
 
-    appendDiagnostic(QStringLiteral("Exported results.csv and %1 activity rosters to %2")
+    // Export summary report
+    const QString summaryPath = dir.filePath(QStringLiteral("summary.txt"));
+    exportSummaryReport(summaryPath);
+
+    appendDiagnostic(QStringLiteral("Exported results.csv, summary.txt, and %1 activity rosters to %2")
                          .arg(filesCreated)
                          .arg(folderPath));
 
     QMessageBox::information(
         q_ptr, QStringLiteral("Export Successful"),
-        QStringLiteral("Successfully exported results.csv and %1 activity roster files to:\n%2")
+        QStringLiteral("Successfully exported results.csv, summary.txt, and %1 activity roster files to:\n%2")
             .arg(filesCreated)
             .arg(folderPath));
   }
@@ -1509,6 +1663,8 @@ public:
   QProgressDialog *progressDialog;
   QString lastDataPath;
   std::optional<SolverResult> lastResult;
+  std::optional<SolverOptions> lastOptions;
+  QString lastDayFilter;
   bool hasResult = false;
 };
 
