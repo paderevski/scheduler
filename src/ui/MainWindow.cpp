@@ -7,12 +7,14 @@
 
 #include <QAbstractItemView>
 #include <QAction>
+#include <QCheckBox>
 #include <QComboBox>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFutureWatcher>
+#include <QGridLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
@@ -235,6 +237,7 @@ public:
         totalCapacityLabel(new QLabel(q)), defaultCapacitySpin(new QSpinBox(q)),
         setAllCapacitiesButton(new QPushButton(QStringLiteral("Set All"), q)),
         autoCapacityButton(new QPushButton(QStringLiteral("Auto"), q)),
+        weightingEnabledCheck(new QCheckBox(QStringLiteral("Enable Attendance Weighting"), q)),
         weightYesSpin(new QSpinBox(q)),
         weightMaybeSpin(new QSpinBox(q)),
         weightNoSpin(new QSpinBox(q)),
@@ -262,6 +265,7 @@ public:
     setupUi();
     setupMenu();
     connectSignals();
+    updateWeightControls();
     updateSummary();
   }
 
@@ -323,34 +327,34 @@ public:
 
     // Attendance weighting
     leftLayout->addWidget(new QLabel(QStringLiteral("<b>Attendance Weighting</b>"), q_ptr));
+    leftLayout->addWidget(weightingEnabledCheck);
+    weightingEnabledCheck->setChecked(true);
 
     weightYesSpin->setRange(1, 1000);
     weightYesSpin->setValue(100);
+    weightYesSpin->setMinimumWidth(80);
     weightMaybeSpin->setRange(0, 1000);
     weightMaybeSpin->setValue(50);
+    weightMaybeSpin->setMinimumWidth(80);
     weightNoSpin->setRange(0, 1000);
     weightNoSpin->setValue(10);
+    weightNoSpin->setMinimumWidth(80);
 
-    auto *weightYesLayout = new QHBoxLayout();
-    weightYesLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr));
-    weightYesLayout->addWidget(weightYesSpin);
-    weightYesLayout->addWidget(weightYesNormLabel);
-    weightYesLayout->addStretch();
-    leftLayout->addLayout(weightYesLayout);
-
-    auto *weightMaybeLayout = new QHBoxLayout();
-    weightMaybeLayout->addWidget(new QLabel(QStringLiteral("Maybe:"), q_ptr));
-    weightMaybeLayout->addWidget(weightMaybeSpin);
-    weightMaybeLayout->addWidget(weightMaybeNormLabel);
-    weightMaybeLayout->addStretch();
-    leftLayout->addLayout(weightMaybeLayout);
-
-    auto *weightNoLayout = new QHBoxLayout();
-    weightNoLayout->addWidget(new QLabel(QStringLiteral("No:"), q_ptr));
-    weightNoLayout->addWidget(weightNoSpin);
-    weightNoLayout->addWidget(weightNoNormLabel);
-    weightNoLayout->addStretch();
-    leftLayout->addLayout(weightNoLayout);
+    auto *weightGridLayout = new QGridLayout();
+    weightGridLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr), 0, 0);
+    weightGridLayout->addWidget(weightYesSpin, 0, 1);
+    weightGridLayout->addWidget(weightYesNormLabel, 0, 2);
+    
+    weightGridLayout->addWidget(new QLabel(QStringLiteral("Maybe:"), q_ptr), 1, 0);
+    weightGridLayout->addWidget(weightMaybeSpin, 1, 1);
+    weightGridLayout->addWidget(weightMaybeNormLabel, 1, 2);
+    
+    weightGridLayout->addWidget(new QLabel(QStringLiteral("No:"), q_ptr), 2, 0);
+    weightGridLayout->addWidget(weightNoSpin, 2, 1);
+    weightGridLayout->addWidget(weightNoNormLabel, 2, 2);
+    
+    weightGridLayout->setColumnStretch(3, 1);
+    leftLayout->addLayout(weightGridLayout);
 
     updateWeightLabels();
 
@@ -515,6 +519,8 @@ public:
                      q_ptr, [this]() { updateWeightLabels(); });
     QObject::connect(weightNoSpin, QOverload<int>::of(&QSpinBox::valueChanged),
                      q_ptr, [this]() { updateWeightLabels(); });
+    QObject::connect(weightingEnabledCheck, &QCheckBox::toggled,
+                     q_ptr, [this]() { updateWeightControls(); });
   }
 
   void appendDiagnostic(const QString &message) {
@@ -522,7 +528,23 @@ public:
     diagnostics->scrollToBottom();
   }
 
+  void updateWeightControls() {
+    bool enabled = weightingEnabledCheck->isChecked();
+    weightYesSpin->setEnabled(enabled);
+    weightMaybeSpin->setEnabled(enabled);
+    weightNoSpin->setEnabled(enabled);
+    updateWeightLabels();
+  }
+
   void updateWeightLabels() {
+    if (!weightingEnabledCheck->isChecked()) {
+      // When disabled, all weights are 1.0
+      weightYesNormLabel->setText(QStringLiteral("(×1.00)"));
+      weightMaybeNormLabel->setText(QStringLiteral("(×1.00)"));
+      weightNoNormLabel->setText(QStringLiteral("(×1.00)"));
+      return;
+    }
+
     int yesVal = weightYesSpin->value();
     int maybeVal = weightMaybeSpin->value();
     int noVal = weightNoSpin->value();
@@ -926,9 +948,17 @@ public:
 
     SolverOptions options;
     options.defaultCapacity = defaultCapacitySpin->value();
-    options.weightYes = weightYesSpin->value();
-    options.weightMaybe = weightMaybeSpin->value();
-    options.weightNo = weightNoSpin->value();
+    
+    // If weighting is disabled, set all weights to 1
+    if (!weightingEnabledCheck->isChecked()) {
+      options.weightYes = 1;
+      options.weightMaybe = 1;
+      options.weightNo = 1;
+    } else {
+      options.weightYes = weightYesSpin->value();
+      options.weightMaybe = weightMaybeSpin->value();
+      options.weightNo = weightNoSpin->value();
+    }
 
     // Collect per-activity capacities from table
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
@@ -1460,6 +1490,7 @@ public:
   QSpinBox *defaultCapacitySpin;
   QPushButton *setAllCapacitiesButton;
   QPushButton *autoCapacityButton;
+  QCheckBox *weightingEnabledCheck;
   QSpinBox *weightYesSpin;
   QSpinBox *weightMaybeSpin;
   QSpinBox *weightNoSpin;
