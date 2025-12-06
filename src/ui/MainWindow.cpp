@@ -208,11 +208,6 @@ SpreadsheetTable resultsToTable(const SolverResult &result) {
     row.push_back(assignment.pathway);
     row.push_back(assignment.present);
     row.push_back(assignment.activity);
-    row.push_back(assignment.firstName);
-    row.push_back(assignment.lastName);
-    row.push_back(assignment.grade);
-    row.push_back(assignment.day);
-    row.push_back(assignment.activity);
     if (assignment.choiceRank >= 0) {
       row.push_back(std::to_string(assignment.choiceRank + 1));
     } else {
