@@ -7,6 +7,7 @@
 
 #include <QAbstractItemView>
 #include <QAction>
+#include <QComboBox>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -238,6 +239,7 @@ public:
         activityCountLabel(new QLabel(q)), capacityTable(new QTableWidget(q)),
         totalCapacityLabel(new QLabel(q)), defaultCapacitySpin(new QSpinBox(q)),
         setAllCapacitiesButton(new QPushButton(QStringLiteral("Set All"), q)),
+        dayFilterCombo(new QComboBox(q)),
         runButton(new QPushButton(QStringLiteral("Calculate"), q)),
         resultsStatus(new QLabel(QStringLiteral("No solver run yet."), q)),
         resultsTable(new QTableWidget(q)), activitySummary(new QTreeWidget(q)),
@@ -293,6 +295,17 @@ public:
     leftLayout->addWidget(studentCountLabel);
     leftLayout->addWidget(choiceCountLabel);
     leftLayout->addWidget(activityCountLabel);
+
+    // Day filter
+    auto *dayFilterLayout = new QHBoxLayout();
+    dayFilterLayout->addWidget(new QLabel(QStringLiteral("Filter by Day:"), q_ptr));
+    dayFilterCombo->addItem(QStringLiteral("All Days"), QString());
+    dayFilterCombo->addItem(QStringLiteral("Day A"), QStringLiteral("A Day"));
+    dayFilterCombo->addItem(QStringLiteral("Day B"), QStringLiteral("B Day"));
+    dayFilterLayout->addWidget(dayFilterCombo);
+    dayFilterLayout->addStretch();
+    leftLayout->addLayout(dayFilterLayout);
+
     leftLayout->addStretch();
 
     // Right side: Capacities
@@ -423,6 +436,9 @@ public:
 
     QObject::connect(setAllCapacitiesButton, &QPushButton::clicked, q_ptr,
                      [this]() { setAllCapacities(); });
+
+    QObject::connect(dayFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                     q_ptr, [this]() { updateSummary(); });
   }
 
   void appendDiagnostic(const QString &message) {
@@ -431,26 +447,48 @@ public:
   }
 
   void updateSummary() {
-    const auto summary = model->summarize();
-    studentCountLabel->setText(QStringLiteral("Students: %1 (missing IDs: %2)")
-                                   .arg(summary.studentCount)
-                                   .arg(summary.missingStudentIds));
-    choiceCountLabel->setText(
-        QStringLiteral("Blank choices: %1").arg(summary.missingChoices));
+    const QString dayFilter = dayFilterCombo->currentData().toString();
+
+    // Count filtered students
+    int filteredStudentCount = 0;
+    int missingIds = 0;
+    int blankChoices = 0;
 
     QSet<QString> activities;
     for (const auto &row : model->rows()) {
+      // Apply day filter
+      if (!dayFilter.isEmpty() && row.day != dayFilter) {
+        continue;
+      }
+
+      filteredStudentCount++;
+
+      if (row.studentId.trimmed().isEmpty()) {
+        missingIds++;
+      }
+
       for (const auto &choice : row.choices) {
         const auto normalized = choice.trimmed();
-        if (!normalized.isEmpty()) {
+        if (normalized.isEmpty()) {
+          blankChoices++;
+        } else {
           activities.insert(normalized);
         }
       }
     }
+
+    QString dayFilterText = dayFilter.isEmpty() ? QStringLiteral("")
+                                                 : QStringLiteral(" (Day %1)").arg(dayFilter);
+    studentCountLabel->setText(QStringLiteral("Students: %1 (missing IDs: %2)%3")
+                                   .arg(filteredStudentCount)
+                                   .arg(missingIds)
+                                   .arg(dayFilterText));
+    choiceCountLabel->setText(
+        QStringLiteral("Blank choices: %1").arg(blankChoices));
     activityCountLabel->setText(
         QStringLiteral("Unique activities: %1").arg(activities.size()));
 
-    const bool hasData = model->rowCount() > 0;
+    const bool hasData = filteredStudentCount > 0;
     runButton->setEnabled(hasData && !solverWatcher->isRunning());
 
     // Update capacity table with detected activities
@@ -509,7 +547,15 @@ public:
       }
     }
 
-    int studentCount = model->rowCount();
+    // Count filtered students
+    const QString dayFilter = dayFilterCombo->currentData().toString();
+    int studentCount = 0;
+    for (const auto &row : model->rows()) {
+      if (dayFilter.isEmpty() || row.day == dayFilter) {
+        studentCount++;
+      }
+    }
+
     bool sufficient = totalCapacity >= studentCount;
 
     QString labelText =
@@ -669,7 +715,25 @@ public:
       return;
     }
 
-    // Check total capacity
+    // Filter rows by selected day
+    const QString dayFilter = dayFilterCombo->currentData().toString();
+    const auto &allRows = model->rows();
+    std::vector<StudentPreferenceRow> filteredRows;
+
+    for (const auto &row : allRows) {
+      if (dayFilter.isEmpty() || row.day == dayFilter) {
+        filteredRows.push_back(row);
+      }
+    }
+
+    if (filteredRows.empty()) {
+      QMessageBox::information(
+          q_ptr, QStringLiteral("No students"),
+          QStringLiteral("No students match the selected day filter."));
+      return;
+    }
+
+    // Check total capacity against filtered students
     int totalCapacity = 0;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *spinBox =
@@ -679,7 +743,7 @@ public:
       }
     }
 
-    int studentCount = model->rowCount();
+    int studentCount = static_cast<int>(filteredRows.size());
     if (totalCapacity < studentCount) {
       auto reply = QMessageBox::warning(
           q_ptr, QStringLiteral("Insufficient Capacity"),
@@ -696,8 +760,6 @@ public:
       }
     }
 
-    const auto &rowsRef = model->rows();
-    std::vector<StudentPreferenceRow> rowsCopy(rowsRef.begin(), rowsRef.end());
     SolverOptions options;
     options.defaultCapacity = defaultCapacitySpin->value();
 
@@ -712,13 +774,15 @@ public:
       }
     }
 
+    QString filterMsg = dayFilter.isEmpty() ? QStringLiteral("all students")
+                                             : QStringLiteral("Day %1 students").arg(dayFilter);
     appendDiagnostic(
-        QStringLiteral("Launching solver with per-activity capacities..."));
+        QStringLiteral("Launching solver for %1 with per-activity capacities...").arg(filterMsg));
     progressDialog->setLabelText(QStringLiteral("Calculating assignments..."));
     progressDialog->show();
     runButton->setEnabled(false);
 
-    auto future = QtConcurrent::run([rows = std::move(rowsCopy), options]() {
+    auto future = QtConcurrent::run([rows = std::move(filteredRows), options]() {
       return runSolver(rows, options);
     });
     solverWatcher->setFuture(future);
@@ -1038,6 +1102,7 @@ public:
   QLabel *totalCapacityLabel;
   QSpinBox *defaultCapacitySpin;
   QPushButton *setAllCapacitiesButton;
+  QComboBox *dayFilterCombo;
   QPushButton *runButton;
   QLabel *resultsStatus;
   QTableWidget *resultsTable;
