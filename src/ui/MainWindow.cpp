@@ -1431,7 +1431,7 @@ public:
       QPdfWriter pdfWriter(filename);
       pdfWriter.setPageSize(QPageSize::Letter);
       pdfWriter.setPageMargins(QMarginsF(15, 15, 15, 15));
-      
+
       QPainter painter(&pdfWriter);
       if (!painter.isActive()) {
         appendDiagnostic(QStringLiteral("Warning: Could not create %1").arg(filename));
@@ -1442,24 +1442,24 @@ public:
       QFont titleFont("Arial", 16, QFont::Bold);
       QFont headerFont("Arial", 10, QFont::Bold);
       QFont normalFont("Arial", 9);
-      
+
       int y = 0;
       const int pageWidth = painter.device()->width();
       const int lineHeight = 400;
       const int headerHeight = 500;
-      
+
       // Draw title
       painter.setFont(titleFont);
       painter.drawText(0, y, activity);
       y += headerHeight * 2;
-      
+
       // Draw enrollment info
       painter.setFont(normalFont);
       painter.drawText(0, y, QString("Enrollment: %1    Capacity: %2")
                               .arg(activitySum.assigned)
                               .arg(activitySum.capacity));
       y += headerHeight;
-      
+
       // Table setup
       const int col1Width = pageWidth / 6;  // Last Name
       const int col2Width = pageWidth / 6;  // First Name
@@ -1467,12 +1467,12 @@ public:
       const int col4Width = pageWidth / 5;  // Pathway
       const int col5Width = pageWidth / 10; // Grade
       const int col6Width = pageWidth / 10; // Present
-      
+
       // Draw table header
       painter.setFont(headerFont);
       painter.fillRect(0, y, pageWidth, headerHeight, QColor(76, 175, 80));
       painter.setPen(Qt::white);
-      
+
       int x = 50;
       painter.drawText(x, y + 350, "Last Name");
       x += col1Width;
@@ -1485,11 +1485,11 @@ public:
       painter.drawText(x, y + 350, "Grade");
       x += col5Width;
       painter.drawText(x, y + 350, "Present");
-      
+
       y += headerHeight;
       painter.setPen(Qt::black);
       painter.setFont(normalFont);
-      
+
       // Draw table rows
       bool alternateRow = false;
       for (const auto &student : students) {
@@ -1498,13 +1498,13 @@ public:
           pdfWriter.newPage();
           y = 0;
         }
-        
+
         // Alternate row background
         if (alternateRow) {
           painter.fillRect(0, y, pageWidth, lineHeight, QColor(242, 242, 242));
         }
         alternateRow = !alternateRow;
-        
+
         // Draw cell borders and text
         x = 50;
         painter.drawText(x, y + 300, student.lastName);
@@ -1518,10 +1518,10 @@ public:
         painter.drawText(x, y + 300, student.grade);
         x += col5Width;
         painter.drawText(x, y + 300, student.present);
-        
+
         y += lineHeight;
       }
-      
+
       painter.end();
       filesCreated++;
     }
@@ -1616,7 +1616,7 @@ public:
       QPdfWriter pdfWriter(filename);
       pdfWriter.setPageSize(QPageSize::Letter);
       pdfWriter.setPageMargins(QMarginsF(15, 15, 15, 15));
-      
+
       QPainter painter(&pdfWriter);
       if (!painter.isActive()) {
         appendDiagnostic(QStringLiteral("Warning: Could not create %1").arg(filename));
@@ -1627,24 +1627,24 @@ public:
       QFont titleFont("Arial", 16, QFont::Bold);
       QFont headerFont("Arial", 10, QFont::Bold);
       QFont normalFont("Arial", 9);
-      
+
       int y = 0;
       const int pageWidth = painter.device()->width();
       const int lineHeight = 400;
       const int headerHeight = 500;
-      
+
       // Draw title
       painter.setFont(titleFont);
       painter.drawText(0, y, activity);
       y += headerHeight * 2;
-      
+
       // Draw enrollment info
       painter.setFont(normalFont);
       painter.drawText(0, y, QString("Enrollment: %1    Capacity: %2")
                               .arg(activitySum.assigned)
                               .arg(activitySum.capacity));
       y += headerHeight;
-      
+
       // Table setup
       const int col1Width = pageWidth / 6;  // Last Name
       const int col2Width = pageWidth / 6;  // First Name
@@ -1652,12 +1652,12 @@ public:
       const int col4Width = pageWidth / 5;  // Pathway
       const int col5Width = pageWidth / 10; // Grade
       const int col6Width = pageWidth / 10; // Present
-      
+
       // Draw table header
       painter.setFont(headerFont);
       painter.fillRect(0, y, pageWidth, headerHeight, QColor(76, 175, 80));
       painter.setPen(Qt::white);
-      
+
       int x = 50;
       painter.drawText(x, y + 350, "Last Name");
       x += col1Width;
@@ -1670,11 +1670,11 @@ public:
       painter.drawText(x, y + 350, "Grade");
       x += col5Width;
       painter.drawText(x, y + 350, "Present");
-      
+
       y += headerHeight;
       painter.setPen(Qt::black);
       painter.setFont(normalFont);
-      
+
       // Draw table rows
       bool alternateRow = false;
       for (const auto &student : students) {
@@ -1683,13 +1683,13 @@ public:
           pdfWriter.newPage();
           y = 0;
         }
-        
+
         // Alternate row background
         if (alternateRow) {
           painter.fillRect(0, y, pageWidth, lineHeight, QColor(242, 242, 242));
         }
         alternateRow = !alternateRow;
-        
+
         // Draw cell borders and text
         x = 50;
         painter.drawText(x, y + 300, student.lastName);
@@ -1703,10 +1703,10 @@ public:
         painter.drawText(x, y + 300, student.grade);
         x += col5Width;
         painter.drawText(x, y + 300, student.present);
-        
+
         y += lineHeight;
       }
-      
+
       painter.end();
       filesCreated++;
     }
