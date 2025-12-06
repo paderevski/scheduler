@@ -31,7 +31,7 @@ jobs:
             ortools_dir: or-tools_x86_64_Windows-10_cpp_v9.11.4210
 
     runs-on: ${{ matrix.os }}
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
