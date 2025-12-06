@@ -22,6 +22,7 @@
 #include <QMenuBar>
 #include <QMessageBox>
 #include <QPainter>
+#include <QPdfWriter>
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QRegularExpression>
@@ -1425,66 +1426,103 @@ public:
       // Create sanitized filename
       QString filename = activity;
       filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")), QStringLiteral("_"));
-      filename = dir.filePath(filename + QStringLiteral(".html"));
+      filename = dir.filePath(filename + QStringLiteral(".pdf"));
 
-      QFile file(filename);
-      if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      QPdfWriter pdfWriter(filename);
+      pdfWriter.setPageSize(QPageSize::Letter);
+      pdfWriter.setPageMargins(QMarginsF(15, 15, 15, 15));
+      
+      QPainter painter(&pdfWriter);
+      if (!painter.isActive()) {
         appendDiagnostic(QStringLiteral("Warning: Could not create %1").arg(filename));
         continue;
       }
 
-      QTextStream out(&file);
-
-      // Write HTML header
-      out << "<!DOCTYPE html>\n";
-      out << "<html>\n<head>\n";
-      out << "<meta charset=\"UTF-8\">\n";
-      out << "<title>" << activity << "</title>\n";
-      out << "<style>\n";
-      out << "body { font-family: Arial, sans-serif; margin: 20px; }\n";
-      out << "h1 { color: #333; }\n";
-      out << ".info { margin-bottom: 20px; color: #666; }\n";
-      out << "table { border-collapse: collapse; width: 100%; }\n";
-      out << "th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\n";
-      out << "th { background-color: #4CAF50; color: white; }\n";
-      out << "tr:nth-child(even) { background-color: #f2f2f2; }\n";
-      out << "tr:hover { background-color: #ddd; }\n";
-      out << "</style>\n";
-      out << "</head>\n<body>\n";
-
-      // Write activity info
-      out << "<h1>" << activity << "</h1>\n";
-      out << "<div class=\"info\">\n";
-      out << "<p><strong>Enrollment:</strong> " << activitySum.assigned << "</p>\n";
-      out << "<p><strong>Capacity:</strong> " << activitySum.capacity << "</p>\n";
-      out << "</div>\n";
-
-      // Write table
-      out << "<table>\n<thead>\n<tr>\n";
-      out << "<th>Last Name</th>\n";
-      out << "<th>First Name</th>\n";
-      out << "<th>Student ID</th>\n";
-      out << "<th>Pathway</th>\n";
-      out << "<th>Grade</th>\n";
-      out << "<th>Present</th>\n";
-      out << "</tr>\n</thead>\n<tbody>\n";
-
-      // Write student data
+      // Set up fonts
+      QFont titleFont("Arial", 16, QFont::Bold);
+      QFont headerFont("Arial", 10, QFont::Bold);
+      QFont normalFont("Arial", 9);
+      
+      int y = 0;
+      const int pageWidth = painter.device()->width();
+      const int lineHeight = 400;
+      const int headerHeight = 500;
+      
+      // Draw title
+      painter.setFont(titleFont);
+      painter.drawText(0, y, activity);
+      y += headerHeight * 2;
+      
+      // Draw enrollment info
+      painter.setFont(normalFont);
+      painter.drawText(0, y, QString("Enrollment: %1    Capacity: %2")
+                              .arg(activitySum.assigned)
+                              .arg(activitySum.capacity));
+      y += headerHeight;
+      
+      // Table setup
+      const int col1Width = pageWidth / 6;  // Last Name
+      const int col2Width = pageWidth / 6;  // First Name
+      const int col3Width = pageWidth / 5;  // Student ID
+      const int col4Width = pageWidth / 5;  // Pathway
+      const int col5Width = pageWidth / 10; // Grade
+      const int col6Width = pageWidth / 10; // Present
+      
+      // Draw table header
+      painter.setFont(headerFont);
+      painter.fillRect(0, y, pageWidth, headerHeight, QColor(76, 175, 80));
+      painter.setPen(Qt::white);
+      
+      int x = 50;
+      painter.drawText(x, y + 350, "Last Name");
+      x += col1Width;
+      painter.drawText(x, y + 350, "First Name");
+      x += col2Width;
+      painter.drawText(x, y + 350, "Student ID");
+      x += col3Width;
+      painter.drawText(x, y + 350, "Pathway");
+      x += col4Width;
+      painter.drawText(x, y + 350, "Grade");
+      x += col5Width;
+      painter.drawText(x, y + 350, "Present");
+      
+      y += headerHeight;
+      painter.setPen(Qt::black);
+      painter.setFont(normalFont);
+      
+      // Draw table rows
+      bool alternateRow = false;
       for (const auto &student : students) {
-        out << "<tr>\n";
-        out << "<td>" << student.lastName << "</td>\n";
-        out << "<td>" << student.firstName << "</td>\n";
-        out << "<td>" << student.studentId << "</td>\n";
-        out << "<td>" << student.pathway << "</td>\n";
-        out << "<td>" << student.grade << "</td>\n";
-        out << "<td>" << student.present << "</td>\n";
-        out << "</tr>\n";
+        // Check if we need a new page
+        if (y + lineHeight > painter.device()->height() - 1000) {
+          pdfWriter.newPage();
+          y = 0;
+        }
+        
+        // Alternate row background
+        if (alternateRow) {
+          painter.fillRect(0, y, pageWidth, lineHeight, QColor(242, 242, 242));
+        }
+        alternateRow = !alternateRow;
+        
+        // Draw cell borders and text
+        x = 50;
+        painter.drawText(x, y + 300, student.lastName);
+        x += col1Width;
+        painter.drawText(x, y + 300, student.firstName);
+        x += col2Width;
+        painter.drawText(x, y + 300, student.studentId);
+        x += col3Width;
+        painter.drawText(x, y + 300, student.pathway);
+        x += col4Width;
+        painter.drawText(x, y + 300, student.grade);
+        x += col5Width;
+        painter.drawText(x, y + 300, student.present);
+        
+        y += lineHeight;
       }
-
-      out << "</tbody>\n</table>\n";
-      out << "</body>\n</html>\n";
-
-      file.close();
+      
+      painter.end();
       filesCreated++;
     }
 
@@ -1492,13 +1530,13 @@ public:
     const QString summaryPath = dir.filePath(QStringLiteral("summary.txt"));
     exportSummaryReport(summaryPath);
 
-    appendDiagnostic(QStringLiteral("Exported results.csv, summary.txt, and %1 activity roster HTML files to %2")
+    appendDiagnostic(QStringLiteral("Exported results.csv, summary.txt, and %1 activity roster PDF files to %2")
                          .arg(filesCreated)
                          .arg(folderPath));
 
     QMessageBox::information(
         q_ptr, QStringLiteral("Export Successful"),
-        QStringLiteral("Successfully exported results.csv, summary.txt, and %1 activity roster HTML files to:\n%2")
+        QStringLiteral("Successfully exported results.csv, summary.txt, and %1 activity roster PDF files to:\n%2")
             .arg(filesCreated)
             .arg(folderPath));
   }
@@ -1573,76 +1611,113 @@ public:
       // Create sanitized filename
       QString filename = activity;
       filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")), QStringLiteral("_"));
-      filename = dir.filePath(filename + QStringLiteral(".html"));
+      filename = dir.filePath(filename + QStringLiteral(".pdf"));
 
-      QFile file(filename);
-      if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      QPdfWriter pdfWriter(filename);
+      pdfWriter.setPageSize(QPageSize::Letter);
+      pdfWriter.setPageMargins(QMarginsF(15, 15, 15, 15));
+      
+      QPainter painter(&pdfWriter);
+      if (!painter.isActive()) {
         appendDiagnostic(QStringLiteral("Warning: Could not create %1").arg(filename));
         continue;
       }
 
-      QTextStream out(&file);
-
-      // Write HTML header
-      out << "<!DOCTYPE html>\n";
-      out << "<html>\n<head>\n";
-      out << "<meta charset=\"UTF-8\">\n";
-      out << "<title>" << activity << "</title>\n";
-      out << "<style>\n";
-      out << "body { font-family: Arial, sans-serif; margin: 20px; }\n";
-      out << "h1 { color: #333; }\n";
-      out << ".info { margin-bottom: 20px; color: #666; }\n";
-      out << "table { border-collapse: collapse; width: 100%; }\n";
-      out << "th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\n";
-      out << "th { background-color: #4CAF50; color: white; }\n";
-      out << "tr:nth-child(even) { background-color: #f2f2f2; }\n";
-      out << "tr:hover { background-color: #ddd; }\n";
-      out << "</style>\n";
-      out << "</head>\n<body>\n";
-
-      // Write activity info
-      out << "<h1>" << activity << "</h1>\n";
-      out << "<div class=\"info\">\n";
-      out << "<p><strong>Enrollment:</strong> " << activitySum.assigned << "</p>\n";
-      out << "<p><strong>Capacity:</strong> " << activitySum.capacity << "</p>\n";
-      out << "</div>\n";
-
-      // Write table
-      out << "<table>\n<thead>\n<tr>\n";
-      out << "<th>Last Name</th>\n";
-      out << "<th>First Name</th>\n";
-      out << "<th>Student ID</th>\n";
-      out << "<th>Pathway</th>\n";
-      out << "<th>Grade</th>\n";
-      out << "<th>Present</th>\n";
-      out << "</tr>\n</thead>\n<tbody>\n";
-
-      // Write student data
+      // Set up fonts
+      QFont titleFont("Arial", 16, QFont::Bold);
+      QFont headerFont("Arial", 10, QFont::Bold);
+      QFont normalFont("Arial", 9);
+      
+      int y = 0;
+      const int pageWidth = painter.device()->width();
+      const int lineHeight = 400;
+      const int headerHeight = 500;
+      
+      // Draw title
+      painter.setFont(titleFont);
+      painter.drawText(0, y, activity);
+      y += headerHeight * 2;
+      
+      // Draw enrollment info
+      painter.setFont(normalFont);
+      painter.drawText(0, y, QString("Enrollment: %1    Capacity: %2")
+                              .arg(activitySum.assigned)
+                              .arg(activitySum.capacity));
+      y += headerHeight;
+      
+      // Table setup
+      const int col1Width = pageWidth / 6;  // Last Name
+      const int col2Width = pageWidth / 6;  // First Name
+      const int col3Width = pageWidth / 5;  // Student ID
+      const int col4Width = pageWidth / 5;  // Pathway
+      const int col5Width = pageWidth / 10; // Grade
+      const int col6Width = pageWidth / 10; // Present
+      
+      // Draw table header
+      painter.setFont(headerFont);
+      painter.fillRect(0, y, pageWidth, headerHeight, QColor(76, 175, 80));
+      painter.setPen(Qt::white);
+      
+      int x = 50;
+      painter.drawText(x, y + 350, "Last Name");
+      x += col1Width;
+      painter.drawText(x, y + 350, "First Name");
+      x += col2Width;
+      painter.drawText(x, y + 350, "Student ID");
+      x += col3Width;
+      painter.drawText(x, y + 350, "Pathway");
+      x += col4Width;
+      painter.drawText(x, y + 350, "Grade");
+      x += col5Width;
+      painter.drawText(x, y + 350, "Present");
+      
+      y += headerHeight;
+      painter.setPen(Qt::black);
+      painter.setFont(normalFont);
+      
+      // Draw table rows
+      bool alternateRow = false;
       for (const auto &student : students) {
-        out << "<tr>\n";
-        out << "<td>" << student.lastName << "</td>\n";
-        out << "<td>" << student.firstName << "</td>\n";
-        out << "<td>" << student.studentId << "</td>\n";
-        out << "<td>" << student.pathway << "</td>\n";
-        out << "<td>" << student.grade << "</td>\n";
-        out << "<td>" << student.present << "</td>\n";
-        out << "</tr>\n";
+        // Check if we need a new page
+        if (y + lineHeight > painter.device()->height() - 1000) {
+          pdfWriter.newPage();
+          y = 0;
+        }
+        
+        // Alternate row background
+        if (alternateRow) {
+          painter.fillRect(0, y, pageWidth, lineHeight, QColor(242, 242, 242));
+        }
+        alternateRow = !alternateRow;
+        
+        // Draw cell borders and text
+        x = 50;
+        painter.drawText(x, y + 300, student.lastName);
+        x += col1Width;
+        painter.drawText(x, y + 300, student.firstName);
+        x += col2Width;
+        painter.drawText(x, y + 300, student.studentId);
+        x += col3Width;
+        painter.drawText(x, y + 300, student.pathway);
+        x += col4Width;
+        painter.drawText(x, y + 300, student.grade);
+        x += col5Width;
+        painter.drawText(x, y + 300, student.present);
+        
+        y += lineHeight;
       }
-
-      out << "</tbody>\n</table>\n";
-      out << "</body>\n</html>\n";
-
-      file.close();
+      
+      painter.end();
       filesCreated++;
     }
 
-    appendDiagnostic(QStringLiteral("Exported results.xlsx and %1 activity roster HTML files to %2")
+    appendDiagnostic(QStringLiteral("Exported results.xlsx and %1 activity roster PDF files to %2")
                          .arg(filesCreated)
                          .arg(folderPath));
 
     QMessageBox::information(
         q_ptr, QStringLiteral("Export Successful"),
-        QStringLiteral("Successfully exported results.xlsx and %1 activity roster HTML files to:\n%2")
+        QStringLiteral("Successfully exported results.xlsx and %1 activity roster PDF files to:\n%2")
             .arg(filesCreated)
             .arg(folderPath));
   }

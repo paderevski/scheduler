@@ -211,9 +211,9 @@ Expected utilization helps predict actual attendance:
 2. The following files are created:
    - **results.csv**: Complete assignment table
    - **summary.txt**: Comprehensive text report
-   - **[Activity Name].html**: Individual roster for each activity (HTML format)
+   - **[Activity Name].pdf**: Individual roster for each activity (PDF format)
 
-**Why HTML?** Activity rosters are exported as HTML files instead of plain text because they display perfectly in Google Drive with proper formatting, borders, and styling. You can open them directly in Google Drive, print them, or share links with colleagues.
+**Why PDF?** Activity rosters are exported as PDF files because they display perfectly inline in Google Drive with proper formatting and professional appearance. PDFs maintain formatting across all platforms and are ready to print or share.
 
 #### Summary Report Contents
 
@@ -226,13 +226,13 @@ The `summary.txt` file includes:
 
 #### Activity Roster Files
 
-Each activity gets an HTML file with:
+Each activity gets a PDF file with:
 
 - Activity name as heading
 - Enrollment and capacity information
 - Formatted table with columns: Last Name, First Name, Student ID, Pathway, Grade, Present
 - Students sorted alphabetically by last name
-- Professional styling with alternating row colors and hover effects
+- Professional formatting with alternating row colors
 
 ### Export Results (XLSX)
 
@@ -240,7 +240,7 @@ Similar to CSV export but creates:
 
 - **results.xlsx**: Excel workbook with assignment table
 - **summary.txt**: Same text report
-- **[Activity Name].html**: Same activity rosters (HTML format)
+- **[Activity Name].pdf**: Same activity rosters (PDF format)
 
 ### Export Data
 
