@@ -37,7 +37,7 @@ else()
     target_compile_definitions(EngineeringWeekScheduler PRIVATE HAVE_OR_TOOLS=0)
 endif()
 
-if(Qt6Charts_FOUND)
+if(Qt6Charts_FOUND AND TARGET Qt6::Charts)
     target_link_libraries(EngineeringWeekScheduler PRIVATE Qt6::Charts)
     target_compile_definitions(EngineeringWeekScheduler PRIVATE HAVE_QT_CHARTS=1)
 else()
