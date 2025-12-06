@@ -1445,8 +1445,8 @@ public:
 
       int y = 0;
       const int pageWidth = painter.device()->width();
-      const int lineHeight = 400;
-      const int headerHeight = 500;
+      const int lineHeight = 300;
+      const int headerHeight = 300;
 
       // Draw title
       painter.setFont(titleFont);
@@ -1474,17 +1474,17 @@ public:
       painter.setPen(Qt::white);
 
       int x = 50;
-      painter.drawText(x, y + 350, "Last Name");
+      painter.drawText(x, y + 225, "Last Name");
       x += col1Width;
-      painter.drawText(x, y + 350, "First Name");
+      painter.drawText(x, y + 225, "First Name");
       x += col2Width;
-      painter.drawText(x, y + 350, "Student ID");
+      painter.drawText(x, y + 225, "Student ID");
       x += col3Width;
-      painter.drawText(x, y + 350, "Pathway");
+      painter.drawText(x, y + 225, "Pathway");
       x += col4Width;
-      painter.drawText(x, y + 350, "Grade");
+      painter.drawText(x, y + 225, "Grade");
       x += col5Width;
-      painter.drawText(x, y + 350, "Present");
+      painter.drawText(x, y + 225, "Present");
 
       y += headerHeight;
       painter.setPen(Qt::black);
@@ -1507,17 +1507,17 @@ public:
 
         // Draw cell borders and text
         x = 50;
-        painter.drawText(x, y + 300, student.lastName);
+        painter.drawText(x, y + 225, student.lastName);
         x += col1Width;
-        painter.drawText(x, y + 300, student.firstName);
+        painter.drawText(x, y + 225, student.firstName);
         x += col2Width;
-        painter.drawText(x, y + 300, student.studentId);
+        painter.drawText(x, y + 225, student.studentId);
         x += col3Width;
-        painter.drawText(x, y + 300, student.pathway);
+        painter.drawText(x, y + 225, student.pathway);
         x += col4Width;
-        painter.drawText(x, y + 300, student.grade);
+        painter.drawText(x, y + 225, student.grade);
         x += col5Width;
-        painter.drawText(x, y + 300, student.present);
+        painter.drawText(x, y + 225, student.present);
 
         y += lineHeight;
       }
@@ -1630,8 +1630,8 @@ public:
 
       int y = 0;
       const int pageWidth = painter.device()->width();
-      const int lineHeight = 400;
-      const int headerHeight = 500;
+      const int lineHeight = 300;
+      const int headerHeight = 300;
 
       // Draw title
       painter.setFont(titleFont);
@@ -1659,17 +1659,17 @@ public:
       painter.setPen(Qt::white);
 
       int x = 50;
-      painter.drawText(x, y + 350, "Last Name");
+      painter.drawText(x, y + 225, "Last Name");
       x += col1Width;
-      painter.drawText(x, y + 350, "First Name");
+      painter.drawText(x, y + 225, "First Name");
       x += col2Width;
-      painter.drawText(x, y + 350, "Student ID");
+      painter.drawText(x, y + 225, "Student ID");
       x += col3Width;
-      painter.drawText(x, y + 350, "Pathway");
+      painter.drawText(x, y + 225, "Pathway");
       x += col4Width;
-      painter.drawText(x, y + 350, "Grade");
+      painter.drawText(x, y + 225, "Grade");
       x += col5Width;
-      painter.drawText(x, y + 350, "Present");
+      painter.drawText(x, y + 225, "Present");
 
       y += headerHeight;
       painter.setPen(Qt::black);
@@ -1692,17 +1692,17 @@ public:
 
         // Draw cell borders and text
         x = 50;
-        painter.drawText(x, y + 300, student.lastName);
+        painter.drawText(x, y + 225, student.lastName);
         x += col1Width;
-        painter.drawText(x, y + 300, student.firstName);
+        painter.drawText(x, y + 225, student.firstName);
         x += col2Width;
-        painter.drawText(x, y + 300, student.studentId);
+        painter.drawText(x, y + 225, student.studentId);
         x += col3Width;
-        painter.drawText(x, y + 300, student.pathway);
+        painter.drawText(x, y + 225, student.pathway);
         x += col4Width;
-        painter.drawText(x, y + 300, student.grade);
+        painter.drawText(x, y + 225, student.grade);
         x += col5Width;
-        painter.drawText(x, y + 300, student.present);
+        painter.drawText(x, y + 225, student.present);
 
         y += lineHeight;
       }
