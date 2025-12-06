@@ -12,6 +12,9 @@ struct ColumnMapping {
   int lastNameColumn = -1;
   int gradeColumn = -1;
   int dayColumn = -1;
+  int teacherColumn = -1;
+  int pathwayColumn = -1;
+  int presentColumn = -1;
   int choice1Column = -1;
   int choice2Column = -1;
   int choice3Column = -1;
@@ -46,6 +49,9 @@ private:
   QComboBox *m_lastNameCombo;
   QComboBox *m_gradeCombo;
   QComboBox *m_dayCombo;
+  QComboBox *m_teacherCombo;
+  QComboBox *m_pathwayCombo;
+  QComboBox *m_presentCombo;
   QComboBox *m_choice1Combo;
   QComboBox *m_choice2Combo;
   QComboBox *m_choice3Combo;

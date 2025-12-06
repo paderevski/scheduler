@@ -1,14 +1,84 @@
 CAD Design Studio
-Enrollment: 10
-Capacity: 10
+Enrollment: 80
+Capacity: 80
 
-Aiden Nelson Aiden Nelson
-Amelia King Amelia King
-Andrew Young Andrew Young
-Aubrey Anderson Aubrey Anderson
-Benjamin Rodriguez Benjamin Rodriguez
-Emily Nguyen Emily Nguyen
-Isabelle Green Isabelle Green
-Leah Martin Leah Martin
-Lillian Johnson Lillian Johnson
-Lincoln Clark Lincoln Clark
+Abigail Young
+Addison Wright
+Aiden Johnson
+Aiden Wilson
+Aria Davis
+Aria Jackson
+Aria Nguyen
+Aria Rivera
+Aubrey Taylor
+Caleb Wilson
+Caroline Nelson
+Carter Thomas
+Charles Roberts
+Charles Taylor
+Christian Johnson
+Christopher Jones
+Christopher King
+Daniel Taylor
+Eleanor Johnson
+Elizabeth Davis
+Ella Torres
+Ella Wright
+Ellie Mitchell
+Emily Johnson
+Emma Hill
+Gabriel Green
+Hannah Lewis
+Harper Garcia
+Harper Harris
+Henry Jones
+Hunter Allen
+Isaac Perez
+Isabelle Nguyen
+Isaiah Brown
+Jack Smith
+Jaxon Wright
+John Jackson
+John Young
+Joseph Flores
+Joseph King
+Joseph Lewis
+Joseph Mitchell
+Joshua Davis
+Joshua Flores
+Joshua Wilson
+Josiah Rivera
+Lillian Nguyen
+Lily Allen
+Lucas Lee
+Lucy Williams
+Luna Garcia
+Mia Thompson
+Michael Moore
+Natalie Anderson
+Nathan White
+Noah Brown
+Noah Lopez
+Olivia Jones
+Owen Jones
+Paisley Wilson
+Penelope Sanchez
+Ryan Miller
+Sebastian Green
+Sophia Garcia
+Sophia Roberts
+Stella Robinson
+Stella White
+Thomas Davis
+Victoria Rodriguez
+Violet Brown
+William Mitchell
+William Taylor
+Wyatt King
+Wyatt Lewis
+Wyatt Miller
+Wyatt Mitchell
+Wyatt Ramirez
+Wyatt Roberts
+Zoe Thompson
+Zoey Moore

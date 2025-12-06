@@ -1,14 +1,84 @@
 3D Printing Lab
-Enrollment: 10
-Capacity: 10
+Enrollment: 80
+Capacity: 80
 
-Aubrey Rodriguez Aubrey Rodriguez
-Aurora Gonzalez Aurora Gonzalez
-Aurora Thompson Aurora Thompson
-Grace Brown Grace Brown
-Isaac Wilson Isaac Wilson
-Joseph Smith Joseph Smith
-Nora Young Nora Young
-Savannah Rodriguez Savannah Rodriguez
-Thomas Nguyen Thomas Nguyen
-William Rivera William Rivera
+Abigail Hall
+Aiden Brown
+Aiden Mitchell
+Aiden Young
+Amelia Perez
+Anna Hall
+Anna Jackson
+Aubrey Garcia
+Audrey Campbell
+Aurora Hall
+Ava Torres
+Avery Roberts
+Bella Campbell
+Benjamin Taylor
+Benjamin Thompson
+Brooklyn Hill
+Caleb Thomas
+Caroline Miller
+Carter Jones
+Charlotte Jones
+Chloe Rodriguez
+Chloe White
+Christian Davis
+Christopher Wilson
+Claire Scott
+Daniel Anderson
+David Lee
+Dylan Lee
+Dylan Perez
+Ellie Carter
+Ellie Robinson
+Emma Clark
+Ethan Walker
+Evelyn Garcia
+Evelyn Perez
+Gabriel King
+Gabriel Miller
+Hannah Hernandez
+Hunter Lopez
+Isaac Brown
+Isaac Walker
+Isabelle Anderson
+Isaiah Carter
+Jack Walker
+Jaxon Ramirez
+Jayden Ramirez
+Joseph Taylor
+Joshua Nguyen
+Leah Taylor
+Liam Clark
+Liam Perez
+Lily Rivera
+Lily Williams
+Lucas Robinson
+Lucy Anderson
+Luna Thompson
+Matthew Campbell
+Michael Wright
+Michael Young
+Natalie Torres
+Nathan Taylor
+Noah Garcia
+Nora Allen
+Nora Lopez
+Owen Sanchez
+Paisley Campbell
+Riley Martin
+Ryan Jackson
+Samuel Gonzalez
+Scarlett Jackson
+Scarlett Taylor
+Sebastian Sanchez
+Sophia Taylor
+Stella Young
+Thomas Jackson
+Thomas Walker
+Violet Perez
+William King
+William Martin
+Zoey Lopez

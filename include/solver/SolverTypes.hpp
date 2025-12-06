@@ -19,6 +19,9 @@ struct StudentAssignment {
   std::string lastName;
   std::string grade;
   std::string day;
+  std::string teacher;
+  std::string pathway;
+  std::string present;
   std::string activity;
   int choiceRank = -1; // 0-based index into the student's preference list
   double score = 0.0;

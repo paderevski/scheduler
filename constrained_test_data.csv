@@ -1,101 +1,801 @@
-Student ID,Student Name,Choice 1,Choice 2,Choice 3
-S1000,Wyatt Perez,Solar Car Racing,3D Printing Lab,CAD Design Studio
-S1001,Avery Miller,Bridge Building Challenge,Robotics Workshop,Circuit Building
-S1002,Grayson Martinez,Circuit Building,Drone Programming,Coding Bootcamp
-S1003,Aubrey Thompson,Environmental Engineering,Solar Car Racing,Rocket Design
-S1004,Audrey Thomas,Coding Bootcamp,3D Printing Lab,Circuit Building
-S1005,James Martin,Circuit Building,Environmental Engineering,CAD Design Studio
-S1006,Leah Martin,CAD Design Studio,Coding Bootcamp,3D Printing Lab
-S1007,Chloe Allen,Bridge Building Challenge,Rocket Design,Drone Programming
-S1008,Dylan Miller,Robotics Workshop,Rocket Design,Environmental Engineering
-S1009,Ella Nguyen,Coding Bootcamp,Rocket Design,3D Printing Lab
-S1010,Joseph Smith,3D Printing Lab,Rocket Design,Environmental Engineering
-S1011,Michael Jones,Bridge Building Challenge,Robotics Workshop,3D Printing Lab
-S1012,Dylan Young,Drone Programming,Robotics Workshop,Coding Bootcamp
-S1013,Eleanor Martin,Solar Car Racing,Robotics Workshop,Rocket Design
-S1014,Amelia King,CAD Design Studio,Robotics Workshop,3D Printing Lab
-S1015,Nora Perez,Coding Bootcamp,Environmental Engineering,Rocket Design
-S1016,Matthew Rivera,Solar Car Racing,Rocket Design,Circuit Building
-S1017,Lucas Green,Coding Bootcamp,Solar Car Racing,Environmental Engineering
-S1018,Joseph Baker,3D Printing Lab,Rocket Design,Circuit Building
-S1019,Emma Torres,Coding Bootcamp,Bridge Building Challenge,3D Printing Lab
-S1020,Benjamin Rodriguez,CAD Design Studio,Robotics Workshop,Drone Programming
-S1021,Carter Harris,CAD Design Studio,Bridge Building Challenge,Drone Programming
-S1022,Leah Wright,Solar Car Racing,Robotics Workshop,Rocket Design
-S1023,Emily Nguyen,CAD Design Studio,3D Printing Lab,Solar Car Racing
-S1024,Christopher Nelson,Robotics Workshop,3D Printing Lab,Coding Bootcamp
-S1025,William Rivera,3D Printing Lab,Environmental Engineering,Robotics Workshop
-S1026,Ethan Rivera,Environmental Engineering,CAD Design Studio,Coding Bootcamp
-S1027,John Allen,Coding Bootcamp,Robotics Workshop,3D Printing Lab
-S1028,Aurora Thompson,3D Printing Lab,Solar Car Racing,CAD Design Studio
-S1029,Liam Scott,Rocket Design,Solar Car Racing,Bridge Building Challenge
-S1030,Aubrey Rodriguez,Coding Bootcamp,3D Printing Lab,Robotics Workshop
-S1031,Sebastian Allen,Rocket Design,Drone Programming,Robotics Workshop
-S1032,Mia Hill,Drone Programming,CAD Design Studio,Environmental Engineering
-S1033,Grace Brown,3D Printing Lab,Solar Car Racing,Coding Bootcamp
-S1034,Isabelle Green,CAD Design Studio,Environmental Engineering,3D Printing Lab
-S1035,Aurora Gonzalez,3D Printing Lab,Robotics Workshop,CAD Design Studio
-S1036,John King,Environmental Engineering,Solar Car Racing,Coding Bootcamp
-S1037,Caleb Thompson,Circuit Building,Robotics Workshop,Drone Programming
-S1038,Aurora King,Coding Bootcamp,Rocket Design,Circuit Building
-S1039,Amelia Lee,Environmental Engineering,Robotics Workshop,3D Printing Lab
-S1040,Jack Harris,Environmental Engineering,Drone Programming,Coding Bootcamp
-S1041,James Walker,Bridge Building Challenge,3D Printing Lab,Coding Bootcamp
-S1042,Ellie Gonzalez,Coding Bootcamp,Solar Car Racing,3D Printing Lab
-S1043,Aiden Nelson,CAD Design Studio,Coding Bootcamp,3D Printing Lab
-S1044,Eli King,Robotics Workshop,Solar Car Racing,3D Printing Lab
-S1045,Andrew Young,CAD Design Studio,Environmental Engineering,Robotics Workshop
-S1046,Savannah Rodriguez,3D Printing Lab,Environmental Engineering,Robotics Workshop
-S1047,Thomas Nguyen,3D Printing Lab,Coding Bootcamp,Robotics Workshop
-S1048,Henry White,Solar Car Racing,Bridge Building Challenge,Robotics Workshop
-S1049,Luke Harris,Drone Programming,CAD Design Studio,Bridge Building Challenge
-S1050,Lucas King,3D Printing Lab,Bridge Building Challenge,Circuit Building
-S1051,Sofia Wilson,Robotics Workshop,CAD Design Studio,Solar Car Racing
-S1052,Sophia White,Circuit Building,3D Printing Lab,Robotics Workshop
-S1053,Jack Thomas,Coding Bootcamp,Robotics Workshop,3D Printing Lab
-S1054,Avery King,Robotics Workshop,Circuit Building,Environmental Engineering
-S1055,Penelope Green,Environmental Engineering,Robotics Workshop,Solar Car Racing
-S1056,Skylar Nguyen,Drone Programming,Solar Car Racing,Environmental Engineering
-S1057,Aubrey Anderson,CAD Design Studio,3D Printing Lab,Solar Car Racing
-S1058,Luke Flores,Environmental Engineering,Circuit Building,3D Printing Lab
-S1059,Luna Thompson,Robotics Workshop,Coding Bootcamp,Bridge Building Challenge
-S1060,Hannah White,Bridge Building Challenge,Circuit Building,CAD Design Studio
-S1061,Zoe White,Coding Bootcamp,Rocket Design,Environmental Engineering
-S1062,Lucy Smith,Environmental Engineering,3D Printing Lab,CAD Design Studio
-S1063,Sofia Allen,Environmental Engineering,Robotics Workshop,Drone Programming
-S1064,Gabriel Garcia,Environmental Engineering,Solar Car Racing,Coding Bootcamp
-S1065,Aaron Roberts,Circuit Building,Robotics Workshop,CAD Design Studio
-S1066,Sophia Harris,Rocket Design,Bridge Building Challenge,Robotics Workshop
-S1067,Aubrey King,Drone Programming,Circuit Building,3D Printing Lab
-S1068,Dylan Torres,3D Printing Lab,Circuit Building,Robotics Workshop
-S1069,Stella Clark,Rocket Design,Coding Bootcamp,3D Printing Lab
-S1070,Natalie Nguyen,Coding Bootcamp,Rocket Design,CAD Design Studio
-S1071,Aria Green,Drone Programming,Coding Bootcamp,3D Printing Lab
-S1072,Hunter Campbell,Coding Bootcamp,Circuit Building,Bridge Building Challenge
-S1073,Avery Torres,Coding Bootcamp,Environmental Engineering,3D Printing Lab
-S1074,Ethan Lopez,Environmental Engineering,CAD Design Studio,Robotics Workshop
-S1075,Grayson Lewis,Circuit Building,Drone Programming,3D Printing Lab
-S1076,Olivia Thompson,3D Printing Lab,Drone Programming,Rocket Design
-S1077,Isaac Wilson,3D Printing Lab,CAD Design Studio,Robotics Workshop
-S1078,Grace Young,Robotics Workshop,Environmental Engineering,3D Printing Lab
-S1079,Abigail Smith,Solar Car Racing,CAD Design Studio,3D Printing Lab
-S1080,Sofia Clark,Solar Car Racing,CAD Design Studio,Rocket Design
-S1081,Isabelle Davis,Solar Car Racing,Drone Programming,Robotics Workshop
-S1082,Mateo Clark,Solar Car Racing,Drone Programming,CAD Design Studio
-S1083,Caroline Harris,Circuit Building,Coding Bootcamp,Rocket Design
-S1084,Charlotte Garcia,Solar Car Racing,3D Printing Lab,Rocket Design
-S1085,Elizabeth Moore,Circuit Building,Drone Programming,Solar Car Racing
-S1086,Andrew Robinson,Rocket Design,Circuit Building,Environmental Engineering
-S1087,Aria Hall,Bridge Building Challenge,Circuit Building,3D Printing Lab
-S1088,Lillian Johnson,CAD Design Studio,Robotics Workshop,Circuit Building
-S1089,Dylan Scott,Circuit Building,3D Printing Lab,Drone Programming
-S1090,Eleanor Ramirez,Drone Programming,Robotics Workshop,3D Printing Lab
-S1091,Mason White,Robotics Workshop,Rocket Design,Drone Programming
-S1092,Caroline Hernandez,Circuit Building,Solar Car Racing,Rocket Design
-S1093,Aubrey Sanchez,Environmental Engineering,Solar Car Racing,Robotics Workshop
-S1094,Lincoln Clark,Coding Bootcamp,CAD Design Studio,3D Printing Lab
-S1095,Ella Rivera,Robotics Workshop,Drone Programming,Bridge Building Challenge
-S1096,Natalie Robinson,Drone Programming,3D Printing Lab,Environmental Engineering
-S1097,Carter Sanchez,Environmental Engineering,3D Printing Lab,Robotics Workshop
-S1098,Nora Young,3D Printing Lab,Environmental Engineering,Rocket Design
-S1099,Caroline King,Robotics Workshop,Coding Bootcamp,Rocket Design
+Student ID,First Name,Last Name,Pathway,Teacher,Day,Present,Choice 1,Choice 2,Choice 3
+S1000,Eli,Williams,CS,Lee,A,No,Drone Programming,Coding Bootcamp,Circuit Building
+S1001,John,Scott,CS,Harris,A,Yes,Coding Bootcamp,Rocket Design,CAD Design Studio
+S1002,Brooklyn,Sanchez,CS,White,A,Maybe,Solar Car Racing,Rocket Design,3D Printing Lab
+S1003,Grayson,Lee,CS,Harris,A,No,Coding Bootcamp,3D Printing Lab,Environmental Engineering
+S1004,Isabelle,Lopez,Engineering,Harris,B,Yes,Drone Programming,Environmental Engineering,Robotics Workshop
+S1005,Aurora,Martinez,CS,Harris,A,Maybe,Bridge Building Challenge,Coding Bootcamp,Robotics Workshop
+S1006,Carter,Ramirez,CS,Thompson,A,No,Coding Bootcamp,Rocket Design,Solar Car Racing
+S1007,Ella,Wright,Entrepreneurship,White,A,No,CAD Design Studio,3D Printing Lab,Solar Car Racing
+S1008,Aria,Davis,CS,Lee,B,No,Coding Bootcamp,CAD Design Studio,3D Printing Lab
+S1009,Isaac,Robinson,CS,Thompson,A,No,Coding Bootcamp,CAD Design Studio,3D Printing Lab
+S1010,Emma,Hernandez,Entrepreneurship,Harris,B,Maybe,Coding Bootcamp,Solar Car Racing,3D Printing Lab
+S1011,Levi,Thompson,Entrepreneurship,Harris,B,No,Circuit Building,CAD Design Studio,Solar Car Racing
+S1012,Natalie,Anderson,CS,Lee,B,No,CAD Design Studio,Robotics Workshop,Coding Bootcamp
+S1013,Dylan,Young,Engineering,Perez,A,No,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1014,Matthew,White,Entrepreneurship,Harris,B,Yes,Coding Bootcamp,Environmental Engineering,Robotics Workshop
+S1015,Brooklyn,Green,CS,Thompson,A,Yes,Coding Bootcamp,Environmental Engineering,3D Printing Lab
+S1016,Isaiah,Sanchez,Entrepreneurship,Thompson,B,Yes,Bridge Building Challenge,Robotics Workshop,Coding Bootcamp
+S1017,Penelope,Sanchez,Entrepreneurship,Perez,A,Maybe,CAD Design Studio,Rocket Design,Circuit Building
+S1018,Zoe,Jones,CS,White,A,Maybe,Rocket Design,Robotics Workshop,Drone Programming
+S1019,Hazel,Johnson,Entrepreneurship,Thompson,A,Yes,Drone Programming,Robotics Workshop,CAD Design Studio
+S1020,Grayson,Roberts,Entrepreneurship,White,B,Yes,Rocket Design,Circuit Building,Solar Car Racing
+S1021,Christopher,King,Engineering,Lee,B,Maybe,Robotics Workshop,CAD Design Studio,3D Printing Lab
+S1022,Julian,Lewis,Engineering,Thompson,B,No,Circuit Building,Rocket Design,Bridge Building Challenge
+S1023,Henry,Nelson,CS,White,A,Yes,Coding Bootcamp,Robotics Workshop,CAD Design Studio
+S1024,Jayden,Rodriguez,CS,White,A,Yes,3D Printing Lab,Environmental Engineering,Robotics Workshop
+S1025,Violet,Robinson,Entrepreneurship,Lee,A,Maybe,Circuit Building,Rocket Design,3D Printing Lab
+S1026,Thomas,Anderson,Entrepreneurship,Lee,B,Maybe,Solar Car Racing,3D Printing Lab,Environmental Engineering
+S1027,Joseph,Martin,Engineering,Lee,B,Yes,Drone Programming,Robotics Workshop,Solar Car Racing
+S1028,Julian,Baker,CS,Lee,A,Yes,Drone Programming,Solar Car Racing,Robotics Workshop
+S1029,Jayden,Flores,Entrepreneurship,White,B,No,Robotics Workshop,3D Printing Lab,Drone Programming
+S1030,Stella,Adams,Entrepreneurship,Thompson,A,Yes,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1031,Riley,Adams,CS,Perez,A,Maybe,Coding Bootcamp,Environmental Engineering,Drone Programming
+S1032,Benjamin,Mitchell,CS,White,A,Maybe,Environmental Engineering,3D Printing Lab,CAD Design Studio
+S1033,Zoe,Smith,CS,White,B,No,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1034,Savannah,Miller,Engineering,Perez,A,Maybe,Circuit Building,3D Printing Lab,Bridge Building Challenge
+S1035,Ella,Rivera,Entrepreneurship,Thompson,A,No,Rocket Design,Bridge Building Challenge,Circuit Building
+S1036,Grace,Adams,CS,Lee,A,Yes,Drone Programming,Environmental Engineering,Solar Car Racing
+S1037,William,Johnson,Entrepreneurship,White,A,No,Bridge Building Challenge,Environmental Engineering,CAD Design Studio
+S1038,Ava,Jones,Engineering,Perez,B,No,Drone Programming,Environmental Engineering,Coding Bootcamp
+S1039,Sophia,Allen,Entrepreneurship,Lee,A,No,Bridge Building Challenge,CAD Design Studio,Circuit Building
+S1040,Josiah,Scott,Engineering,Harris,B,Maybe,Environmental Engineering,Robotics Workshop,Rocket Design
+S1041,Skylar,Torres,CS,Thompson,A,Maybe,3D Printing Lab,Rocket Design,Coding Bootcamp
+S1042,Isaiah,Roberts,CS,Perez,B,No,Rocket Design,Drone Programming,Bridge Building Challenge
+S1043,Ryan,Lopez,Engineering,Perez,B,Maybe,Robotics Workshop,Bridge Building Challenge,3D Printing Lab
+S1044,Caroline,Green,CS,Thompson,B,Yes,3D Printing Lab,Environmental Engineering,Coding Bootcamp
+S1045,Gabriel,Moore,CS,Perez,A,Maybe,Rocket Design,3D Printing Lab,Coding Bootcamp
+S1046,Levi,Hill,Engineering,Lee,A,Maybe,Coding Bootcamp,Solar Car Racing,CAD Design Studio
+S1047,Olivia,Nelson,CS,Lee,B,Yes,Robotics Workshop,Solar Car Racing,Drone Programming
+S1048,Ethan,Mitchell,Entrepreneurship,Thompson,B,No,Robotics Workshop,3D Printing Lab,Environmental Engineering
+S1049,Sebastian,Martin,CS,Thompson,A,Maybe,Circuit Building,Solar Car Racing,Robotics Workshop
+S1050,Isabelle,Johnson,Entrepreneurship,Thompson,A,No,Circuit Building,3D Printing Lab,Solar Car Racing
+S1051,Benjamin,Campbell,CS,White,A,Yes,Coding Bootcamp,3D Printing Lab,Drone Programming
+S1052,Christian,Smith,Entrepreneurship,White,B,Maybe,Rocket Design,Coding Bootcamp,Solar Car Racing
+S1053,Benjamin,Garcia,Entrepreneurship,Lee,B,Yes,Coding Bootcamp,Rocket Design,Environmental Engineering
+S1054,Lucas,Sanchez,CS,Lee,A,Maybe,Solar Car Racing,Rocket Design,Bridge Building Challenge
+S1055,Christian,Walker,Engineering,Harris,B,No,Coding Bootcamp,CAD Design Studio,Circuit Building
+S1056,Aaron,Miller,Engineering,Thompson,B,Yes,Bridge Building Challenge,3D Printing Lab,CAD Design Studio
+S1057,Jaxon,Wright,Engineering,Perez,B,Yes,CAD Design Studio,Bridge Building Challenge,Coding Bootcamp
+S1058,Lincoln,Rodriguez,Entrepreneurship,Thompson,B,Maybe,Solar Car Racing,3D Printing Lab,Coding Bootcamp
+S1059,Elizabeth,Rodriguez,CS,Harris,A,No,Coding Bootcamp,Robotics Workshop,Bridge Building Challenge
+S1060,Luna,Thompson,Engineering,Perez,B,Yes,3D Printing Lab,Rocket Design,Drone Programming
+S1061,Eli,Walker,Entrepreneurship,Harris,B,Yes,Bridge Building Challenge,3D Printing Lab,Robotics Workshop
+S1062,Ava,Baker,CS,Harris,A,Yes,Rocket Design,Environmental Engineering,Solar Car Racing
+S1063,Leah,Taylor,CS,Harris,B,Maybe,3D Printing Lab,Coding Bootcamp,Solar Car Racing
+S1064,Lily,Nguyen,Entrepreneurship,Harris,A,Maybe,Robotics Workshop,Environmental Engineering,Bridge Building Challenge
+S1065,Riley,Martin,CS,Lee,B,No,3D Printing Lab,Coding Bootcamp,Drone Programming
+S1066,Joseph,Robinson,Engineering,Lee,A,Maybe,Environmental Engineering,Robotics Workshop,Circuit Building
+S1067,Mia,Thompson,Engineering,Lee,B,No,CAD Design Studio,Bridge Building Challenge,Robotics Workshop
+S1068,Ella,Torres,Entrepreneurship,Harris,A,No,CAD Design Studio,Environmental Engineering,Bridge Building Challenge
+S1069,Olivia,Anderson,Engineering,White,B,Yes,Robotics Workshop,Circuit Building,Bridge Building Challenge
+S1070,Emily,Ramirez,Engineering,White,A,Yes,Coding Bootcamp,Bridge Building Challenge,Robotics Workshop
+S1071,Jackson,Lee,Engineering,Lee,B,No,Coding Bootcamp,Rocket Design,Robotics Workshop
+S1072,Lillian,Martin,Engineering,White,B,Maybe,Rocket Design,Environmental Engineering,3D Printing Lab
+S1073,Joseph,Hall,Entrepreneurship,Thompson,B,Maybe,Circuit Building,Rocket Design,Coding Bootcamp
+S1074,Eli,Thomas,Engineering,Harris,B,No,Coding Bootcamp,Circuit Building,Bridge Building Challenge
+S1075,Nathan,Wilson,CS,Lee,B,Maybe,Robotics Workshop,3D Printing Lab,Bridge Building Challenge
+S1076,Aiden,Wilson,CS,Thompson,B,Yes,CAD Design Studio,Robotics Workshop,3D Printing Lab
+S1077,Elizabeth,Thomas,Entrepreneurship,Lee,A,Maybe,Rocket Design,Coding Bootcamp,Solar Car Racing
+S1078,Thomas,Rodriguez,Engineering,Perez,B,Maybe,Environmental Engineering,Rocket Design,Coding Bootcamp
+S1079,Dylan,Lee,CS,Thompson,A,Yes,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1080,Luke,Wilson,CS,Thompson,B,Maybe,Drone Programming,CAD Design Studio,Circuit Building
+S1081,Chloe,Nguyen,CS,Lee,B,Maybe,Circuit Building,Robotics Workshop,Rocket Design
+S1082,Penelope,Taylor,Engineering,Perez,A,No,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1083,Lucas,Jones,CS,Thompson,B,No,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1084,Stella,Miller,Entrepreneurship,White,A,Maybe,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1085,Lincoln,Young,Engineering,White,A,Maybe,Environmental Engineering,Robotics Workshop,Rocket Design
+S1086,Scarlett,Moore,CS,Perez,B,Yes,3D Printing Lab,Circuit Building,Environmental Engineering
+S1087,Luna,Garcia,CS,Harris,B,Yes,CAD Design Studio,Drone Programming,Coding Bootcamp
+S1088,Lucy,Taylor,Entrepreneurship,White,A,No,Drone Programming,Robotics Workshop,CAD Design Studio
+S1089,Isaiah,Jones,Entrepreneurship,Harris,B,Maybe,Environmental Engineering,Circuit Building,Coding Bootcamp
+S1090,Zoey,Moore,Entrepreneurship,Harris,B,Maybe,CAD Design Studio,Environmental Engineering,Drone Programming
+S1091,Abigail,Ramirez,Entrepreneurship,Thompson,B,Yes,Rocket Design,Environmental Engineering,Circuit Building
+S1092,Victoria,Harris,Engineering,Lee,B,No,Rocket Design,Coding Bootcamp,Circuit Building
+S1093,Brooklyn,Lopez,CS,Thompson,B,Maybe,Drone Programming,Bridge Building Challenge,3D Printing Lab
+S1094,Christian,Thompson,CS,White,A,No,Drone Programming,Circuit Building,Solar Car Racing
+S1095,Noah,Jackson,Engineering,Thompson,A,No,3D Printing Lab,Solar Car Racing,Robotics Workshop
+S1096,Natalie,Young,CS,Harris,B,Maybe,Solar Car Racing,Circuit Building,Bridge Building Challenge
+S1097,Claire,Thompson,CS,Thompson,A,Maybe,Coding Bootcamp,Robotics Workshop,Solar Car Racing
+S1098,Claire,Mitchell,CS,Harris,B,No,Robotics Workshop,Solar Car Racing,CAD Design Studio
+S1099,Aiden,Johnson,CS,White,A,No,CAD Design Studio,Drone Programming,Rocket Design
+S1100,Bella,Hill,Engineering,Perez,A,Maybe,Environmental Engineering,Circuit Building,Rocket Design
+S1101,Evelyn,Green,Entrepreneurship,Perez,B,No,Coding Bootcamp,Robotics Workshop,Rocket Design
+S1102,Aubrey,Lee,Engineering,Thompson,A,Maybe,Drone Programming,Environmental Engineering,CAD Design Studio
+S1103,Sofia,Davis,Entrepreneurship,Harris,A,Yes,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1104,Michael,Moore,CS,Perez,B,Maybe,3D Printing Lab,CAD Design Studio,Environmental Engineering
+S1105,Christopher,Moore,CS,Perez,A,Maybe,Robotics Workshop,Environmental Engineering,Solar Car Racing
+S1106,John,Martin,Entrepreneurship,Perez,B,Yes,Coding Bootcamp,Drone Programming,Robotics Workshop
+S1107,Isaac,Harris,Entrepreneurship,Harris,A,No,Circuit Building,Bridge Building Challenge,CAD Design Studio
+S1108,Lucas,Robinson,Engineering,Thompson,B,No,3D Printing Lab,Coding Bootcamp,Robotics Workshop
+S1109,Levi,Torres,Entrepreneurship,Harris,A,Yes,Solar Car Racing,Environmental Engineering,Rocket Design
+S1110,Caleb,Thomas,Engineering,Thompson,A,Maybe,3D Printing Lab,Coding Bootcamp,Rocket Design
+S1111,Isaac,Jackson,CS,Lee,B,Maybe,Robotics Workshop,Rocket Design,Bridge Building Challenge
+S1112,Audrey,Moore,Entrepreneurship,Thompson,B,Maybe,Environmental Engineering,Robotics Workshop,Bridge Building Challenge
+S1113,Chloe,Garcia,Engineering,Lee,A,No,Rocket Design,Coding Bootcamp,Robotics Workshop
+S1114,Aiden,Torres,Engineering,Perez,A,Maybe,Environmental Engineering,Robotics Workshop,Drone Programming
+S1115,Isaiah,Carter,Engineering,Perez,A,Maybe,3D Printing Lab,Coding Bootcamp,Drone Programming
+S1116,Caroline,Wright,Entrepreneurship,Thompson,A,Yes,Rocket Design,Robotics Workshop,Coding Bootcamp
+S1117,Ryan,Gonzalez,CS,White,A,Maybe,Solar Car Racing,Robotics Workshop,3D Printing Lab
+S1118,Olivia,Walker,Engineering,Lee,A,Yes,Environmental Engineering,Drone Programming,Circuit Building
+S1119,Sofia,Hall,CS,Perez,B,No,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1120,Ellie,Carter,Engineering,Lee,A,Maybe,3D Printing Lab,Robotics Workshop,Environmental Engineering
+S1121,Thomas,Young,Engineering,Lee,A,No,Environmental Engineering,Circuit Building,Coding Bootcamp
+S1122,Violet,Brown,CS,Perez,A,No,CAD Design Studio,Drone Programming,Coding Bootcamp
+S1123,Savannah,Taylor,Engineering,Thompson,A,Maybe,Robotics Workshop,3D Printing Lab,Environmental Engineering
+S1124,Lily,Hall,Entrepreneurship,Harris,B,Maybe,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1125,Michael,Wright,Engineering,Perez,A,Maybe,3D Printing Lab,Bridge Building Challenge,Coding Bootcamp
+S1126,Mia,Wright,Entrepreneurship,Perez,B,No,Coding Bootcamp,Robotics Workshop,Bridge Building Challenge
+S1127,Brooklyn,Jones,CS,White,A,Yes,Rocket Design,3D Printing Lab,Coding Bootcamp
+S1128,Evelyn,Perez,CS,Harris,A,Yes,3D Printing Lab,Coding Bootcamp,Robotics Workshop
+S1129,Isaac,Walker,Entrepreneurship,Thompson,A,Maybe,3D Printing Lab,Coding Bootcamp,Bridge Building Challenge
+S1130,Hannah,Lewis,Engineering,Thompson,A,Yes,CAD Design Studio,Coding Bootcamp,Robotics Workshop
+S1131,Caleb,Carter,Engineering,Harris,B,Maybe,Rocket Design,Solar Car Racing,Robotics Workshop
+S1132,Aiden,Clark,Entrepreneurship,Harris,B,Yes,3D Printing Lab,Solar Car Racing,Coding Bootcamp
+S1133,Zoey,Lopez,Engineering,Perez,A,Maybe,3D Printing Lab,Solar Car Racing,Rocket Design
+S1134,Violet,Rivera,Engineering,Lee,A,Yes,Circuit Building,Coding Bootcamp,Drone Programming
+S1135,Aiden,King,Entrepreneurship,Lee,A,Yes,Robotics Workshop,Rocket Design,3D Printing Lab
+S1136,Christian,Davis,CS,Perez,A,No,3D Printing Lab,Coding Bootcamp,Robotics Workshop
+S1137,Owen,Flores,CS,Thompson,B,Maybe,Robotics Workshop,Bridge Building Challenge,Environmental Engineering
+S1138,Harper,Garcia,Engineering,Harris,A,No,CAD Design Studio,Robotics Workshop,Coding Bootcamp
+S1139,Victoria,Ramirez,Entrepreneurship,Lee,B,Maybe,Bridge Building Challenge,Drone Programming,Rocket Design
+S1140,Hannah,Allen,Entrepreneurship,Lee,A,Yes,Robotics Workshop,Coding Bootcamp,Rocket Design
+S1141,Charles,Taylor,Entrepreneurship,White,B,No,CAD Design Studio,Environmental Engineering,3D Printing Lab
+S1142,Elizabeth,Hall,CS,Perez,A,No,Robotics Workshop,Bridge Building Challenge,Rocket Design
+S1143,Levi,Lewis,Engineering,Lee,B,No,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1144,Evelyn,Garcia,Entrepreneurship,Thompson,B,Yes,3D Printing Lab,Rocket Design,CAD Design Studio
+S1145,Daniel,Brown,Entrepreneurship,Harris,A,Yes,Circuit Building,Solar Car Racing,3D Printing Lab
+S1146,Amelia,White,Entrepreneurship,White,A,No,Solar Car Racing,Environmental Engineering,Coding Bootcamp
+S1147,Daniel,Taylor,CS,Perez,B,Maybe,CAD Design Studio,Robotics Workshop,Drone Programming
+S1148,Penelope,Rodriguez,Engineering,Thompson,B,No,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1149,Benjamin,Clark,Entrepreneurship,Thompson,B,Yes,Solar Car Racing,3D Printing Lab,Coding Bootcamp
+S1150,Caleb,Baker,Engineering,Lee,B,Maybe,3D Printing Lab,Bridge Building Challenge,CAD Design Studio
+S1151,Avery,Roberts,Entrepreneurship,Harris,B,Yes,3D Printing Lab,Robotics Workshop,CAD Design Studio
+S1152,Riley,Nguyen,Engineering,White,B,No,Coding Bootcamp,Solar Car Racing,CAD Design Studio
+S1153,Wyatt,Ramirez,Engineering,Harris,A,No,CAD Design Studio,Coding Bootcamp,Bridge Building Challenge
+S1154,Lincoln,Rivera,Entrepreneurship,Thompson,A,No,Coding Bootcamp,Robotics Workshop,Circuit Building
+S1155,Amelia,Davis,Entrepreneurship,Lee,B,No,Bridge Building Challenge,CAD Design Studio,Rocket Design
+S1156,Thomas,Torres,Engineering,Harris,A,Yes,Robotics Workshop,Drone Programming,CAD Design Studio
+S1157,Natalie,Green,Entrepreneurship,Lee,A,Maybe,Solar Car Racing,Environmental Engineering,Bridge Building Challenge
+S1158,Olivia,Young,Engineering,Lee,A,No,Coding Bootcamp,Rocket Design,Drone Programming
+S1159,Anna,Walker,Engineering,Thompson,B,Yes,Coding Bootcamp,Robotics Workshop,Environmental Engineering
+S1160,Josiah,Flores,Entrepreneurship,Thompson,A,No,Environmental Engineering,Drone Programming,Bridge Building Challenge
+S1161,Nora,Lopez,CS,Lee,A,Maybe,3D Printing Lab,Coding Bootcamp,Robotics Workshop
+S1162,Addison,Wright,Entrepreneurship,White,A,No,CAD Design Studio,3D Printing Lab,Rocket Design
+S1163,Noah,Roberts,CS,Perez,B,Yes,Bridge Building Challenge,Robotics Workshop,Circuit Building
+S1164,Isabelle,Nguyen,Entrepreneurship,Thompson,B,Yes,3D Printing Lab,CAD Design Studio,Drone Programming
+S1165,Joseph,Williams,Engineering,White,A,Maybe,Drone Programming,Coding Bootcamp,Circuit Building
+S1166,Aaron,Martin,Entrepreneurship,Thompson,A,Yes,Rocket Design,3D Printing Lab,Coding Bootcamp
+S1167,Christian,Young,CS,Lee,B,No,Coding Bootcamp,Robotics Workshop,CAD Design Studio
+S1168,Violet,Thompson,Engineering,Perez,B,Maybe,Robotics Workshop,Environmental Engineering,Bridge Building Challenge
+S1169,Penelope,Ramirez,Engineering,Harris,A,No,Robotics Workshop,Rocket Design,Coding Bootcamp
+S1170,Henry,Torres,Engineering,Harris,B,No,Environmental Engineering,Coding Bootcamp,Robotics Workshop
+S1171,Joshua,Nguyen,CS,Harris,B,Maybe,3D Printing Lab,Coding Bootcamp,Bridge Building Challenge
+S1172,Caleb,Wilson,CS,Harris,A,Maybe,CAD Design Studio,Drone Programming,Coding Bootcamp
+S1173,Paisley,Allen,CS,Lee,B,Yes,Bridge Building Challenge,3D Printing Lab,Drone Programming
+S1174,Caleb,Clark,Engineering,Harris,A,Yes,Robotics Workshop,Coding Bootcamp,Bridge Building Challenge
+S1175,Sophia,Garcia,Entrepreneurship,White,B,Yes,CAD Design Studio,Drone Programming,Robotics Workshop
+S1176,Violet,Hall,CS,Perez,B,Yes,Environmental Engineering,Rocket Design,CAD Design Studio
+S1177,Riley,Williams,Entrepreneurship,Harris,B,Maybe,Coding Bootcamp,3D Printing Lab,Solar Car Racing
+S1178,Emma,Williams,Engineering,Perez,B,Yes,Robotics Workshop,Rocket Design,Coding Bootcamp
+S1179,Luna,Nguyen,CS,Thompson,B,Maybe,Bridge Building Challenge,Environmental Engineering,CAD Design Studio
+S1180,Gabriel,Davis,Engineering,Perez,B,No,Rocket Design,Circuit Building,3D Printing Lab
+S1181,Paisley,Adams,CS,Harris,A,Maybe,Environmental Engineering,3D Printing Lab,Solar Car Racing
+S1182,Andrew,Thompson,Entrepreneurship,White,A,Yes,3D Printing Lab,Environmental Engineering,Coding Bootcamp
+S1183,Alexander,Davis,Engineering,Lee,B,Yes,Environmental Engineering,Robotics Workshop,Circuit Building
+S1184,Sebastian,Roberts,Entrepreneurship,Thompson,B,No,Circuit Building,Bridge Building Challenge,Drone Programming
+S1185,Audrey,Robinson,Engineering,Lee,A,Yes,Rocket Design,Solar Car Racing,Circuit Building
+S1186,Lincoln,Ramirez,Engineering,Perez,B,Yes,Robotics Workshop,Coding Bootcamp,CAD Design Studio
+S1187,Owen,Wright,Engineering,White,B,Maybe,Circuit Building,Coding Bootcamp,CAD Design Studio
+S1188,Michael,Baker,Entrepreneurship,Harris,A,No,3D Printing Lab,Drone Programming,Rocket Design
+S1189,Evelyn,Walker,CS,Perez,B,Maybe,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1190,Eleanor,Baker,Entrepreneurship,White,A,Yes,Robotics Workshop,Environmental Engineering,Circuit Building
+S1191,Wyatt,Lee,CS,White,A,Maybe,Drone Programming,Circuit Building,Rocket Design
+S1192,Mateo,Nguyen,Entrepreneurship,Harris,A,Maybe,Robotics Workshop,Solar Car Racing,3D Printing Lab
+S1193,Hazel,Mitchell,CS,White,A,No,Robotics Workshop,Coding Bootcamp,Drone Programming
+S1194,Wyatt,Jackson,CS,Perez,A,Yes,Bridge Building Challenge,Rocket Design,Environmental Engineering
+S1195,Harper,Davis,Engineering,Thompson,B,Maybe,Solar Car Racing,Drone Programming,Environmental Engineering
+S1196,Natalie,Rivera,Engineering,Thompson,A,No,Robotics Workshop,Coding Bootcamp,Rocket Design
+S1197,Jack,Allen,CS,Thompson,B,Maybe,Robotics Workshop,3D Printing Lab,Rocket Design
+S1198,Hazel,Taylor,CS,White,B,Yes,Rocket Design,Bridge Building Challenge,Coding Bootcamp
+S1199,Henry,Garcia,Entrepreneurship,Thompson,A,Maybe,Rocket Design,3D Printing Lab,Robotics Workshop
+S1200,Paisley,Baker,Engineering,Harris,A,Yes,Environmental Engineering,Robotics Workshop,Drone Programming
+S1201,Carter,Wilson,Engineering,Thompson,B,Yes,Robotics Workshop,Drone Programming,Coding Bootcamp
+S1202,Henry,Harris,CS,Perez,B,Maybe,Robotics Workshop,Rocket Design,Circuit Building
+S1203,David,Carter,CS,Harris,B,No,Solar Car Racing,3D Printing Lab,Environmental Engineering
+S1204,Paisley,Campbell,CS,White,B,No,3D Printing Lab,Robotics Workshop,Environmental Engineering
+S1205,Elizabeth,Davis,Engineering,Harris,A,Maybe,CAD Design Studio,3D Printing Lab,Drone Programming
+S1206,Jayden,Wright,Engineering,Harris,A,Yes,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1207,Hannah,Hernandez,CS,Lee,B,Maybe,3D Printing Lab,Rocket Design,Bridge Building Challenge
+S1208,Luke,Rodriguez,CS,Lee,B,No,3D Printing Lab,Circuit Building,Coding Bootcamp
+S1209,Sofia,Mitchell,Engineering,Perez,B,Maybe,Solar Car Racing,Environmental Engineering,Robotics Workshop
+S1210,Savannah,Johnson,Entrepreneurship,Harris,B,Maybe,Bridge Building Challenge,Coding Bootcamp,Rocket Design
+S1211,Zoe,Lewis,CS,Lee,A,Yes,Robotics Workshop,Rocket Design,Environmental Engineering
+S1212,Savannah,White,Entrepreneurship,Perez,A,No,Environmental Engineering,3D Printing Lab,CAD Design Studio
+S1213,Anthony,King,CS,White,A,No,Rocket Design,Bridge Building Challenge,Solar Car Racing
+S1214,Daniel,White,CS,Harris,B,No,Rocket Design,Environmental Engineering,Solar Car Racing
+S1215,Amelia,Rodriguez,Engineering,Perez,B,Yes,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1216,Avery,Campbell,CS,Perez,A,Yes,Environmental Engineering,Rocket Design,Robotics Workshop
+S1217,Luna,Robinson,CS,Perez,B,No,Coding Bootcamp,Circuit Building,3D Printing Lab
+S1218,Grace,Johnson,Entrepreneurship,Thompson,B,Maybe,Solar Car Racing,Coding Bootcamp,Drone Programming
+S1219,Noah,Lopez,Engineering,Lee,A,No,CAD Design Studio,Drone Programming,3D Printing Lab
+S1220,Samuel,Smith,CS,Perez,B,Yes,Coding Bootcamp,Robotics Workshop,Circuit Building
+S1221,Olivia,Jones,CS,Thompson,A,Maybe,CAD Design Studio,Drone Programming,Robotics Workshop
+S1222,Harper,White,CS,Thompson,A,No,Solar Car Racing,Drone Programming,Robotics Workshop
+S1223,Emily,Green,CS,White,B,Yes,Robotics Workshop,Drone Programming,Circuit Building
+S1224,Claire,Scott,Entrepreneurship,Thompson,A,Yes,3D Printing Lab,Robotics Workshop,Rocket Design
+S1225,Evelyn,Lopez,Entrepreneurship,Perez,A,Maybe,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1226,Nathan,Miller,Entrepreneurship,Thompson,B,Maybe,Robotics Workshop,Rocket Design,CAD Design Studio
+S1227,Aaron,King,Entrepreneurship,Thompson,A,Maybe,Environmental Engineering,Solar Car Racing,Coding Bootcamp
+S1228,Josiah,Martinez,CS,Lee,A,Maybe,Robotics Workshop,Coding Bootcamp,Circuit Building
+S1229,Henry,Hernandez,CS,Thompson,B,Maybe,Rocket Design,Coding Bootcamp,Drone Programming
+S1230,Lillian,Williams,Entrepreneurship,Perez,B,No,Bridge Building Challenge,Rocket Design,3D Printing Lab
+S1231,Charles,Perez,CS,Lee,B,No,Bridge Building Challenge,Coding Bootcamp,Drone Programming
+S1232,Hunter,Rivera,Entrepreneurship,Lee,A,Yes,Rocket Design,Circuit Building,Solar Car Racing
+S1233,Daniel,Jackson,Engineering,Perez,A,No,Rocket Design,Coding Bootcamp,Environmental Engineering
+S1234,Joshua,Torres,CS,Thompson,A,No,Solar Car Racing,Environmental Engineering,Rocket Design
+S1235,Zoe,Gonzalez,Entrepreneurship,Lee,A,Maybe,Environmental Engineering,Drone Programming,Circuit Building
+S1236,Nathan,King,Entrepreneurship,Lee,A,Maybe,Coding Bootcamp,3D Printing Lab,Solar Car Racing
+S1237,Caroline,Thomas,CS,Lee,B,No,Bridge Building Challenge,3D Printing Lab,Robotics Workshop
+S1238,Grace,Mitchell,Engineering,White,A,Maybe,Drone Programming,3D Printing Lab,Solar Car Racing
+S1239,Sophia,Sanchez,Entrepreneurship,Thompson,B,Yes,Environmental Engineering,Bridge Building Challenge,Coding Bootcamp
+S1240,Lily,Roberts,Engineering,Harris,B,Maybe,Environmental Engineering,Robotics Workshop,Circuit Building
+S1241,Brooklyn,Hill,Entrepreneurship,Harris,A,No,3D Printing Lab,Bridge Building Challenge,CAD Design Studio
+S1242,Sebastian,Green,Engineering,Perez,A,Maybe,CAD Design Studio,3D Printing Lab,Circuit Building
+S1243,Savannah,Harris,Entrepreneurship,Thompson,B,No,Coding Bootcamp,Circuit Building,Environmental Engineering
+S1244,Henry,Lee,Engineering,Perez,B,Maybe,Environmental Engineering,3D Printing Lab,Drone Programming
+S1245,Jackson,Torres,Engineering,Harris,B,Maybe,Robotics Workshop,Solar Car Racing,Drone Programming
+S1246,Matthew,Campbell,Engineering,Harris,B,Yes,3D Printing Lab,Coding Bootcamp,CAD Design Studio
+S1247,Lily,Rivera,Engineering,Harris,A,No,3D Printing Lab,Robotics Workshop,Drone Programming
+S1248,Sofia,Flores,Engineering,Harris,B,Maybe,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1249,Ellie,Robinson,Engineering,Lee,A,Maybe,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1250,Sofia,Lopez,Entrepreneurship,Lee,B,No,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1251,Christian,Hernandez,Engineering,Lee,B,No,3D Printing Lab,Circuit Building,Robotics Workshop
+S1252,Ella,Rodriguez,CS,Perez,B,Maybe,Bridge Building Challenge,Circuit Building,Robotics Workshop
+S1253,Benjamin,Miller,CS,Perez,B,No,Solar Car Racing,Environmental Engineering,Circuit Building
+S1254,Wyatt,Davis,Engineering,Lee,A,Yes,Rocket Design,3D Printing Lab,CAD Design Studio
+S1255,Paisley,Johnson,Entrepreneurship,Harris,A,Yes,Coding Bootcamp,Bridge Building Challenge,3D Printing Lab
+S1256,Sofia,Hill,Entrepreneurship,White,B,Maybe,Robotics Workshop,Solar Car Racing,3D Printing Lab
+S1257,Harper,Rodriguez,Entrepreneurship,Lee,A,Maybe,Coding Bootcamp,Rocket Design,Robotics Workshop
+S1258,Savannah,Martinez,CS,Lee,A,Yes,Drone Programming,Robotics Workshop,CAD Design Studio
+S1259,Victoria,Wilson,Engineering,White,A,Maybe,Drone Programming,Rocket Design,Coding Bootcamp
+S1260,Jaxon,Gonzalez,CS,White,A,Yes,Coding Bootcamp,Robotics Workshop,CAD Design Studio
+S1261,Jack,Walker,Engineering,Lee,A,No,3D Printing Lab,Rocket Design,Circuit Building
+S1262,Wyatt,Lewis,Engineering,Perez,A,No,CAD Design Studio,Coding Bootcamp,Drone Programming
+S1263,Natalie,Johnson,CS,White,A,No,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1264,Wyatt,Young,Engineering,White,B,Yes,Rocket Design,Solar Car Racing,Robotics Workshop
+S1265,Amelia,Harris,Engineering,Perez,B,Maybe,Coding Bootcamp,Circuit Building,3D Printing Lab
+S1266,Samuel,Roberts,Engineering,Perez,B,Maybe,Rocket Design,Bridge Building Challenge,Drone Programming
+S1267,Violet,Thomas,Entrepreneurship,Harris,A,No,Solar Car Racing,Robotics Workshop,Environmental Engineering
+S1268,Michael,Gonzalez,CS,Harris,B,Maybe,Environmental Engineering,CAD Design Studio,3D Printing Lab
+S1269,Paisley,Rodriguez,Entrepreneurship,Harris,A,No,Coding Bootcamp,3D Printing Lab,Solar Car Racing
+S1270,Bella,Thompson,Entrepreneurship,Lee,B,Maybe,Bridge Building Challenge,Solar Car Racing,3D Printing Lab
+S1271,Charles,Hall,CS,Perez,A,Yes,Circuit Building,Solar Car Racing,Environmental Engineering
+S1272,Levi,Robinson,Engineering,Perez,B,Yes,Rocket Design,Coding Bootcamp,3D Printing Lab
+S1273,Violet,Perez,CS,White,A,Yes,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1274,Scarlett,Lopez,CS,Thompson,A,Maybe,Circuit Building,Coding Bootcamp,3D Printing Lab
+S1275,Scarlett,Rodriguez,Entrepreneurship,White,A,Maybe,Bridge Building Challenge,Circuit Building,3D Printing Lab
+S1276,Ryan,Lee,CS,Thompson,B,Yes,Environmental Engineering,Coding Bootcamp,Drone Programming
+S1277,Mason,Flores,Engineering,White,A,No,Circuit Building,Drone Programming,Robotics Workshop
+S1278,Emily,King,Entrepreneurship,Lee,B,Maybe,Environmental Engineering,CAD Design Studio,Bridge Building Challenge
+S1279,Claire,Ramirez,Engineering,Harris,A,Maybe,Coding Bootcamp,CAD Design Studio,3D Printing Lab
+S1280,Emily,Martinez,Entrepreneurship,Perez,B,Maybe,Coding Bootcamp,Robotics Workshop,Solar Car Racing
+S1281,Victoria,Williams,Entrepreneurship,Thompson,A,Maybe,Coding Bootcamp,Bridge Building Challenge,Robotics Workshop
+S1282,Ryan,Jackson,Entrepreneurship,Lee,A,No,3D Printing Lab,Rocket Design,Coding Bootcamp
+S1283,Scarlett,Taylor,CS,White,B,Yes,3D Printing Lab,Robotics Workshop,Drone Programming
+S1284,Joshua,Wright,Entrepreneurship,Lee,B,Yes,Rocket Design,Robotics Workshop,Environmental Engineering
+S1285,Mason,Roberts,Entrepreneurship,Lee,B,Maybe,Robotics Workshop,Solar Car Racing,Coding Bootcamp
+S1286,Avery,Moore,CS,Thompson,A,No,Drone Programming,Coding Bootcamp,3D Printing Lab
+S1287,Hazel,Campbell,CS,Harris,A,No,Bridge Building Challenge,Solar Car Racing,3D Printing Lab
+S1288,Riley,Rivera,CS,Thompson,A,Maybe,Robotics Workshop,Coding Bootcamp,Rocket Design
+S1289,Hunter,Lopez,CS,Harris,B,No,3D Printing Lab,Coding Bootcamp,Robotics Workshop
+S1290,David,Roberts,CS,Lee,B,No,Bridge Building Challenge,Robotics Workshop,CAD Design Studio
+S1291,Benjamin,Thompson,CS,Harris,B,No,3D Printing Lab,Environmental Engineering,Rocket Design
+S1292,Samuel,Thomas,CS,Lee,B,Yes,Rocket Design,Coding Bootcamp,Robotics Workshop
+S1293,Skylar,Nguyen,Entrepreneurship,White,B,No,Rocket Design,Coding Bootcamp,Bridge Building Challenge
+S1294,Olivia,King,Engineering,Perez,B,Yes,Bridge Building Challenge,Drone Programming,CAD Design Studio
+S1295,Mason,Lee,Entrepreneurship,White,A,No,Coding Bootcamp,Solar Car Racing,3D Printing Lab
+S1296,Elizabeth,Lee,CS,Perez,B,Yes,Robotics Workshop,Coding Bootcamp,CAD Design Studio
+S1297,Emma,Gonzalez,CS,Thompson,B,Yes,Coding Bootcamp,Robotics Workshop,Rocket Design
+S1298,Josiah,Carter,Entrepreneurship,Thompson,A,Yes,Robotics Workshop,Solar Car Racing,3D Printing Lab
+S1299,Thomas,Perez,CS,White,A,Maybe,Circuit Building,3D Printing Lab,Robotics Workshop
+S1300,Luna,Hill,Entrepreneurship,Lee,A,No,Environmental Engineering,3D Printing Lab,Circuit Building
+S1301,Lucy,Johnson,CS,Harris,B,No,Solar Car Racing,Robotics Workshop,Circuit Building
+S1302,John,Rodriguez,Engineering,Harris,A,No,Coding Bootcamp,Circuit Building,Robotics Workshop
+S1303,Noah,Johnson,CS,Perez,A,Maybe,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1304,Julian,Hall,Engineering,Thompson,A,No,Environmental Engineering,3D Printing Lab,Robotics Workshop
+S1305,William,Martin,CS,Lee,B,Yes,3D Printing Lab,Solar Car Racing,Coding Bootcamp
+S1306,Anna,Lewis,Entrepreneurship,Lee,A,No,Drone Programming,Bridge Building Challenge,Solar Car Racing
+S1307,Gabriel,Miller,CS,Harris,B,Maybe,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1308,Christopher,Nguyen,CS,Lee,A,Yes,Circuit Building,Bridge Building Challenge,Coding Bootcamp
+S1309,John,Johnson,Entrepreneurship,Lee,B,No,Environmental Engineering,Coding Bootcamp,Circuit Building
+S1310,Sophia,Wright,CS,Perez,A,Maybe,Rocket Design,Solar Car Racing,Robotics Workshop
+S1311,Matthew,Jackson,Engineering,Lee,A,No,Circuit Building,Rocket Design,Drone Programming
+S1312,Scarlett,Perez,CS,Thompson,B,Maybe,3D Printing Lab,Environmental Engineering,Bridge Building Challenge
+S1313,Luke,Rivera,Entrepreneurship,White,A,No,3D Printing Lab,Environmental Engineering,Drone Programming
+S1314,Hazel,Hernandez,Engineering,Perez,A,No,Robotics Workshop,Drone Programming,CAD Design Studio
+S1315,Carter,Jones,Engineering,Thompson,B,Yes,3D Printing Lab,Robotics Workshop,Solar Car Racing
+S1316,Aaron,Garcia,Entrepreneurship,Lee,A,Yes,Environmental Engineering,Drone Programming,Solar Car Racing
+S1317,Chloe,Young,Engineering,Thompson,A,No,Coding Bootcamp,Solar Car Racing,CAD Design Studio
+S1318,Charlotte,Jones,CS,Thompson,B,No,3D Printing Lab,CAD Design Studio,Drone Programming
+S1319,Emma,Thomas,Entrepreneurship,White,B,Yes,Robotics Workshop,3D Printing Lab,Drone Programming
+S1320,Jackson,Ramirez,Engineering,Harris,A,No,Robotics Workshop,3D Printing Lab,Environmental Engineering
+S1321,Violet,Anderson,Engineering,Lee,B,Maybe,Robotics Workshop,Drone Programming,CAD Design Studio
+S1322,Lucas,Lee,CS,White,B,Maybe,3D Printing Lab,CAD Design Studio,Circuit Building
+S1323,Ryan,Thomas,CS,Lee,A,No,Circuit Building,3D Printing Lab,Coding Bootcamp
+S1324,Stella,White,Engineering,Thompson,A,No,CAD Design Studio,Robotics Workshop,Rocket Design
+S1325,Carter,Rodriguez,CS,Harris,A,Yes,Robotics Workshop,3D Printing Lab,Environmental Engineering
+S1326,Noah,Young,CS,White,A,No,Environmental Engineering,Drone Programming,Circuit Building
+S1327,Jayden,Young,Engineering,Thompson,A,Maybe,Solar Car Racing,Bridge Building Challenge,Circuit Building
+S1328,Christopher,Mitchell,Entrepreneurship,Lee,B,Maybe,Environmental Engineering,3D Printing Lab,Drone Programming
+S1329,Hazel,Clark,Entrepreneurship,Perez,B,Maybe,Rocket Design,Coding Bootcamp,Circuit Building
+S1330,John,Green,Engineering,White,A,Yes,Rocket Design,Environmental Engineering,Circuit Building
+S1331,Skylar,Harris,CS,Harris,B,No,Solar Car Racing,Rocket Design,Circuit Building
+S1332,Lucy,Thomas,Entrepreneurship,Thompson,B,No,Coding Bootcamp,3D Printing Lab,Rocket Design
+S1333,Brooklyn,Mitchell,Engineering,Perez,A,Maybe,Rocket Design,Circuit Building,Robotics Workshop
+S1334,Matthew,Walker,CS,White,B,No,Rocket Design,Circuit Building,Robotics Workshop
+S1335,Benjamin,Martinez,Entrepreneurship,Perez,A,Yes,Circuit Building,Bridge Building Challenge,Solar Car Racing
+S1336,Noah,Garcia,CS,Perez,B,No,3D Printing Lab,Robotics Workshop,Bridge Building Challenge
+S1337,John,Jackson,Entrepreneurship,Lee,A,Yes,CAD Design Studio,Robotics Workshop,Drone Programming
+S1338,Claire,Anderson,Engineering,Harris,B,No,Solar Car Racing,3D Printing Lab,Bridge Building Challenge
+S1339,Joseph,Mitchell,Entrepreneurship,Lee,A,Yes,CAD Design Studio,Environmental Engineering,Robotics Workshop
+S1340,Jaxon,Garcia,Engineering,Thompson,A,No,Robotics Workshop,3D Printing Lab,Rocket Design
+S1341,Bella,Sanchez,Entrepreneurship,White,B,Yes,Environmental Engineering,CAD Design Studio,Rocket Design
+S1342,Hazel,Green,Engineering,White,A,Maybe,Drone Programming,Solar Car Racing,Bridge Building Challenge
+S1343,Jayden,Ramirez,CS,Lee,A,Yes,3D Printing Lab,Robotics Workshop,Drone Programming
+S1344,Christopher,Jones,Entrepreneurship,Perez,B,Yes,Robotics Workshop,CAD Design Studio,Drone Programming
+S1345,Olivia,White,Entrepreneurship,Perez,B,Maybe,Environmental Engineering,Circuit Building,3D Printing Lab
+S1346,Anna,Hall,Entrepreneurship,Perez,B,Maybe,3D Printing Lab,Coding Bootcamp,Rocket Design
+S1347,Bella,Hall,Engineering,Lee,B,Yes,Robotics Workshop,Rocket Design,Circuit Building
+S1348,Aaron,Rivera,Engineering,White,B,Maybe,Drone Programming,Robotics Workshop,CAD Design Studio
+S1349,Anthony,Young,CS,Lee,B,No,Robotics Workshop,Rocket Design,3D Printing Lab
+S1350,Henry,Ramirez,Entrepreneurship,Thompson,B,No,Bridge Building Challenge,Rocket Design,Environmental Engineering
+S1351,Eli,Allen,Engineering,Harris,B,No,Solar Car Racing,Circuit Building,Robotics Workshop
+S1352,Skylar,Nelson,Engineering,Harris,B,No,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1353,Emily,Johnson,CS,Lee,B,No,CAD Design Studio,Drone Programming,Robotics Workshop
+S1354,Joseph,Walker,CS,Harris,A,No,Environmental Engineering,Rocket Design,Coding Bootcamp
+S1355,Avery,Robinson,Engineering,Perez,B,No,Circuit Building,Robotics Workshop,CAD Design Studio
+S1356,Lily,Allen,Entrepreneurship,Thompson,B,No,CAD Design Studio,Coding Bootcamp,Rocket Design
+S1357,Lincoln,Lewis,Entrepreneurship,White,B,Yes,Robotics Workshop,Rocket Design,3D Printing Lab
+S1358,Jayden,Taylor,Entrepreneurship,Perez,B,Yes,Environmental Engineering,Coding Bootcamp,3D Printing Lab
+S1359,Aria,Rivera,Entrepreneurship,Thompson,A,Maybe,3D Printing Lab,CAD Design Studio,Coding Bootcamp
+S1360,Joseph,Lewis,CS,White,A,No,CAD Design Studio,3D Printing Lab,Drone Programming
+S1361,Charles,Wright,Entrepreneurship,White,A,No,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1362,Lucy,White,Entrepreneurship,Thompson,A,No,Solar Car Racing,Bridge Building Challenge,3D Printing Lab
+S1363,Lily,Rodriguez,Entrepreneurship,Harris,B,Yes,Robotics Workshop,3D Printing Lab,CAD Design Studio
+S1364,Aria,Nguyen,Entrepreneurship,Perez,B,Yes,Coding Bootcamp,CAD Design Studio,Solar Car Racing
+S1365,Luke,Nguyen,CS,White,A,No,Environmental Engineering,3D Printing Lab,Coding Bootcamp
+S1366,Grace,Hernandez,Entrepreneurship,Thompson,B,Maybe,Environmental Engineering,Robotics Workshop,Coding Bootcamp
+S1367,Jaxon,Rodriguez,Entrepreneurship,Harris,B,Yes,Bridge Building Challenge,Solar Car Racing,Robotics Workshop
+S1368,Natalie,Lopez,CS,Lee,A,Yes,Coding Bootcamp,CAD Design Studio,3D Printing Lab
+S1369,Victoria,Scott,Engineering,Perez,A,No,Solar Car Racing,Bridge Building Challenge,Circuit Building
+S1370,Elizabeth,Sanchez,CS,Lee,A,Maybe,Circuit Building,Solar Car Racing,Coding Bootcamp
+S1371,Natalie,Wright,Engineering,White,B,No,Bridge Building Challenge,Environmental Engineering,Solar Car Racing
+S1372,Daniel,Anderson,Entrepreneurship,Lee,A,Yes,3D Printing Lab,Solar Car Racing,Coding Bootcamp
+S1373,Joshua,Hernandez,CS,Perez,A,No,Solar Car Racing,Bridge Building Challenge,Coding Bootcamp
+S1374,William,Smith,Engineering,Perez,A,Yes,3D Printing Lab,Drone Programming,Rocket Design
+S1375,John,Lewis,Entrepreneurship,Perez,B,Yes,Robotics Workshop,Coding Bootcamp,Environmental Engineering
+S1376,Joshua,Flores,Entrepreneurship,Lee,A,No,CAD Design Studio,Circuit Building,Bridge Building Challenge
+S1377,Stella,Rodriguez,CS,Harris,B,Maybe,Coding Bootcamp,Bridge Building Challenge,Robotics Workshop
+S1378,Aubrey,Clark,Engineering,White,A,No,Solar Car Racing,Bridge Building Challenge,Rocket Design
+S1379,Aria,Hill,Entrepreneurship,Perez,B,No,Rocket Design,Coding Bootcamp,Robotics Workshop
+S1380,Violet,King,CS,White,B,No,Rocket Design,Bridge Building Challenge,Solar Car Racing
+S1381,Owen,Garcia,Entrepreneurship,Perez,A,Yes,Robotics Workshop,Environmental Engineering,3D Printing Lab
+S1382,Lucy,Carter,Engineering,Lee,B,Yes,Bridge Building Challenge,Rocket Design,3D Printing Lab
+S1383,Sofia,Gonzalez,Engineering,Perez,A,Maybe,Coding Bootcamp,Solar Car Racing,Bridge Building Challenge
+S1384,Isaac,Sanchez,Entrepreneurship,Perez,A,No,Bridge Building Challenge,Rocket Design,3D Printing Lab
+S1385,Chloe,Rivera,CS,Thompson,A,No,Robotics Workshop,Circuit Building,Coding Bootcamp
+S1386,Jaxon,Martin,Engineering,Thompson,B,No,Robotics Workshop,3D Printing Lab,Drone Programming
+S1387,Abigail,Young,CS,White,B,Maybe,3D Printing Lab,CAD Design Studio,Drone Programming
+S1388,Michael,Campbell,Entrepreneurship,Perez,B,Yes,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1389,Ella,Moore,Entrepreneurship,Lee,A,Yes,3D Printing Lab,Drone Programming,Coding Bootcamp
+S1390,Christopher,Rodriguez,Entrepreneurship,Thompson,A,Yes,Solar Car Racing,Rocket Design,Robotics Workshop
+S1391,Isabelle,Roberts,Entrepreneurship,White,B,No,Drone Programming,Circuit Building,Solar Car Racing
+S1392,Thomas,Walker,Engineering,Lee,A,No,3D Printing Lab,Coding Bootcamp,Solar Car Racing
+S1393,Wyatt,Thomas,Engineering,Lee,A,Maybe,Drone Programming,3D Printing Lab,Rocket Design
+S1394,Audrey,Mitchell,Engineering,Perez,A,No,3D Printing Lab,Environmental Engineering,Robotics Workshop
+S1395,Josiah,Jones,Entrepreneurship,Perez,A,No,3D Printing Lab,Drone Programming,Bridge Building Challenge
+S1396,Isaiah,Lewis,Entrepreneurship,Thompson,B,Yes,Bridge Building Challenge,3D Printing Lab,Coding Bootcamp
+S1397,Nathan,Taylor,Entrepreneurship,Thompson,B,Maybe,3D Printing Lab,Robotics Workshop,Bridge Building Challenge
+S1398,Aiden,Brown,Entrepreneurship,Thompson,A,No,3D Printing Lab,Bridge Building Challenge,Rocket Design
+S1399,Mason,Moore,Entrepreneurship,Thompson,B,Maybe,Robotics Workshop,Bridge Building Challenge,Coding Bootcamp
+S1400,Stella,Young,CS,Perez,A,Yes,3D Printing Lab,Coding Bootcamp,Environmental Engineering
+S1401,Alexander,Williams,CS,Lee,A,Yes,3D Printing Lab,Environmental Engineering,Robotics Workshop
+S1402,Caroline,Brown,Entrepreneurship,Harris,A,Yes,Circuit Building,3D Printing Lab,Robotics Workshop
+S1403,Charlotte,Clark,Entrepreneurship,Lee,A,Yes,Solar Car Racing,CAD Design Studio,Bridge Building Challenge
+S1404,Isaiah,King,Engineering,White,A,Yes,Solar Car Racing,Coding Bootcamp,Circuit Building
+S1405,Isaiah,Williams,Engineering,Perez,B,Maybe,Drone Programming,Circuit Building,Robotics Workshop
+S1406,Lily,Williams,Entrepreneurship,Harris,B,Yes,3D Printing Lab,Bridge Building Challenge,Coding Bootcamp
+S1407,Eleanor,Wilson,Entrepreneurship,Lee,B,Yes,Coding Bootcamp,Bridge Building Challenge,Circuit Building
+S1408,Scarlett,Hill,Entrepreneurship,Thompson,A,No,Solar Car Racing,Robotics Workshop,3D Printing Lab
+S1409,Evelyn,Sanchez,CS,Harris,B,Yes,Bridge Building Challenge,3D Printing Lab,Drone Programming
+S1410,Olivia,Green,Entrepreneurship,Lee,A,No,Coding Bootcamp,Robotics Workshop,CAD Design Studio
+S1411,Aiden,Young,Engineering,White,B,Maybe,3D Printing Lab,Coding Bootcamp,Circuit Building
+S1412,Alexander,Brown,Engineering,Harris,B,Maybe,Robotics Workshop,Coding Bootcamp,Solar Car Racing
+S1413,Bella,Thomas,CS,Lee,A,Maybe,Rocket Design,Robotics Workshop,Bridge Building Challenge
+S1414,Chloe,Jones,Engineering,Thompson,B,Maybe,Solar Car Racing,Environmental Engineering,3D Printing Lab
+S1415,Ryan,Nguyen,Entrepreneurship,Thompson,A,No,Circuit Building,Rocket Design,Solar Car Racing
+S1416,Henry,Baker,Engineering,Perez,B,Maybe,Robotics Workshop,Environmental Engineering,Coding Bootcamp
+S1417,Bella,Ramirez,CS,Lee,A,Yes,Circuit Building,Drone Programming,Rocket Design
+S1418,Nathan,Roberts,Entrepreneurship,Thompson,B,Maybe,Coding Bootcamp,Bridge Building Challenge,Robotics Workshop
+S1419,Mason,Martinez,Entrepreneurship,Perez,B,No,Coding Bootcamp,Bridge Building Challenge,Solar Car Racing
+S1420,Lucy,Clark,CS,Lee,A,Maybe,Coding Bootcamp,Drone Programming,Solar Car Racing
+S1421,Owen,Davis,CS,Perez,B,Maybe,Solar Car Racing,CAD Design Studio,Robotics Workshop
+S1422,Eleanor,Thompson,Engineering,Harris,A,Maybe,Rocket Design,Robotics Workshop,Environmental Engineering
+S1423,Carter,Gonzalez,Entrepreneurship,White,B,No,Solar Car Racing,Drone Programming,CAD Design Studio
+S1424,Isaiah,Brown,Entrepreneurship,Perez,A,Yes,Coding Bootcamp,CAD Design Studio,Rocket Design
+S1425,Claire,Hernandez,Entrepreneurship,Perez,B,Yes,Coding Bootcamp,CAD Design Studio,Bridge Building Challenge
+S1426,Isaac,Ramirez,Entrepreneurship,Harris,B,Yes,Coding Bootcamp,Robotics Workshop,Drone Programming
+S1427,Nathan,Brown,Engineering,Harris,A,Yes,Coding Bootcamp,Robotics Workshop,Bridge Building Challenge
+S1428,Aubrey,Taylor,CS,Perez,A,Yes,3D Printing Lab,CAD Design Studio,Robotics Workshop
+S1429,Brooklyn,Hernandez,Engineering,Perez,B,Maybe,Environmental Engineering,Drone Programming,Coding Bootcamp
+S1430,Isaac,Brown,Engineering,Thompson,A,Maybe,3D Printing Lab,Coding Bootcamp,CAD Design Studio
+S1431,Sophia,Mitchell,Engineering,Lee,A,No,Coding Bootcamp,Drone Programming,Robotics Workshop
+S1432,Isabelle,Scott,CS,Lee,B,Maybe,Robotics Workshop,Rocket Design,CAD Design Studio
+S1433,Natalie,Torres,Engineering,Harris,B,Maybe,3D Printing Lab,Solar Car Racing,Coding Bootcamp
+S1434,Zoe,Taylor,CS,White,A,No,3D Printing Lab,Rocket Design,Bridge Building Challenge
+S1435,Nora,Allen,Engineering,Thompson,A,Yes,3D Printing Lab,Robotics Workshop,Rocket Design
+S1436,Jackson,Scott,Engineering,Perez,A,No,Coding Bootcamp,3D Printing Lab,Solar Car Racing
+S1437,Nathan,Ramirez,Engineering,Lee,B,Maybe,Circuit Building,Drone Programming,3D Printing Lab
+S1438,Liam,Thomas,Entrepreneurship,Harris,A,Yes,Rocket Design,Coding Bootcamp,Circuit Building
+S1439,Chloe,Moore,Entrepreneurship,Thompson,B,Yes,Solar Car Racing,Rocket Design,3D Printing Lab
+S1440,Harper,Anderson,CS,Harris,A,Yes,Robotics Workshop,Coding Bootcamp,Environmental Engineering
+S1441,Chloe,Harris,Engineering,Harris,A,No,Environmental Engineering,Solar Car Racing,Coding Bootcamp
+S1442,Zoe,Thompson,CS,Thompson,B,No,CAD Design Studio,Rocket Design,3D Printing Lab
+S1443,Victoria,Gonzalez,CS,Perez,A,Maybe,Robotics Workshop,Coding Bootcamp,Drone Programming
+S1444,Elizabeth,Adams,Engineering,Harris,A,No,Solar Car Racing,Drone Programming,Robotics Workshop
+S1445,Brooklyn,Roberts,Engineering,Thompson,B,No,Drone Programming,3D Printing Lab,Solar Car Racing
+S1446,Natalie,Nguyen,CS,Perez,B,Maybe,Environmental Engineering,3D Printing Lab,Drone Programming
+S1447,Joseph,King,Entrepreneurship,Thompson,A,Maybe,Coding Bootcamp,CAD Design Studio,Drone Programming
+S1448,Samuel,Lee,Entrepreneurship,Harris,A,Maybe,Drone Programming,Environmental Engineering,Robotics Workshop
+S1449,Christian,Clark,Entrepreneurship,Perez,B,Yes,Circuit Building,3D Printing Lab,Coding Bootcamp
+S1450,Ethan,Martinez,Engineering,Lee,A,Yes,Coding Bootcamp,Solar Car Racing,3D Printing Lab
+S1451,Joseph,Taylor,CS,Lee,B,Maybe,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1452,Mateo,Sanchez,Entrepreneurship,Lee,A,Maybe,Solar Car Racing,CAD Design Studio,Robotics Workshop
+S1453,Ellie,Jackson,CS,White,A,No,Bridge Building Challenge,3D Printing Lab,Drone Programming
+S1454,Penelope,Walker,Engineering,Perez,A,No,Bridge Building Challenge,Environmental Engineering,Circuit Building
+S1455,Samuel,White,Entrepreneurship,Perez,A,Yes,Drone Programming,3D Printing Lab,Robotics Workshop
+S1456,Anna,Flores,Entrepreneurship,Thompson,A,No,Robotics Workshop,Drone Programming,Circuit Building
+S1457,Ryan,Scott,Engineering,White,B,Maybe,Circuit Building,3D Printing Lab,Drone Programming
+S1458,Christian,Johnson,Engineering,Perez,A,Maybe,Coding Bootcamp,CAD Design Studio,Drone Programming
+S1459,Josiah,Perez,Entrepreneurship,Perez,B,Maybe,Rocket Design,CAD Design Studio,Solar Car Racing
+S1460,Jaxon,Thompson,CS,Perez,A,No,Solar Car Racing,Coding Bootcamp,CAD Design Studio
+S1461,Zoe,Flores,CS,Lee,A,Maybe,Bridge Building Challenge,Environmental Engineering,Coding Bootcamp
+S1462,Ava,Martin,Entrepreneurship,Lee,A,Maybe,Robotics Workshop,Bridge Building Challenge,Drone Programming
+S1463,Gabriel,Rodriguez,Engineering,Lee,A,Yes,Coding Bootcamp,Bridge Building Challenge,Circuit Building
+S1464,Olivia,Williams,Entrepreneurship,White,A,Maybe,Bridge Building Challenge,Environmental Engineering,Rocket Design
+S1465,Elizabeth,Williams,Engineering,Perez,A,Maybe,Solar Car Racing,Environmental Engineering,3D Printing Lab
+S1466,Charles,Hernandez,Entrepreneurship,Harris,A,Yes,Bridge Building Challenge,Coding Bootcamp,Robotics Workshop
+S1467,Samuel,Davis,CS,Perez,A,Maybe,Bridge Building Challenge,CAD Design Studio,3D Printing Lab
+S1468,Aria,Jackson,CS,Lee,A,Maybe,CAD Design Studio,Circuit Building,Bridge Building Challenge
+S1469,Dylan,Campbell,Entrepreneurship,White,B,Maybe,Robotics Workshop,Circuit Building,Environmental Engineering
+S1470,Sophia,Green,Engineering,Harris,B,Maybe,Bridge Building Challenge,Rocket Design,Circuit Building
+S1471,Bella,Rodriguez,Entrepreneurship,Thompson,A,Maybe,Drone Programming,Robotics Workshop,Rocket Design
+S1472,Avery,Mitchell,CS,White,A,Maybe,Environmental Engineering,3D Printing Lab,Rocket Design
+S1473,Audrey,Campbell,CS,Perez,B,Maybe,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1474,Harper,Miller,Entrepreneurship,Thompson,B,No,Environmental Engineering,Rocket Design,CAD Design Studio
+S1475,Bella,Allen,Engineering,Thompson,B,Maybe,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1476,Sebastian,Walker,Engineering,Thompson,A,No,Coding Bootcamp,Solar Car Racing,Environmental Engineering
+S1477,Harper,Thompson,Engineering,Thompson,A,Maybe,Bridge Building Challenge,Rocket Design,Robotics Workshop
+S1478,Stella,Hernandez,CS,Perez,A,Yes,Circuit Building,3D Printing Lab,Bridge Building Challenge
+S1479,Michael,Ramirez,CS,Thompson,B,Maybe,Bridge Building Challenge,Solar Car Racing,Robotics Workshop
+S1480,Sofia,Wright,Entrepreneurship,Thompson,B,Maybe,Environmental Engineering,Rocket Design,Coding Bootcamp
+S1481,Lincoln,Robinson,CS,Thompson,A,No,Rocket Design,Bridge Building Challenge,Drone Programming
+S1482,Luke,Carter,Engineering,White,B,Yes,Circuit Building,3D Printing Lab,Drone Programming
+S1483,Daniel,Green,Entrepreneurship,Harris,B,No,Bridge Building Challenge,Coding Bootcamp,3D Printing Lab
+S1484,Aaron,Lopez,CS,Lee,B,Maybe,Solar Car Racing,Rocket Design,Environmental Engineering
+S1485,Andrew,Taylor,Engineering,Perez,A,Yes,Rocket Design,Robotics Workshop,Solar Car Racing
+S1486,Addison,Thomas,Entrepreneurship,Harris,B,Maybe,Circuit Building,Drone Programming,Rocket Design
+S1487,Noah,Clark,Entrepreneurship,Perez,B,Yes,Bridge Building Challenge,Circuit Building,CAD Design Studio
+S1488,Joshua,Lee,Entrepreneurship,Thompson,B,Yes,Solar Car Racing,3D Printing Lab,Environmental Engineering
+S1489,Michael,Perez,CS,White,A,Yes,Robotics Workshop,Bridge Building Challenge,Circuit Building
+S1490,Ava,Thomas,Engineering,Lee,A,Yes,Bridge Building Challenge,Coding Bootcamp,Environmental Engineering
+S1491,Luna,Sanchez,Entrepreneurship,Lee,B,Yes,Coding Bootcamp,Solar Car Racing,Environmental Engineering
+S1492,Penelope,Hall,Entrepreneurship,Lee,B,Yes,Coding Bootcamp,Circuit Building,Environmental Engineering
+S1493,Ethan,Martin,Entrepreneurship,Harris,B,No,Bridge Building Challenge,Rocket Design,Environmental Engineering
+S1494,Benjamin,Allen,Engineering,Lee,B,Yes,Bridge Building Challenge,3D Printing Lab,Coding Bootcamp
+S1495,Wyatt,Smith,CS,Thompson,B,Maybe,Drone Programming,Robotics Workshop,CAD Design Studio
+S1496,Aria,Campbell,Entrepreneurship,Thompson,B,Maybe,Robotics Workshop,Circuit Building,Coding Bootcamp
+S1497,Chloe,Rodriguez,CS,Perez,B,Yes,3D Printing Lab,Drone Programming,Rocket Design
+S1498,Julian,Ramirez,Engineering,Perez,B,No,Coding Bootcamp,3D Printing Lab,CAD Design Studio
+S1499,Caroline,Torres,CS,Perez,A,Maybe,Robotics Workshop,Coding Bootcamp,Drone Programming
+S1500,Aria,Anderson,CS,Perez,A,Maybe,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1501,Sophia,Taylor,CS,Thompson,A,No,3D Printing Lab,Coding Bootcamp,Environmental Engineering
+S1502,Ryan,Perez,Entrepreneurship,Perez,A,No,Robotics Workshop,Coding Bootcamp,Drone Programming
+S1503,Henry,Carter,Entrepreneurship,Harris,A,No,Robotics Workshop,3D Printing Lab,Environmental Engineering
+S1504,Olivia,Hall,CS,Perez,B,Yes,Circuit Building,Rocket Design,CAD Design Studio
+S1505,Eleanor,Scott,Entrepreneurship,White,A,Yes,Coding Bootcamp,3D Printing Lab,Environmental Engineering
+S1506,Ava,Torres,Engineering,White,A,Yes,3D Printing Lab,Coding Bootcamp,Drone Programming
+S1507,Noah,Rivera,CS,Lee,B,Maybe,Robotics Workshop,Coding Bootcamp,Bridge Building Challenge
+S1508,Nora,Lee,Engineering,White,A,No,3D Printing Lab,Drone Programming,Robotics Workshop
+S1509,Amelia,Martin,Engineering,Thompson,B,Yes,Coding Bootcamp,3D Printing Lab,Solar Car Racing
+S1510,Violet,Nelson,Entrepreneurship,Harris,B,Maybe,Coding Bootcamp,Rocket Design,3D Printing Lab
+S1511,Emma,Smith,CS,Thompson,B,No,Robotics Workshop,Bridge Building Challenge,3D Printing Lab
+S1512,Lucy,Williams,Entrepreneurship,Thompson,A,Maybe,Robotics Workshop,CAD Design Studio,Rocket Design
+S1513,Eli,Nelson,CS,White,B,Yes,Coding Bootcamp,Drone Programming,3D Printing Lab
+S1514,Sebastian,Jones,Entrepreneurship,Lee,A,No,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1515,Mia,Baker,Engineering,Thompson,A,Maybe,Coding Bootcamp,Rocket Design,Circuit Building
+S1516,Ethan,Walker,CS,Perez,B,Maybe,3D Printing Lab,Coding Bootcamp,Robotics Workshop
+S1517,Liam,Clark,Engineering,White,B,No,3D Printing Lab,Coding Bootcamp,Rocket Design
+S1518,William,Mitchell,Entrepreneurship,Lee,A,Maybe,CAD Design Studio,Coding Bootcamp,3D Printing Lab
+S1519,Josiah,Wilson,CS,Perez,B,Maybe,Robotics Workshop,Coding Bootcamp,Rocket Design
+S1520,Alexander,Allen,Engineering,Harris,B,Maybe,Drone Programming,Environmental Engineering,Bridge Building Challenge
+S1521,Hannah,Gonzalez,Engineering,Harris,A,Maybe,Coding Bootcamp,Drone Programming,CAD Design Studio
+S1522,Aria,Brown,Engineering,Harris,A,No,3D Printing Lab,Solar Car Racing,Robotics Workshop
+S1523,Sebastian,Williams,CS,Thompson,A,Yes,Environmental Engineering,Robotics Workshop,3D Printing Lab
+S1524,Owen,King,Entrepreneurship,Harris,B,Yes,Robotics Workshop,Drone Programming,3D Printing Lab
+S1525,Mason,Johnson,Engineering,Lee,B,Maybe,Coding Bootcamp,Rocket Design,Robotics Workshop
+S1526,Stella,Hall,Engineering,Thompson,A,Maybe,Circuit Building,Solar Car Racing,Rocket Design
+S1527,Ella,Jones,CS,Thompson,B,Maybe,Solar Car Racing,Drone Programming,CAD Design Studio
+S1528,Samuel,Harris,Entrepreneurship,Thompson,A,Maybe,Rocket Design,Robotics Workshop,Drone Programming
+S1529,Savannah,Jackson,Engineering,White,B,Yes,Drone Programming,Robotics Workshop,3D Printing Lab
+S1530,Ryan,Miller,Engineering,Harris,B,Yes,Robotics Workshop,CAD Design Studio,Drone Programming
+S1531,Daniel,Lopez,CS,White,A,Yes,Circuit Building,3D Printing Lab,Coding Bootcamp
+S1532,Christopher,Wilson,Engineering,Lee,B,Maybe,3D Printing Lab,Coding Bootcamp,Rocket Design
+S1533,Gabriel,Garcia,Engineering,Lee,A,Maybe,Rocket Design,Robotics Workshop,Coding Bootcamp
+S1534,Benjamin,Taylor,Entrepreneurship,White,B,Yes,3D Printing Lab,Coding Bootcamp,Rocket Design
+S1535,Jackson,Brown,Entrepreneurship,Perez,A,Maybe,Bridge Building Challenge,Rocket Design,Solar Car Racing
+S1536,Claire,Young,Engineering,Thompson,B,No,Coding Bootcamp,Bridge Building Challenge,Circuit Building
+S1537,Jaxon,Clark,CS,White,A,No,Solar Car Racing,Bridge Building Challenge,Coding Bootcamp
+S1538,Hunter,Allen,Entrepreneurship,Harris,B,No,CAD Design Studio,Robotics Workshop,Drone Programming
+S1539,Henry,Jones,Engineering,Harris,A,No,3D Printing Lab,CAD Design Studio,Coding Bootcamp
+S1540,Ava,Wilson,Entrepreneurship,Harris,B,Yes,Circuit Building,Solar Car Racing,Drone Programming
+S1541,Joshua,Davis,CS,Harris,A,Maybe,CAD Design Studio,Coding Bootcamp,3D Printing Lab
+S1542,Hunter,White,CS,White,B,No,Coding Bootcamp,Environmental Engineering,Circuit Building
+S1543,James,Gonzalez,Entrepreneurship,Harris,B,No,Drone Programming,Circuit Building,3D Printing Lab
+S1544,Eleanor,Johnson,CS,Harris,B,Maybe,CAD Design Studio,Rocket Design,Coding Bootcamp
+S1545,Liam,Nguyen,Engineering,Harris,A,Maybe,Circuit Building,Robotics Workshop,3D Printing Lab
+S1546,Ellie,Taylor,Engineering,Lee,B,Maybe,Solar Car Racing,Robotics Workshop,Bridge Building Challenge
+S1547,Aubrey,Wilson,Entrepreneurship,Lee,B,No,Drone Programming,3D Printing Lab,Circuit Building
+S1548,Matthew,Martinez,CS,Thompson,A,Yes,Environmental Engineering,Drone Programming,Coding Bootcamp
+S1549,Olivia,Rodriguez,Entrepreneurship,Perez,A,Yes,Environmental Engineering,3D Printing Lab,Robotics Workshop
+S1550,Emma,Hill,Engineering,Perez,A,No,Robotics Workshop,CAD Design Studio,Coding Bootcamp
+S1551,William,Taylor,CS,Thompson,A,Yes,CAD Design Studio,3D Printing Lab,Coding Bootcamp
+S1552,Lincoln,Green,Entrepreneurship,Lee,B,Maybe,Circuit Building,CAD Design Studio,Robotics Workshop
+S1553,Leah,Lee,Entrepreneurship,Perez,B,Maybe,Drone Programming,Solar Car Racing,3D Printing Lab
+S1554,Claire,Johnson,Engineering,Thompson,A,Yes,Rocket Design,Environmental Engineering,CAD Design Studio
+S1555,Wyatt,Mitchell,Engineering,Thompson,A,Yes,CAD Design Studio,Robotics Workshop,Coding Bootcamp
+S1556,Eli,Sanchez,Engineering,Perez,B,No,Rocket Design,Solar Car Racing,Coding Bootcamp
+S1557,Charlotte,White,Entrepreneurship,Perez,B,Maybe,Coding Bootcamp,Solar Car Racing,3D Printing Lab
+S1558,Isabelle,White,CS,Lee,A,Yes,Bridge Building Challenge,Drone Programming,Robotics Workshop
+S1559,Lillian,Nelson,Entrepreneurship,White,B,Maybe,Rocket Design,Robotics Workshop,Bridge Building Challenge
+S1560,Victoria,Rodriguez,Entrepreneurship,Perez,B,No,Coding Bootcamp,CAD Design Studio,3D Printing Lab
+S1561,Ava,Roberts,CS,Perez,A,Yes,Rocket Design,Circuit Building,3D Printing Lab
+S1562,James,Mitchell,Entrepreneurship,Harris,B,No,Coding Bootcamp,Circuit Building,CAD Design Studio
+S1563,Zoe,Brown,Engineering,Harris,B,Maybe,Drone Programming,Robotics Workshop,Coding Bootcamp
+S1564,Riley,Lopez,CS,Lee,B,Yes,Robotics Workshop,Coding Bootcamp,CAD Design Studio
+S1565,Wyatt,King,Engineering,Perez,B,Yes,CAD Design Studio,Circuit Building,Solar Car Racing
+S1566,Grayson,Rivera,Engineering,Harris,B,No,Robotics Workshop,Circuit Building,Coding Bootcamp
+S1567,Noah,Brown,Entrepreneurship,White,A,Maybe,CAD Design Studio,Environmental Engineering,Drone Programming
+S1568,Amelia,Perez,Engineering,Thompson,A,No,3D Printing Lab,Coding Bootcamp,Rocket Design
+S1569,Emma,Campbell,Engineering,Thompson,A,Yes,Drone Programming,Bridge Building Challenge,3D Printing Lab
+S1570,Natalie,Clark,Entrepreneurship,Lee,B,Maybe,3D Printing Lab,Drone Programming,Coding Bootcamp
+S1571,Sebastian,Sanchez,Engineering,Lee,B,No,3D Printing Lab,Coding Bootcamp,Bridge Building Challenge
+S1572,Levi,Martin,Entrepreneurship,White,A,No,Coding Bootcamp,CAD Design Studio,Bridge Building Challenge
+S1573,Ava,Young,CS,Thompson,A,Yes,3D Printing Lab,Drone Programming,Bridge Building Challenge
+S1574,James,Lewis,Engineering,Harris,A,Maybe,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1575,Caroline,Miller,Engineering,White,B,Maybe,3D Printing Lab,Robotics Workshop,Rocket Design
+S1576,Emma,Roberts,Entrepreneurship,Thompson,A,Maybe,Robotics Workshop,Coding Bootcamp,CAD Design Studio
+S1577,Addison,Smith,CS,Thompson,A,Yes,Circuit Building,Solar Car Racing,CAD Design Studio
+S1578,William,King,Entrepreneurship,Harris,A,Maybe,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1579,Luna,Moore,CS,White,A,Yes,Rocket Design,Coding Bootcamp,Circuit Building
+S1580,Chloe,Perez,Entrepreneurship,Harris,B,Maybe,Solar Car Racing,3D Printing Lab,CAD Design Studio
+S1581,Hannah,King,CS,White,B,Yes,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1582,Isabelle,Williams,CS,Lee,A,No,Environmental Engineering,Bridge Building Challenge,3D Printing Lab
+S1583,Claire,Thomas,Engineering,Perez,B,No,Coding Bootcamp,Circuit Building,Robotics Workshop
+S1584,Ellie,Miller,CS,Harris,B,Yes,Environmental Engineering,Robotics Workshop,Coding Bootcamp
+S1585,Liam,Ramirez,Engineering,Harris,B,Yes,Rocket Design,Coding Bootcamp,Circuit Building
+S1586,Christian,Jones,CS,White,A,Maybe,Robotics Workshop,CAD Design Studio,Coding Bootcamp
+S1587,Anna,Jackson,Engineering,Perez,A,Maybe,3D Printing Lab,Coding Bootcamp,Robotics Workshop
+S1588,Chloe,Gonzalez,CS,Perez,B,Maybe,Bridge Building Challenge,Drone Programming,3D Printing Lab
+S1589,Grayson,Rodriguez,CS,Harris,A,No,Robotics Workshop,Rocket Design,CAD Design Studio
+S1590,Scarlett,Jackson,Entrepreneurship,Thompson,B,Yes,3D Printing Lab,Coding Bootcamp,Rocket Design
+S1591,Abigail,Roberts,Entrepreneurship,Lee,A,Yes,Circuit Building,Robotics Workshop,Coding Bootcamp
+S1592,Caroline,Nguyen,Engineering,Perez,B,Yes,3D Printing Lab,Bridge Building Challenge,Rocket Design
+S1593,Paisley,Wilson,CS,Thompson,A,Yes,CAD Design Studio,Coding Bootcamp,Bridge Building Challenge
+S1594,Ava,Garcia,Engineering,White,A,Yes,3D Printing Lab,Circuit Building,Coding Bootcamp
+S1595,Daniel,Garcia,Entrepreneurship,Perez,B,No,Circuit Building,Robotics Workshop,Drone Programming
+S1596,Gabriel,King,CS,Harris,A,No,3D Printing Lab,Coding Bootcamp,Rocket Design
+S1597,Andrew,Jones,CS,Thompson,B,Yes,Robotics Workshop,Drone Programming,Coding Bootcamp
+S1598,Henry,Brown,Engineering,Perez,A,Yes,Robotics Workshop,Circuit Building,Rocket Design
+S1599,Christian,Perez,Entrepreneurship,Harris,B,No,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1600,Andrew,Hall,Engineering,White,A,Yes,Coding Bootcamp,Environmental Engineering,CAD Design Studio
+S1601,Anthony,Smith,Engineering,Harris,A,Yes,Coding Bootcamp,Rocket Design,Robotics Workshop
+S1602,Levi,Williams,Entrepreneurship,Harris,B,Maybe,Solar Car Racing,3D Printing Lab,Coding Bootcamp
+S1603,Wyatt,Gonzalez,Entrepreneurship,Perez,B,Maybe,Robotics Workshop,Rocket Design,3D Printing Lab
+S1604,Matthew,Jones,Entrepreneurship,Thompson,B,Maybe,Solar Car Racing,Environmental Engineering,3D Printing Lab
+S1605,Nathan,White,Engineering,Lee,A,Maybe,CAD Design Studio,Rocket Design,Circuit Building
+S1606,Jackson,Garcia,Entrepreneurship,Thompson,A,No,Robotics Workshop,Solar Car Racing,3D Printing Lab
+S1607,Luke,Anderson,Entrepreneurship,Perez,A,Yes,Drone Programming,Coding Bootcamp,Robotics Workshop
+S1608,Aubrey,Young,Entrepreneurship,Harris,B,No,Solar Car Racing,Bridge Building Challenge,Robotics Workshop
+S1609,Eli,Jackson,Engineering,Harris,A,Yes,Robotics Workshop,Coding Bootcamp,Drone Programming
+S1610,Aaron,Nguyen,CS,Harris,A,No,Rocket Design,Environmental Engineering,3D Printing Lab
+S1611,David,Perez,Entrepreneurship,Harris,A,No,Coding Bootcamp,Rocket Design,Drone Programming
+S1612,Natalie,Carter,Entrepreneurship,Lee,B,Yes,Circuit Building,Coding Bootcamp,Environmental Engineering
+S1613,Christian,Lewis,Entrepreneurship,White,B,Yes,Robotics Workshop,Coding Bootcamp,Rocket Design
+S1614,Victoria,Lewis,Engineering,Thompson,A,Yes,Coding Bootcamp,Environmental Engineering,Solar Car Racing
+S1615,Addison,Campbell,Entrepreneurship,Perez,A,No,Coding Bootcamp,Drone Programming,Solar Car Racing
+S1616,Dylan,Martinez,CS,Lee,B,No,Coding Bootcamp,Robotics Workshop,Rocket Design
+S1617,Anna,Adams,Entrepreneurship,Thompson,B,Maybe,Coding Bootcamp,Drone Programming,Robotics Workshop
+S1618,James,Moore,Engineering,Harris,B,Yes,Rocket Design,Robotics Workshop,CAD Design Studio
+S1619,Emma,Clark,CS,Thompson,A,No,3D Printing Lab,Rocket Design,Coding Bootcamp
+S1620,Stella,Lopez,CS,Harris,B,Yes,Robotics Workshop,3D Printing Lab,CAD Design Studio
+S1621,Isabelle,Anderson,Entrepreneurship,Thompson,B,Maybe,3D Printing Lab,Coding Bootcamp,Circuit Building
+S1622,Christopher,Hill,Entrepreneurship,Thompson,A,No,Robotics Workshop,Bridge Building Challenge,Circuit Building
+S1623,Audrey,Hill,Entrepreneurship,White,A,Maybe,Coding Bootcamp,3D Printing Lab,Bridge Building Challenge
+S1624,Stella,Flores,Engineering,Lee,B,Yes,Rocket Design,Drone Programming,Robotics Workshop
+S1625,Grayson,Garcia,CS,Thompson,B,No,Robotics Workshop,Bridge Building Challenge,Coding Bootcamp
+S1626,Isaac,Davis,Engineering,Lee,A,Yes,Environmental Engineering,3D Printing Lab,CAD Design Studio
+S1627,Gabriel,Green,CS,Perez,A,Maybe,3D Printing Lab,CAD Design Studio,Rocket Design
+S1628,Caroline,Nelson,Entrepreneurship,Thompson,B,Yes,CAD Design Studio,Robotics Workshop,3D Printing Lab
+S1629,Evelyn,Johnson,CS,Perez,A,No,Robotics Workshop,Drone Programming,Coding Bootcamp
+S1630,Jack,Smith,CS,Lee,A,Maybe,CAD Design Studio,Coding Bootcamp,Solar Car Racing
+S1631,Ethan,Torres,CS,Thompson,A,Yes,Drone Programming,Solar Car Racing,3D Printing Lab
+S1632,Aria,Hall,Entrepreneurship,White,A,Maybe,Drone Programming,Solar Car Racing,Circuit Building
+S1633,Aaron,Johnson,Engineering,Thompson,B,Yes,Robotics Workshop,Solar Car Racing,3D Printing Lab
+S1634,Joshua,Scott,Engineering,Thompson,B,Maybe,Coding Bootcamp,Environmental Engineering,Robotics Workshop
+S1635,Michael,Young,Entrepreneurship,Thompson,B,No,3D Printing Lab,Coding Bootcamp,Bridge Building Challenge
+S1636,Benjamin,Moore,Entrepreneurship,White,A,Yes,Bridge Building Challenge,Solar Car Racing,3D Printing Lab
+S1637,Ellie,Flores,Entrepreneurship,Lee,A,Maybe,Rocket Design,Circuit Building,Solar Car Racing
+S1638,Amelia,Lopez,CS,Thompson,B,No,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1639,Natalie,Hernandez,Entrepreneurship,Perez,A,Maybe,Circuit Building,Coding Bootcamp,Robotics Workshop
+S1640,Amelia,Jackson,Entrepreneurship,Lee,B,Maybe,Robotics Workshop,Bridge Building Challenge,Coding Bootcamp
+S1641,Skylar,Lee,Engineering,Thompson,A,Maybe,Coding Bootcamp,Bridge Building Challenge,CAD Design Studio
+S1642,Leah,Hall,CS,Harris,B,Yes,Robotics Workshop,Solar Car Racing,Coding Bootcamp
+S1643,Sophia,Roberts,Engineering,Harris,A,Yes,CAD Design Studio,Coding Bootcamp,3D Printing Lab
+S1644,Alexander,Nguyen,CS,White,B,Yes,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1645,Caroline,Campbell,CS,White,A,Maybe,Robotics Workshop,Circuit Building,CAD Design Studio
+S1646,Aiden,Hill,Engineering,Harris,A,Maybe,Solar Car Racing,Rocket Design,Circuit Building
+S1647,Lucy,Anderson,Engineering,Thompson,A,Maybe,3D Printing Lab,Robotics Workshop,Environmental Engineering
+S1648,Ryan,Wilson,CS,Thompson,B,Yes,Circuit Building,CAD Design Studio,Drone Programming
+S1649,Caleb,Green,Engineering,White,B,Yes,Circuit Building,Rocket Design,Coding Bootcamp
+S1650,Charles,Scott,CS,Thompson,B,No,Bridge Building Challenge,Rocket Design,Environmental Engineering
+S1651,Benjamin,Perez,Entrepreneurship,Perez,B,Maybe,Circuit Building,Environmental Engineering,Robotics Workshop
+S1652,Brooklyn,Anderson,CS,Thompson,A,Yes,Bridge Building Challenge,3D Printing Lab,Robotics Workshop
+S1653,Owen,Sanchez,Entrepreneurship,Harris,B,Maybe,3D Printing Lab,CAD Design Studio,Bridge Building Challenge
+S1654,Owen,Ramirez,Engineering,White,A,Yes,Robotics Workshop,Rocket Design,Coding Bootcamp
+S1655,Abigail,Hall,CS,White,B,Maybe,3D Printing Lab,Rocket Design,Coding Bootcamp
+S1656,Lillian,Nguyen,CS,White,B,No,CAD Design Studio,Robotics Workshop,Coding Bootcamp
+S1657,Ryan,Flores,Entrepreneurship,Lee,B,Yes,Rocket Design,Coding Bootcamp,Circuit Building
+S1658,Isaac,Torres,Entrepreneurship,Harris,B,Yes,Robotics Workshop,Coding Bootcamp,Bridge Building Challenge
+S1659,Thomas,Jackson,Entrepreneurship,Harris,B,Maybe,3D Printing Lab,Robotics Workshop,Solar Car Racing
+S1660,William,Hill,CS,Thompson,B,No,Rocket Design,Coding Bootcamp,CAD Design Studio
+S1661,Harper,Harris,Entrepreneurship,Harris,B,Maybe,CAD Design Studio,Drone Programming,Coding Bootcamp
+S1662,Mateo,Wilson,CS,White,A,No,Robotics Workshop,Circuit Building,Environmental Engineering
+S1663,Liam,Perez,Entrepreneurship,White,A,Maybe,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1664,Josiah,Rivera,Engineering,Thompson,A,Maybe,CAD Design Studio,Environmental Engineering,Circuit Building
+S1665,Daniel,Davis,Entrepreneurship,Harris,B,No,Coding Bootcamp,Bridge Building Challenge,Rocket Design
+S1666,Carter,Smith,Entrepreneurship,Perez,A,Yes,Drone Programming,Circuit Building,3D Printing Lab
+S1667,Charlotte,Sanchez,CS,Lee,A,No,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1668,Thomas,Davis,Engineering,Harris,A,Maybe,Coding Bootcamp,CAD Design Studio,Solar Car Racing
+S1669,Sebastian,Harris,Engineering,Harris,B,Yes,Rocket Design,3D Printing Lab,Coding Bootcamp
+S1670,Chloe,Jackson,CS,Perez,B,Yes,Solar Car Racing,CAD Design Studio,Bridge Building Challenge
+S1671,Nathan,Hernandez,Engineering,Perez,A,Yes,Environmental Engineering,CAD Design Studio,Bridge Building Challenge
+S1672,Wyatt,Hall,Entrepreneurship,Thompson,B,Maybe,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1673,Samuel,Gonzalez,Engineering,Perez,A,Maybe,3D Printing Lab,Robotics Workshop,Circuit Building
+S1674,Ava,Robinson,Entrepreneurship,White,A,Yes,Drone Programming,3D Printing Lab,Coding Bootcamp
+S1675,Isaiah,Martin,Entrepreneurship,Lee,B,Yes,3D Printing Lab,Bridge Building Challenge,Circuit Building
+S1676,Luna,Wilson,CS,Thompson,A,Maybe,Coding Bootcamp,3D Printing Lab,Environmental Engineering
+S1677,Isabelle,Allen,Entrepreneurship,Perez,B,Yes,Bridge Building Challenge,Robotics Workshop,Coding Bootcamp
+S1678,Mason,Thompson,Entrepreneurship,Lee,A,No,Robotics Workshop,Solar Car Racing,Circuit Building
+S1679,Anna,King,CS,Perez,B,Maybe,Bridge Building Challenge,CAD Design Studio,Coding Bootcamp
+S1680,Carter,Thomas,CS,Lee,B,Yes,CAD Design Studio,3D Printing Lab,Environmental Engineering
+S1681,Victoria,Robinson,Engineering,White,B,No,Circuit Building,Drone Programming,Bridge Building Challenge
+S1682,Hannah,Martin,Entrepreneurship,Harris,B,Yes,Circuit Building,Coding Bootcamp,Drone Programming
+S1683,David,Lee,CS,Lee,B,Maybe,3D Printing Lab,Robotics Workshop,Rocket Design
+S1684,Michael,Lee,CS,Lee,A,No,Bridge Building Challenge,Drone Programming,CAD Design Studio
+S1685,Eli,Gonzalez,Engineering,White,A,Yes,Robotics Workshop,Bridge Building Challenge,Rocket Design
+S1686,Aurora,Hall,Engineering,Harris,B,Yes,3D Printing Lab,Robotics Workshop,Drone Programming
+S1687,Stella,Martinez,Entrepreneurship,White,B,No,Environmental Engineering,3D Printing Lab,Coding Bootcamp
+S1688,Zoey,Johnson,Entrepreneurship,Perez,B,No,Circuit Building,Coding Bootcamp,Solar Car Racing
+S1689,Savannah,Young,CS,Perez,A,Yes,Drone Programming,Bridge Building Challenge,Rocket Design
+S1690,Aaron,Williams,Entrepreneurship,Harris,B,Yes,Coding Bootcamp,Drone Programming,CAD Design Studio
+S1691,Lincoln,Adams,Engineering,Perez,A,No,Coding Bootcamp,3D Printing Lab,Environmental Engineering
+S1692,Joshua,Sanchez,Engineering,White,A,No,Coding Bootcamp,Solar Car Racing,Environmental Engineering
+S1693,Zoey,Roberts,Entrepreneurship,Perez,A,No,Solar Car Racing,3D Printing Lab,Drone Programming
+S1694,Skylar,King,CS,Lee,B,Yes,Circuit Building,Robotics Workshop,Rocket Design
+S1695,Michael,White,CS,Lee,A,Yes,Robotics Workshop,Drone Programming,Bridge Building Challenge
+S1696,Aria,Thompson,Engineering,Lee,A,No,Bridge Building Challenge,Circuit Building,Environmental Engineering
+S1697,Noah,Nguyen,Engineering,Lee,A,No,Coding Bootcamp,Environmental Engineering,Solar Car Racing
+S1698,Nathan,Rivera,Entrepreneurship,Thompson,A,Yes,Bridge Building Challenge,Rocket Design,Solar Car Racing
+S1699,Matthew,Perez,Engineering,Harris,B,Maybe,Coding Bootcamp,Solar Car Racing,Environmental Engineering
+S1700,Christian,Williams,CS,Harris,A,Yes,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1701,Eleanor,Ramirez,CS,Thompson,B,No,Rocket Design,Coding Bootcamp,CAD Design Studio
+S1702,Josiah,Harris,CS,Perez,A,Yes,Rocket Design,CAD Design Studio,Robotics Workshop
+S1703,Elizabeth,Clark,Entrepreneurship,Lee,B,Maybe,Robotics Workshop,Environmental Engineering,Rocket Design
+S1704,James,Roberts,Engineering,Harris,A,Yes,Drone Programming,Solar Car Racing,CAD Design Studio
+S1705,Jaxon,Ramirez,Entrepreneurship,White,B,Yes,3D Printing Lab,Environmental Engineering,Bridge Building Challenge
+S1706,Elizabeth,Thompson,CS,Lee,A,Yes,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1707,Hazel,Carter,Entrepreneurship,Thompson,B,Maybe,Solar Car Racing,Rocket Design,Circuit Building
+S1708,Victoria,Jackson,Engineering,Thompson,A,Yes,Robotics Workshop,Drone Programming,3D Printing Lab
+S1709,Lucas,Hill,CS,White,B,Yes,Bridge Building Challenge,CAD Design Studio,3D Printing Lab
+S1710,Samuel,Green,Engineering,Harris,B,No,Coding Bootcamp,Drone Programming,CAD Design Studio
+S1711,Ellie,Allen,Entrepreneurship,Lee,B,Maybe,Environmental Engineering,Rocket Design,Robotics Workshop
+S1712,James,Brown,Entrepreneurship,Perez,A,Yes,Robotics Workshop,3D Printing Lab,Solar Car Racing
+S1713,Mia,Walker,CS,Lee,B,No,Environmental Engineering,Robotics Workshop,Solar Car Racing
+S1714,Isaac,Lee,Entrepreneurship,Harris,B,Maybe,Coding Bootcamp,Drone Programming,Solar Car Racing
+S1715,Aurora,Walker,CS,Lee,A,No,Environmental Engineering,Rocket Design,Robotics Workshop
+S1716,Brooklyn,Torres,Entrepreneurship,Perez,B,No,Coding Bootcamp,Drone Programming,Circuit Building
+S1717,Jayden,Allen,Entrepreneurship,Harris,B,Maybe,Circuit Building,Robotics Workshop,Bridge Building Challenge
+S1718,Andrew,King,Entrepreneurship,Perez,B,Yes,Rocket Design,Robotics Workshop,Bridge Building Challenge
+S1719,Dylan,Thompson,Engineering,Thompson,A,Maybe,Coding Bootcamp,Bridge Building Challenge,Robotics Workshop
+S1720,Owen,Jones,Engineering,Thompson,A,Yes,CAD Design Studio,Circuit Building,Rocket Design
+S1721,Joseph,Hernandez,CS,Thompson,B,Yes,Solar Car Racing,Bridge Building Challenge,Rocket Design
+S1722,Hunter,Adams,Engineering,Harris,B,Maybe,Bridge Building Challenge,Environmental Engineering,Rocket Design
+S1723,Isaac,Martinez,Engineering,White,A,No,Drone Programming,Environmental Engineering,Solar Car Racing
+S1724,Carter,Campbell,Engineering,Thompson,A,Yes,Circuit Building,Coding Bootcamp,Robotics Workshop
+S1725,Samuel,Rivera,Entrepreneurship,Thompson,B,Maybe,Solar Car Racing,Circuit Building,Drone Programming
+S1726,Matthew,Thompson,CS,Lee,B,Yes,Robotics Workshop,Rocket Design,Coding Bootcamp
+S1727,Isabelle,Rivera,Entrepreneurship,Thompson,B,No,Solar Car Racing,Environmental Engineering,Bridge Building Challenge
+S1728,Natalie,Lee,Engineering,Lee,A,Maybe,Coding Bootcamp,Environmental Engineering,Rocket Design
+S1729,Grayson,Brown,Entrepreneurship,White,A,Maybe,Environmental Engineering,Rocket Design,Solar Car Racing
+S1730,Ellie,Mitchell,Engineering,Harris,B,Yes,Coding Bootcamp,CAD Design Studio,Rocket Design
+S1731,Zoe,Garcia,Engineering,Thompson,A,No,Drone Programming,CAD Design Studio,Solar Car Racing
+S1732,Scarlett,Campbell,Engineering,Perez,B,No,Coding Bootcamp,3D Printing Lab,Rocket Design
+S1733,Josiah,Martin,CS,Harris,A,No,Circuit Building,Coding Bootcamp,Solar Car Racing
+S1734,Avery,Jones,Entrepreneurship,Harris,B,Yes,Bridge Building Challenge,Coding Bootcamp,3D Printing Lab
+S1735,Andrew,Rivera,CS,White,A,Maybe,3D Printing Lab,Environmental Engineering,Coding Bootcamp
+S1736,Sebastian,White,Entrepreneurship,Perez,B,No,Rocket Design,Robotics Workshop,Environmental Engineering
+S1737,Sebastian,Flores,CS,Thompson,A,Yes,Rocket Design,Robotics Workshop,Coding Bootcamp
+S1738,Isaac,Flores,Entrepreneurship,Lee,B,Yes,Robotics Workshop,Coding Bootcamp,3D Printing Lab
+S1739,Bella,Campbell,Entrepreneurship,Harris,A,Yes,3D Printing Lab,Robotics Workshop,Drone Programming
+S1740,Ethan,Lee,CS,Thompson,B,Yes,Environmental Engineering,Solar Car Racing,Coding Bootcamp
+S1741,Chloe,Taylor,Entrepreneurship,Thompson,B,Maybe,Circuit Building,Solar Car Racing,Rocket Design
+S1742,Christopher,Robinson,CS,Lee,A,Yes,Robotics Workshop,Rocket Design,CAD Design Studio
+S1743,David,Garcia,Entrepreneurship,Harris,B,No,Bridge Building Challenge,3D Printing Lab,Coding Bootcamp
+S1744,Evelyn,Hall,CS,Lee,A,No,Coding Bootcamp,Robotics Workshop,3D Printing Lab
+S1745,Claire,Rodriguez,Entrepreneurship,Harris,A,Yes,Robotics Workshop,3D Printing Lab,Bridge Building Challenge
+S1746,Joshua,Wilson,Entrepreneurship,White,A,Maybe,Coding Bootcamp,CAD Design Studio,Environmental Engineering
+S1747,Aaron,Green,Engineering,White,A,Maybe,3D Printing Lab,Drone Programming,Coding Bootcamp
+S1748,John,Young,Engineering,Lee,A,No,CAD Design Studio,Coding Bootcamp,Circuit Building
+S1749,Isaac,Perez,Engineering,White,B,No,CAD Design Studio,3D Printing Lab,Robotics Workshop
+S1750,Aubrey,Garcia,Entrepreneurship,Harris,B,Yes,3D Printing Lab,Robotics Workshop,CAD Design Studio
+S1751,Nora,Smith,Engineering,Harris,A,No,Robotics Workshop,Drone Programming,Solar Car Racing
+S1752,Luke,Nelson,Entrepreneurship,Harris,B,Maybe,Rocket Design,Drone Programming,Robotics Workshop
+S1753,Aubrey,Green,Engineering,Lee,A,Yes,Robotics Workshop,3D Printing Lab,Rocket Design
+S1754,Hannah,Davis,Engineering,White,A,Maybe,Robotics Workshop,Coding Bootcamp,Bridge Building Challenge
+S1755,Evelyn,Ramirez,Engineering,Thompson,A,No,3D Printing Lab,Drone Programming,Rocket Design
+S1756,Lincoln,Roberts,CS,Thompson,B,Maybe,Rocket Design,Circuit Building,CAD Design Studio
+S1757,Charles,Green,Engineering,Harris,B,No,Drone Programming,Bridge Building Challenge,Environmental Engineering
+S1758,Aurora,Taylor,Engineering,Lee,A,Yes,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1759,Skylar,Carter,CS,Lee,B,No,Environmental Engineering,Drone Programming,Robotics Workshop
+S1760,Benjamin,Martin,Engineering,Harris,A,No,Circuit Building,Robotics Workshop,Coding Bootcamp
+S1761,Dylan,Perez,Entrepreneurship,Perez,B,Yes,3D Printing Lab,Robotics Workshop,Environmental Engineering
+S1762,Abigail,Adams,Entrepreneurship,Perez,A,Yes,Coding Bootcamp,3D Printing Lab,Bridge Building Challenge
+S1763,Lucy,Davis,Entrepreneurship,Thompson,A,No,Coding Bootcamp,Rocket Design,Robotics Workshop
+S1764,Aurora,Rivera,CS,Lee,B,Maybe,Environmental Engineering,Circuit Building,Drone Programming
+S1765,James,Wright,Entrepreneurship,Perez,B,Yes,Bridge Building Challenge,Robotics Workshop,Rocket Design
+S1766,Harper,Rivera,Entrepreneurship,White,A,No,3D Printing Lab,Circuit Building,Solar Car Racing
+S1767,Emma,Adams,Entrepreneurship,White,A,Maybe,Solar Car Racing,3D Printing Lab,Robotics Workshop
+S1768,Joseph,Nelson,Engineering,Thompson,B,Yes,3D Printing Lab,Bridge Building Challenge,Circuit Building
+S1769,Sophia,Torres,CS,Lee,B,Maybe,Environmental Engineering,Rocket Design,Coding Bootcamp
+S1770,Ryan,King,Entrepreneurship,Lee,A,No,Robotics Workshop,Rocket Design,Coding Bootcamp
+S1771,Joseph,Flores,Engineering,Thompson,B,No,3D Printing Lab,CAD Design Studio,Bridge Building Challenge
+S1772,Aiden,Mitchell,CS,White,A,Maybe,3D Printing Lab,Solar Car Racing,Coding Bootcamp
+S1773,Charlotte,Williams,Entrepreneurship,Lee,A,No,Coding Bootcamp,Bridge Building Challenge,Robotics Workshop
+S1774,Charles,Roberts,Entrepreneurship,Lee,B,Maybe,CAD Design Studio,Coding Bootcamp,3D Printing Lab
+S1775,Wyatt,Roberts,CS,Harris,B,Yes,CAD Design Studio,Rocket Design,Robotics Workshop
+S1776,Ella,Perez,CS,Lee,A,Yes,Coding Bootcamp,3D Printing Lab,Robotics Workshop
+S1777,Daniel,Moore,Entrepreneurship,White,A,Yes,Drone Programming,Solar Car Racing,Coding Bootcamp
+S1778,Gabriel,Taylor,CS,Perez,A,No,Rocket Design,Robotics Workshop,Drone Programming
+S1779,Paisley,Nelson,Engineering,Lee,A,Maybe,Bridge Building Challenge,3D Printing Lab,Environmental Engineering
+S1780,Isabelle,Clark,Engineering,Harris,A,Yes,Robotics Workshop,Rocket Design,3D Printing Lab
+S1781,Bella,Johnson,CS,Lee,B,No,Rocket Design,Circuit Building,Drone Programming
+S1782,Stella,Robinson,Entrepreneurship,Lee,A,Yes,Robotics Workshop,CAD Design Studio,Rocket Design
+S1783,Caleb,Martin,Entrepreneurship,Perez,A,Maybe,Robotics Workshop,Bridge Building Challenge,Circuit Building
+S1784,William,White,CS,Thompson,B,No,Coding Bootcamp,CAD Design Studio,Circuit Building
+S1785,Chloe,White,CS,Perez,A,Maybe,3D Printing Lab,Robotics Workshop,Coding Bootcamp
+S1786,Michael,Rodriguez,Entrepreneurship,Harris,B,Maybe,Coding Bootcamp,3D Printing Lab,Solar Car Racing
+S1787,Henry,Hill,CS,Perez,B,Yes,Robotics Workshop,Coding Bootcamp,CAD Design Studio
+S1788,Zoey,Williams,Engineering,Harris,B,No,Drone Programming,Solar Car Racing,Circuit Building
+S1789,Harper,Lopez,CS,White,B,Yes,Drone Programming,CAD Design Studio,Bridge Building Challenge
+S1790,Addison,Walker,Entrepreneurship,Harris,B,Maybe,Rocket Design,3D Printing Lab,Bridge Building Challenge
+S1791,Lily,Green,CS,Lee,B,Maybe,Coding Bootcamp,Circuit Building,Drone Programming
+S1792,Chloe,Clark,Engineering,Thompson,A,Maybe,Bridge Building Challenge,Coding Bootcamp,Solar Car Racing
+S1793,Mason,Martin,Engineering,Harris,A,Yes,Robotics Workshop,Solar Car Racing,Coding Bootcamp
+S1794,Mia,Williams,CS,Lee,A,No,Robotics Workshop,Environmental Engineering,Coding Bootcamp
+S1795,Wyatt,Miller,Entrepreneurship,Lee,B,Maybe,3D Printing Lab,CAD Design Studio,Circuit Building
+S1796,Lillian,King,CS,White,B,No,3D Printing Lab,Circuit Building,Coding Bootcamp
+S1797,Daniel,Thompson,Entrepreneurship,Lee,A,Maybe,Drone Programming,3D Printing Lab,Solar Car Racing
+S1798,Anna,Harris,CS,Lee,A,Maybe,Drone Programming,Coding Bootcamp,3D Printing Lab
+S1799,Hunter,King,Engineering,Lee,B,Yes,Robotics Workshop,Coding Bootcamp,3D Printing Lab

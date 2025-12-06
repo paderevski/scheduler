@@ -20,6 +20,9 @@ ColumnMapping ColumnMapDialog::getMapping() const {
   mapping.lastNameColumn = m_lastNameCombo->currentIndex() - 1;
   mapping.gradeColumn = m_gradeCombo->currentIndex() - 1;
   mapping.dayColumn = m_dayCombo->currentIndex() - 1;
+  mapping.teacherColumn = m_teacherCombo->currentIndex() - 1;
+  mapping.pathwayColumn = m_pathwayCombo->currentIndex() - 1;
+  mapping.presentColumn = m_presentCombo->currentIndex() - 1;
   mapping.choice1Column = m_choice1Combo->currentIndex() - 1;
   mapping.choice2Column = m_choice2Combo->currentIndex() - 1;
   mapping.choice3Column = m_choice3Combo->currentIndex() - 1;
@@ -69,6 +72,15 @@ void ColumnMapDialog::setupUi() {
 
   m_dayCombo = createColumnCombo();
   formLayout->addRow(QStringLiteral("Day (optional):"), m_dayCombo);
+
+  m_teacherCombo = createColumnCombo();
+  formLayout->addRow(QStringLiteral("Teacher (optional):"), m_teacherCombo);
+
+  m_pathwayCombo = createColumnCombo();
+  formLayout->addRow(QStringLiteral("Pathway (optional):"), m_pathwayCombo);
+
+  m_presentCombo = createColumnCombo();
+  formLayout->addRow(QStringLiteral("Present (optional):"), m_presentCombo);
 
   layout->addLayout(formLayout);
 
@@ -143,6 +155,21 @@ void ColumnMapDialog::tryAutoMap() {
     // Day variations
     else if (header == "day" || header == "session") {
       m_dayCombo->setCurrentIndex(i + 1);
+    }
+
+    // Teacher variations
+    else if (header == "teacher" || header == "instructor") {
+      m_teacherCombo->setCurrentIndex(i + 1);
+    }
+
+    // Pathway variations
+    else if (header == "pathway" || header == "track" || header == "program") {
+      m_pathwayCombo->setCurrentIndex(i + 1);
+    }
+
+    // Present variations
+    else if (header == "present" || header == "attendance" || header == "attending") {
+      m_presentCombo->setCurrentIndex(i + 1);
     }
 
     // Choice variations

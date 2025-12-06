@@ -1,14 +1,84 @@
 Environmental Engineering
-Enrollment: 10
-Capacity: 10
+Enrollment: 80
+Capacity: 80
 
-Amelia Lee Amelia Lee
-Aubrey Thompson Aubrey Thompson
-Carter Sanchez Carter Sanchez
-Ethan Lopez Ethan Lopez
-Ethan Rivera Ethan Rivera
-Gabriel Garcia Gabriel Garcia
-John King John King
-Lucy Smith Lucy Smith
-Penelope Green Penelope Green
-Sofia Allen Sofia Allen
+Aaron Garcia
+Aaron King
+Aiden Torres
+Alexander Davis
+Alexander Williams
+Andrew Hall
+Andrew Rivera
+Andrew Thompson
+Audrey Mitchell
+Audrey Moore
+Aurora Rivera
+Aurora Walker
+Avery Campbell
+Avery Mitchell
+Bella Hill
+Bella Sanchez
+Benjamin Mitchell
+Brooklyn Hernandez
+Caroline Green
+Chloe Harris
+Christopher Mitchell
+Christopher Moore
+Eleanor Baker
+Elizabeth Clark
+Ellie Allen
+Ellie Miller
+Emily King
+Ethan Lee
+Grace Hernandez
+Grayson Brown
+Harper Miller
+Henry Lee
+Henry Torres
+Isaac Davis
+Isabelle Williams
+Isaiah Jones
+Jayden Rodriguez
+Jayden Taylor
+John Johnson
+Joseph Robinson
+Joseph Walker
+Joshua Scott
+Josiah Flores
+Josiah Scott
+Julian Hall
+Lily Nguyen
+Lily Roberts
+Lincoln Young
+Luke Nguyen
+Luke Rivera
+Luna Hill
+Matthew Martinez
+Mia Walker
+Michael Gonzalez
+Natalie Lee
+Natalie Nguyen
+Nathan Hernandez
+Noah Nguyen
+Noah Young
+Olivia Rodriguez
+Olivia Walker
+Olivia White
+Paisley Adams
+Paisley Baker
+Riley Adams
+Ryan Lee
+Savannah White
+Scarlett Perez
+Sebastian Williams
+Skylar Carter
+Sofia Wright
+Sophia Sanchez
+Sophia Torres
+Stella Martinez
+Thomas Rodriguez
+Thomas Young
+Victoria Lewis
+Violet Hall
+Violet Thompson
+Zoe Gonzalez

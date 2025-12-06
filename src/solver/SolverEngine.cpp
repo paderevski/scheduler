@@ -200,6 +200,9 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         assignment.lastName = toStdString(row.lastName);
         assignment.grade = toStdString(row.grade);
         assignment.day = toStdString(row.day);
+        assignment.teacher = toStdString(row.teacher);
+        assignment.pathway = toStdString(row.pathway);
+        assignment.present = toStdString(row.present);
         assignment.activity = toStdString(activities[varInfo.activityIndex]);
         assignment.choiceRank = varInfo.choiceRank;
 
@@ -240,6 +243,9 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       assignment.lastName = toStdString(row.lastName);
       assignment.grade = toStdString(row.grade);
       assignment.day = toStdString(row.day);
+      assignment.teacher = toStdString(row.teacher);
+      assignment.pathway = toStdString(row.pathway);
+      assignment.present = toStdString(row.present);
       assignment.activity = "ERROR: Not assigned";
       assignment.choiceRank = -1;
       assignment.score = 0.0;
@@ -317,6 +323,9 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.lastName = toStdString(row.lastName);
         assignment.grade = toStdString(row.grade);
         assignment.day = toStdString(row.day);
+        assignment.teacher = toStdString(row.teacher);
+        assignment.pathway = toStdString(row.pathway);
+        assignment.present = toStdString(row.present);
         assignment.activity = toStdString(activityName);
         assignment.choiceRank = choiceIdx;
         assignment.score = weightForRank(choiceIdx);
@@ -334,6 +343,9 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
       assignment.lastName = toStdString(row.lastName);
       assignment.grade = toStdString(row.grade);
       assignment.day = toStdString(row.day);
+      assignment.teacher = toStdString(row.teacher);
+      assignment.pathway = toStdString(row.pathway);
+      assignment.present = toStdString(row.present);
       assignment.activity = "";
       assignment.choiceRank = -1;
       assignment.score = 0.0;

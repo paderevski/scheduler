@@ -1,14 +1,84 @@
 Rocket Design
-Enrollment: 10
-Capacity: 10
+Enrollment: 80
+Capacity: 80
 
-Aurora King Aurora King
-Dylan Miller Dylan Miller
-Ella Nguyen Ella Nguyen
-Liam Scott Liam Scott
-Natalie Nguyen Natalie Nguyen
-Nora Perez Nora Perez
-Sebastian Allen Sebastian Allen
-Sophia Harris Sophia Harris
-Stella Clark Stella Clark
-Zoe White Zoe White
+Aaron Martin
+Aaron Nguyen
+Abigail Ramirez
+Addison Walker
+Andrew King
+Andrew Taylor
+Anthony King
+Aria Hill
+Audrey Robinson
+Ava Baker
+Ava Roberts
+Bella Hall
+Bella Johnson
+Bella Thomas
+Brooklyn Jones
+Brooklyn Mitchell
+Caleb Carter
+Caroline Wright
+Chloe Garcia
+Christian Smith
+Christopher Robinson
+Claire Johnson
+Daniel Jackson
+Daniel White
+Eleanor Ramirez
+Eleanor Thompson
+Eli Sanchez
+Elizabeth Thomas
+Ella Rivera
+Ellie Flores
+Emma Williams
+Gabriel Davis
+Gabriel Garcia
+Gabriel Moore
+Gabriel Taylor
+Grayson Rodriguez
+Hazel Clark
+Hazel Taylor
+Henry Garcia
+Henry Hernandez
+Hunter Rivera
+Isabelle Clark
+Isaiah Roberts
+James Moore
+John Green
+Joshua Wright
+Josiah Harris
+Josiah Perez
+Levi Robinson
+Liam Ramirez
+Liam Thomas
+Lillian Martin
+Lillian Nelson
+Lincoln Roberts
+Lincoln Robinson
+Luke Nelson
+Luna Moore
+Matthew Walker
+Mia Baker
+Olivia Young
+Owen Ramirez
+Penelope Ramirez
+Ryan Flores
+Samuel Harris
+Samuel Roberts
+Samuel Thomas
+Sebastian Flores
+Sebastian Harris
+Sebastian White
+Skylar Nguyen
+Skylar Torres
+Sophia Wright
+Stella Flores
+Victoria Harris
+Violet King
+William Hill
+Wyatt Davis
+Wyatt Young
+Zoe Jones
+Zoe Taylor

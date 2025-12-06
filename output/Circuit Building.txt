@@ -1,23 +1,84 @@
 Circuit Building
-Enrollment: 19
-Capacity: 19
+Enrollment: 80
+Capacity: 80
 
-Aaron Roberts Aaron Roberts
-Andrew Robinson Andrew Robinson
-Aubrey King Aubrey King
-Audrey Thomas Audrey Thomas
-Avery King Avery King
-Caleb Thompson Caleb Thompson
-Caroline Harris Caroline Harris
-Caroline Hernandez Caroline Hernandez
-Dylan Scott Dylan Scott
-Dylan Torres Dylan Torres
-Elizabeth Moore Elizabeth Moore
-Grayson Lewis Grayson Lewis
-Grayson Martinez Grayson Martinez
-Hunter Campbell Hunter Campbell
-James Martin James Martin
-Joseph Baker Joseph Baker
-Luke Flores Luke Flores
-Matthew Rivera Matthew Rivera
-Sophia White Sophia White
+Abigail Roberts
+Addison Smith
+Addison Thomas
+Amelia Harris
+Aria Campbell
+Ava Garcia
+Ava Wilson
+Avery Robinson
+Bella Ramirez
+Benjamin Martin
+Benjamin Martinez
+Benjamin Perez
+Caleb Green
+Caroline Brown
+Caroline Campbell
+Carter Campbell
+Charles Hall
+Chloe Nguyen
+Chloe Rivera
+Chloe Taylor
+Christian Clark
+Christian Hernandez
+Christopher Nguyen
+Claire Thomas
+Daniel Brown
+Daniel Garcia
+Daniel Lopez
+Dylan Campbell
+Eli Thomas
+Elizabeth Sanchez
+Ella Rodriguez
+Grayson Rivera
+Grayson Roberts
+Hannah Martin
+Harper Rivera
+Henry Brown
+Isaac Harris
+Isabelle Johnson
+James Mitchell
+Jayden Allen
+John Rodriguez
+Joseph Hall
+Josiah Martin
+Julian Lewis
+Levi Thompson
+Liam Nguyen
+Lillian King
+Lily Green
+Lincoln Green
+Luke Carter
+Luke Rodriguez
+Luna Robinson
+Mason Flores
+Mateo Wilson
+Matthew Jackson
+Natalie Carter
+Natalie Hernandez
+Nathan Ramirez
+Olivia Anderson
+Olivia Hall
+Owen Wright
+Penelope Hall
+Ryan Nguyen
+Ryan Scott
+Ryan Thomas
+Ryan Wilson
+Savannah Harris
+Savannah Miller
+Scarlett Lopez
+Scarlett Moore
+Sebastian Martin
+Sebastian Roberts
+Skylar King
+Stella Hall
+Stella Hernandez
+Thomas Perez
+Victoria Robinson
+Violet Rivera
+Violet Robinson
+Zoey Johnson

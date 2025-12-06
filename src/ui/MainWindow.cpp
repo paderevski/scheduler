@@ -44,8 +44,10 @@ namespace {
 QStringList defaultHeaders() {
   return {QStringLiteral("Student ID"), QStringLiteral("First Name"),
           QStringLiteral("Last Name"), QStringLiteral("Grade"),
-          QStringLiteral("Day"), QStringLiteral("Choice 1"),
-          QStringLiteral("Choice 2"), QStringLiteral("Choice 3")};
+          QStringLiteral("Day"), QStringLiteral("Teacher"),
+          QStringLiteral("Pathway"), QStringLiteral("Present"),
+          QStringLiteral("Choice 1"), QStringLiteral("Choice 2"),
+          QStringLiteral("Choice 3")};
 }
 
 QString toQString(const std::string &value) {
@@ -80,8 +82,17 @@ SpreadsheetTable modelToTable(const PreferenceModel &model) {
     if (columnCount > 4) {
       line[4] = row.day.trimmed().toStdString();
     }
-    for (int col = 5; col < columnCount; ++col) {
-      const int choiceIndex = col - 5;
+    if (columnCount > 5) {
+      line[5] = row.teacher.trimmed().toStdString();
+    }
+    if (columnCount > 6) {
+      line[6] = row.pathway.trimmed().toStdString();
+    }
+    if (columnCount > 7) {
+      line[7] = row.present.trimmed().toStdString();
+    }
+    for (int col = 8; col < columnCount; ++col) {
+      const int choiceIndex = col - 8;
       if (choiceIndex < row.choices.size()) {
         line[col] = row.choices[choiceIndex].trimmed().toStdString();
       } else {
@@ -136,6 +147,21 @@ rowsFromTableWithMapping(const SpreadsheetTable &table,
       row.day = QString::fromStdString(line[mapping.dayColumn]).trimmed();
     }
 
+    if (mapping.teacherColumn >= 0 &&
+        mapping.teacherColumn < static_cast<int>(line.size())) {
+      row.teacher = QString::fromStdString(line[mapping.teacherColumn]).trimmed();
+    }
+
+    if (mapping.pathwayColumn >= 0 &&
+        mapping.pathwayColumn < static_cast<int>(line.size())) {
+      row.pathway = QString::fromStdString(line[mapping.pathwayColumn]).trimmed();
+    }
+
+    if (mapping.presentColumn >= 0 &&
+        mapping.presentColumn < static_cast<int>(line.size())) {
+      row.present = QString::fromStdString(line[mapping.presentColumn]).trimmed();
+    }
+
     // Extract choices
     if (mapping.choice1Column >= 0 &&
         mapping.choice1Column < static_cast<int>(line.size())) {
@@ -167,11 +193,20 @@ rowsFromTableWithMapping(const SpreadsheetTable &table,
 SpreadsheetTable resultsToTable(const SolverResult &result) {
   SpreadsheetTable table;
   table.headers = {"Student ID", "First Name", "Last Name", "Grade", "Day",
+                   "Teacher", "Pathway", "Present",
                    "Assigned Activity", "Choice Rank", "Score"};
   for (const auto &assignment : result.assignments) {
     std::vector<std::string> row;
-    row.reserve(8);
+    row.reserve(11);
     row.push_back(assignment.studentId);
+    row.push_back(assignment.firstName);
+    row.push_back(assignment.lastName);
+    row.push_back(assignment.grade);
+    row.push_back(assignment.day);
+    row.push_back(assignment.teacher);
+    row.push_back(assignment.pathway);
+    row.push_back(assignment.present);
+    row.push_back(assignment.activity);
     row.push_back(assignment.firstName);
     row.push_back(assignment.lastName);
     row.push_back(assignment.grade);
@@ -294,12 +329,14 @@ public:
     auto *optionsWidget = new QWidget(q_ptr);
     optionsWidget->setLayout(optionsMainLayout);
 
-    resultsTable->setColumnCount(8);
+    resultsTable->setColumnCount(11);
     resultsTable->setHorizontalHeaderLabels(
         {QStringLiteral("Student ID"), QStringLiteral("First Name"),
          QStringLiteral("Last Name"), QStringLiteral("Grade"),
-         QStringLiteral("Day"), QStringLiteral("Activity"),
-         QStringLiteral("Choice"), QStringLiteral("Score")});
+         QStringLiteral("Day"), QStringLiteral("Teacher"),
+         QStringLiteral("Pathway"), QStringLiteral("Present"),
+         QStringLiteral("Activity"), QStringLiteral("Choice"),
+         QStringLiteral("Score")});
     resultsTable->horizontalHeader()->setSectionResizeMode(
         QHeaderView::Stretch);
     resultsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -728,6 +765,9 @@ public:
       const auto lastName = toQString(assignment.lastName);
       const auto grade = toQString(assignment.grade);
       const auto day = toQString(assignment.day);
+      const auto teacher = toQString(assignment.teacher);
+      const auto pathway = toQString(assignment.pathway);
+      const auto present = toQString(assignment.present);
       const auto activity = toQString(assignment.activity);
       const QString rank = assignment.choiceRank >= 0
                                ? QString::number(assignment.choiceRank + 1)
@@ -745,9 +785,12 @@ public:
       resultsTable->setItem(rowIndex, 2, makeItem(lastName));
       resultsTable->setItem(rowIndex, 3, makeItem(grade));
       resultsTable->setItem(rowIndex, 4, makeItem(day));
-      resultsTable->setItem(rowIndex, 5, makeItem(activity));
-      resultsTable->setItem(rowIndex, 6, makeItem(rank));
-      resultsTable->setItem(rowIndex, 7, makeItem(score));
+      resultsTable->setItem(rowIndex, 5, makeItem(teacher));
+      resultsTable->setItem(rowIndex, 6, makeItem(pathway));
+      resultsTable->setItem(rowIndex, 7, makeItem(present));
+      resultsTable->setItem(rowIndex, 8, makeItem(activity));
+      resultsTable->setItem(rowIndex, 9, makeItem(rank));
+      resultsTable->setItem(rowIndex, 10, makeItem(score));
       ++rowIndex;
     }
 

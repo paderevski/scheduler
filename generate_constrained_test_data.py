@@ -181,11 +181,16 @@ unpopular_activities = [
 
 all_activities = popular_activities + medium_activities + unpopular_activities
 
+pathways = ["CS", "Engineering", "Entrepreneurship"]
+teachers = last_names[20:25]
+days = ["A", "B"]
+presents = ["Yes", "No", "Maybe"]
+
 # Generate 100 students with biased preferences
 students = []
 used_names = set()
 
-for i in range(100):
+for i in range(800):
     # Generate unique student name
     while True:
         first = random.choice(first_names)
@@ -197,6 +202,10 @@ for i in range(100):
 
     # Student ID
     student_id = f"S{1000 + i}"
+    teacher = random.choice(teachers)
+    day = random.choice(days)
+    present = random.choice(presents)
+    pathway = random.choice(pathways)
 
     # Bias the selection toward popular activities
     # 70% of students have at least 2 popular activities in their top 3
@@ -226,18 +235,31 @@ for i in range(100):
         else:
             break
 
-    students.append([student_id, full_name] + choices)
+    students.append([student_id, first, last, pathway, teacher, day, present] + choices)
 
 # Write to CSV
 with open("constrained_test_data.csv", "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
-    writer.writerow(["Student ID", "Student Name", "Choice 1", "Choice 2", "Choice 3"])
+    writer.writerow(
+        [
+            "Student ID",
+            "First Name",
+            "Last Name",
+            "Pathway",
+            "Teacher",
+            "Day",
+            "Present",
+            "Choice 1",
+            "Choice 2",
+            "Choice 3",
+        ]
+    )
     writer.writerows(students)
 
 # Analyze the demand
 demand = {activity: 0 for activity in all_activities}
 for student in students:
-    for choice in student[2:5]:  # Choices are in columns 2, 3, 4
+    for choice in student[7:10]:  # Choices are in columns 7,8,9
         if choice:
             demand[choice] += 1
 

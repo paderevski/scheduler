@@ -1,14 +1,84 @@
 Drone Programming
-Enrollment: 10
-Capacity: 10
+Enrollment: 80
+Capacity: 80
 
-Aria Green Aria Green
-Dylan Young Dylan Young
-Eleanor Ramirez Eleanor Ramirez
-Jack Harris Jack Harris
-Luke Harris Luke Harris
-Mateo Clark Mateo Clark
-Mia Hill Mia Hill
-Natalie Robinson Natalie Robinson
-Olivia Thompson Olivia Thompson
-Skylar Nguyen Skylar Nguyen
+Aaron Green
+Aaron Rivera
+Aaron Williams
+Addison Campbell
+Alexander Allen
+Anna Adams
+Anna Flores
+Anna Harris
+Anna Lewis
+Aria Hall
+Aubrey Lee
+Aubrey Wilson
+Ava Jones
+Ava Robinson
+Ava Young
+Avery Moore
+Bella Rodriguez
+Brooklyn Lopez
+Brooklyn Roberts
+Brooklyn Torres
+Carter Smith
+Carter Wilson
+Charles Green
+Christian Thompson
+Daniel Moore
+Daniel Thompson
+Eli Nelson
+Eli Williams
+Ella Moore
+Emily Green
+Emma Campbell
+Ethan Torres
+Evelyn Johnson
+Evelyn Ramirez
+Grace Adams
+Grace Mitchell
+Hannah Gonzalez
+Harper Lopez
+Hazel Green
+Hazel Hernandez
+Hazel Johnson
+Isaac Lee
+Isaac Martinez
+Isabelle Lopez
+Isabelle Roberts
+Isaiah Williams
+James Gonzalez
+James Roberts
+John Martin
+Joseph Martin
+Joseph Williams
+Josiah Jones
+Julian Baker
+Leah Lee
+Lucy Taylor
+Luke Anderson
+Luke Wilson
+Michael Baker
+Michael White
+Natalie Clark
+Nora Lee
+Nora Smith
+Owen King
+Samuel Lee
+Samuel White
+Savannah Jackson
+Savannah Martinez
+Savannah Young
+Sophia Mitchell
+Thomas Torres
+Victoria Jackson
+Victoria Wilson
+Violet Anderson
+William Smith
+Wyatt Lee
+Wyatt Smith
+Wyatt Thomas
+Zoe Brown
+Zoe Garcia
+Zoey Williams

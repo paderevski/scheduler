@@ -15,6 +15,9 @@ struct StudentPreferenceRow {
   QString lastName;
   QString grade;
   QString day; // A or B
+  QString teacher;
+  QString pathway;
+  QString present; // yes/no
   QStringList choices; // ordered by priority (choice1, choice2, ...)
 
   // Helper to get full name

@@ -1,14 +1,84 @@
 Bridge Building Challenge
-Enrollment: 10
-Capacity: 10
+Enrollment: 80
+Capacity: 80
 
-Aria Hall Aria Hall
-Avery Miller Avery Miller
-Carter Harris Carter Harris
-Chloe Allen Chloe Allen
-Emma Torres Emma Torres
-Hannah White Hannah White
-Henry White Henry White
-James Walker James Walker
-Lucas King Lucas King
-Michael Jones Michael Jones
+Aaron Miller
+Amelia Davis
+Amelia Jackson
+Anna King
+Aria Thompson
+Aurora Martinez
+Ava Martin
+Ava Thomas
+Avery Jones
+Bella Thompson
+Benjamin Allen
+Benjamin Moore
+Brooklyn Anderson
+Caleb Baker
+Caleb Martin
+Caroline Nguyen
+Caroline Thomas
+Charles Hernandez
+Charles Perez
+Charles Scott
+Chloe Clark
+Chloe Gonzalez
+Daniel Davis
+Daniel Green
+David Garcia
+David Roberts
+Dylan Thompson
+Eleanor Wilson
+Eli Gonzalez
+Eli Walker
+Elizabeth Hall
+Ellie Jackson
+Emma Smith
+Ethan Martin
+Evelyn Sanchez
+Harper Thompson
+Hazel Campbell
+Henry Ramirez
+Hunter Adams
+Isaac Sanchez
+Isabelle Allen
+Isabelle White
+Isaiah Lewis
+Isaiah Martin
+Isaiah Sanchez
+Jackson Brown
+James Wright
+Jaxon Rodriguez
+Joseph Nelson
+Lillian Williams
+Lucas Hill
+Lucy Carter
+Luna Nguyen
+Mason Moore
+Michael Lee
+Michael Perez
+Michael Ramirez
+Natalie Wright
+Nathan Rivera
+Noah Clark
+Noah Roberts
+Olivia King
+Olivia Williams
+Owen Flores
+Paisley Allen
+Paisley Johnson
+Paisley Nelson
+Penelope Walker
+Ryan Lopez
+Samuel Davis
+Savannah Johnson
+Scarlett Rodriguez
+Skylar Lee
+Sophia Allen
+Sophia Green
+Stella Rodriguez
+Victoria Ramirez
+William Johnson
+Wyatt Jackson
+Zoe Flores

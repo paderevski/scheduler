@@ -1,14 +1,84 @@
 Robotics Workshop
-Enrollment: 10
-Capacity: 10
+Enrollment: 80
+Capacity: 80
 
-Caroline King Caroline King
-Christopher Nelson Christopher Nelson
-Eli King Eli King
-Ella Rivera Ella Rivera
-Grace Young Grace Young
-Jack Thomas Jack Thomas
-John Allen John Allen
-Luna Thompson Luna Thompson
-Mason White Mason White
-Sofia Wilson Sofia Wilson
+Aiden King
+Alexander Brown
+Alexander Nguyen
+Amelia Lopez
+Amelia Rodriguez
+Andrew Jones
+Anthony Young
+Aria Anderson
+Aubrey Green
+Aurora Taylor
+Bella Allen
+Caleb Clark
+Caroline Torres
+Carter Rodriguez
+Christian Jones
+Christian Lewis
+Christian Perez
+Christopher Hill
+Claire Mitchell
+Claire Rodriguez
+Dylan Young
+Eli Jackson
+Elizabeth Lee
+Emma Roberts
+Emma Thomas
+Ethan Mitchell
+Grayson Garcia
+Hannah Allen
+Hannah Davis
+Harper Anderson
+Hazel Mitchell
+Henry Baker
+Henry Carter
+Henry Harris
+Henry Hill
+Hunter King
+Isaac Flores
+Isaac Jackson
+Isaac Torres
+Isabelle Scott
+Jack Allen
+Jackson Ramirez
+James Brown
+James Lewis
+Jaxon Garcia
+Jaxon Martin
+Jayden Flores
+Jayden Wright
+John Lewis
+Josiah Martinez
+Josiah Wilson
+Levi Lewis
+Lily Rodriguez
+Lincoln Lewis
+Lincoln Ramirez
+Matthew Thompson
+Mia Williams
+Natalie Rivera
+Nathan Miller
+Nathan Wilson
+Noah Johnson
+Noah Rivera
+Olivia Nelson
+Owen Garcia
+Penelope Rodriguez
+Penelope Taylor
+Riley Lopez
+Riley Rivera
+Ryan King
+Ryan Perez
+Savannah Taylor
+Skylar Nelson
+Sofia Davis
+Sofia Hill
+Sofia Lopez
+Stella Lopez
+Victoria Gonzalez
+Wyatt Gonzalez
+Wyatt Hall
+Zoe Lewis

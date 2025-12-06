@@ -1,14 +1,84 @@
 Solar Car Racing
-Enrollment: 10
-Capacity: 10
+Enrollment: 80
+Capacity: 80
 
-Abigail Smith Abigail Smith
-Aubrey Sanchez Aubrey Sanchez
-Charlotte Garcia Charlotte Garcia
-Eleanor Martin Eleanor Martin
-Ellie Gonzalez Ellie Gonzalez
-Isabelle Davis Isabelle Davis
-Leah Wright Leah Wright
-Lucas Green Lucas Green
-Sofia Clark Sofia Clark
-Wyatt Perez Wyatt Perez
+Aaron Johnson
+Aaron Lopez
+Aiden Clark
+Aiden Hill
+Amelia White
+Aria Brown
+Aubrey Clark
+Aubrey Young
+Benjamin Clark
+Benjamin Miller
+Brooklyn Sanchez
+Carter Gonzalez
+Charlotte Clark
+Charlotte White
+Chloe Jackson
+Chloe Jones
+Chloe Moore
+Chloe Perez
+Chloe Young
+Christopher Rodriguez
+Claire Anderson
+David Carter
+Eli Allen
+Elizabeth Adams
+Elizabeth Williams
+Ella Jones
+Ellie Taylor
+Emma Adams
+Emma Hernandez
+Ethan Martinez
+Grace Johnson
+Harper Davis
+Harper White
+Hazel Carter
+Isabelle Rivera
+Isaiah King
+Jackson Garcia
+Jackson Torres
+Jaxon Clark
+Jaxon Thompson
+Jayden Young
+Joseph Hernandez
+Joshua Hernandez
+Joshua Lee
+Joshua Sanchez
+Joshua Torres
+Josiah Carter
+Leah Hall
+Levi Hill
+Levi Torres
+Levi Williams
+Lincoln Rodriguez
+Lucas Sanchez
+Lucy Johnson
+Lucy White
+Luna Sanchez
+Mason Lee
+Mason Martin
+Mason Roberts
+Mason Thompson
+Mateo Nguyen
+Mateo Sanchez
+Matthew Jones
+Matthew Perez
+Natalie Green
+Natalie Young
+Noah Jackson
+Owen Davis
+Riley Nguyen
+Ryan Gonzalez
+Samuel Rivera
+Scarlett Hill
+Sebastian Walker
+Skylar Harris
+Sofia Gonzalez
+Sofia Mitchell
+Thomas Anderson
+Victoria Scott
+Violet Thomas
+Zoey Roberts
