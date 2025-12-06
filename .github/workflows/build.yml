@@ -50,6 +50,17 @@ jobs:
           arch: ${{ matrix.qt_arch }}
           modules: ""
           cache: true
+          tools: "tools_cmake"
+
+      - name: Debug Qt paths
+        shell: bash
+        run: |
+          echo "Qt6_DIR: $Qt6_DIR"
+          echo "QT_ROOT_DIR: $QT_ROOT_DIR"
+          echo "IQTA_TOOLS: $IQTA_TOOLS"
+          ls -la $QT_ROOT_DIR/../ || true
+          find $QT_ROOT_DIR/.. -name "macdeployqt*" 2>/dev/null || true
+          find $QT_ROOT_DIR/.. -name "windeployqt*" 2>/dev/null || true
 
       - name: Download OR-Tools (Linux/macOS)
         if: runner.os != 'Windows'
@@ -120,8 +131,9 @@ jobs:
             wget -q -O AppDir/usr/share/icons/hicolor/256x256/apps/EngineeringWeekScheduler.png "https://via.placeholder.com/256/4682B4/FFFFFF?text=EWS"
 
           # Build AppImage
-          export QMAKE=${Qt6_DIR}/bin/qmake
-          export LD_LIBRARY_PATH="${ORTOOLS_ROOT}/lib:${Qt6_DIR}/lib:$LD_LIBRARY_PATH"
+          export QMAKE=$(find $QT_ROOT_DIR -name "qmake" -type f 2>/dev/null | head -1)
+          echo "Using QMAKE: $QMAKE"
+          export LD_LIBRARY_PATH="${ORTOOLS_ROOT}/lib:${QT_ROOT_DIR}/lib:$LD_LIBRARY_PATH"
           ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage
 
           mkdir -p dist
@@ -176,8 +188,13 @@ jobs:
           # Copy OR-Tools libraries
           cp ${ORTOOLS_ROOT}/lib/libortools*.dylib "${APP_DIR}/Contents/Frameworks/" || true
 
-          # Use macdeployqt to bundle Qt frameworks
-          ${Qt6_DIR}/bin/macdeployqt "${APP_DIR}" -verbose=2
+          # Find and use macdeployqt to bundle Qt frameworks
+          MACDEPLOYQT=$(find $QT_ROOT_DIR -name "macdeployqt" -type f 2>/dev/null | head -1)
+          if [ -z "$MACDEPLOYQT" ]; then
+            MACDEPLOYQT=$(find $RUNNER_WORKSPACE -name "macdeployqt" -type f 2>/dev/null | head -1)
+          fi
+          echo "Using macdeployqt: $MACDEPLOYQT"
+          $MACDEPLOYQT "${APP_DIR}" -verbose=2
 
           # Fix OR-Tools library paths
           for lib in "${APP_DIR}/Contents/Frameworks"/libortools*.dylib; do
@@ -205,8 +222,15 @@ jobs:
           New-Item -ItemType Directory -Force -Path dist
           Copy-Item build/src/Release/EngineeringWeekScheduler.exe dist/
 
+          # Find windeployqt
+          $windeployqt = Get-ChildItem -Path $env:QT_ROOT_DIR -Recurse -Filter "windeployqt.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $windeployqt) {
+            $windeployqt = Get-ChildItem -Path $env:RUNNER_WORKSPACE -Recurse -Filter "windeployqt.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          }
+          Write-Host "Using windeployqt: $($windeployqt.FullName)"
+
           # Use windeployqt to bundle Qt DLLs
-          & "$env:Qt6_DIR/bin/windeployqt.exe" --release --no-translations dist/EngineeringWeekScheduler.exe
+          & $windeployqt.FullName --release --no-translations dist/EngineeringWeekScheduler.exe
 
           # Bundle OR-Tools DLLs
           Copy-Item "$env:ORTOOLS_ROOT/bin/*.dll" dist/ -ErrorAction SilentlyContinue
