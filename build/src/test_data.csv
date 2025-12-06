@@ -1,0 +1,101 @@
+Student ID,Student Name,Choice 1,Choice 2,Choice 3
+S1000,Ella Robinson,Circuit Building,Drone Programming,Bridge Building Challenge
+S1001,Carter Lopez,CAD Design Studio,Coding Bootcamp,Circuit Building
+S1002,Grayson Mitchell,Circuit Building,Environmental Engineering,3D Printing Lab
+S1003,Elizabeth Mitchell,Rocket Design,Coding Bootcamp,Drone Programming
+S1004,Aubrey Mitchell,Circuit Building,Rocket Design,Robotics Workshop
+S1005,Christian Gonzalez,CAD Design Studio,3D Printing Lab,Solar Car Racing
+S1006,William Jones,Bridge Building Challenge,Robotics Workshop,Solar Car Racing
+S1007,Henry Campbell,Drone Programming,Robotics Workshop,Bridge Building Challenge
+S1008,Sofia Moore,Bridge Building Challenge,Robotics Workshop,3D Printing Lab
+S1009,Mason Lee,Environmental Engineering,Solar Car Racing,3D Printing Lab
+S1010,Aaron King,3D Printing Lab,Drone Programming,Circuit Building
+S1011,Julian Lewis,CAD Design Studio,Solar Car Racing,Drone Programming
+S1012,Owen Miller,Solar Car Racing,Robotics Workshop,Bridge Building Challenge
+S1013,Zoey Garcia,Robotics Workshop,Bridge Building Challenge,Environmental Engineering
+S1014,Christopher Mitchell,3D Printing Lab,CAD Design Studio,Drone Programming
+S1015,Zoe Wright,Solar Car Racing,Drone Programming,Environmental Engineering
+S1016,Avery Jackson,Circuit Building,Coding Bootcamp,Rocket Design
+S1017,Grayson Walker,3D Printing Lab,Solar Car Racing,Rocket Design
+S1018,Joseph Taylor,Coding Bootcamp,Circuit Building,Solar Car Racing
+S1019,Henry Jackson,Coding Bootcamp,Environmental Engineering,Robotics Workshop
+S1020,Mia Allen,3D Printing Lab,Environmental Engineering,CAD Design Studio
+S1021,Isaac Rodriguez,Bridge Building Challenge,Rocket Design,Solar Car Racing
+S1022,Samuel Lee,Environmental Engineering,Rocket Design,3D Printing Lab
+S1023,Abigail Moore,Drone Programming,Robotics Workshop,Rocket Design
+S1024,Savannah Smith,Rocket Design,Bridge Building Challenge,CAD Design Studio
+S1025,Christopher Martin,3D Printing Lab,Bridge Building Challenge,Environmental Engineering
+S1026,Samuel Martin,Environmental Engineering,Solar Car Racing,3D Printing Lab
+S1027,Luna Ramirez,Drone Programming,3D Printing Lab,Solar Car Racing
+S1028,Skylar Hall,Coding Bootcamp,Drone Programming,Robotics Workshop
+S1029,Matthew Hill,CAD Design Studio,Coding Bootcamp,Drone Programming
+S1030,Aubrey Jackson,CAD Design Studio,Circuit Building,Drone Programming
+S1031,Harper Baker,Solar Car Racing,Bridge Building Challenge,Robotics Workshop
+S1032,Jaxon Sanchez,Drone Programming,CAD Design Studio,Robotics Workshop
+S1033,Wyatt Anderson,Coding Bootcamp,Solar Car Racing,Rocket Design
+S1034,Charles Thompson,Drone Programming,Environmental Engineering,Solar Car Racing
+S1035,Lillian Taylor,Environmental Engineering,CAD Design Studio,Robotics Workshop
+S1036,Elizabeth Perez,Circuit Building,Drone Programming,Coding Bootcamp
+S1037,Stella Martinez,CAD Design Studio,Rocket Design,Solar Car Racing
+S1038,Aubrey Ramirez,Solar Car Racing,Environmental Engineering,Coding Bootcamp
+S1039,Stella Flores,Circuit Building,Environmental Engineering,Robotics Workshop
+S1040,Aiden Young,CAD Design Studio,Circuit Building,Bridge Building Challenge
+S1041,Michael Nguyen,Environmental Engineering,Bridge Building Challenge,Solar Car Racing
+S1042,Mia Flores,Robotics Workshop,Coding Bootcamp,Rocket Design
+S1043,Harper Davis,3D Printing Lab,Bridge Building Challenge,Solar Car Racing
+S1044,Matthew Walker,Robotics Workshop,3D Printing Lab,CAD Design Studio
+S1045,Amelia Green,Drone Programming,Solar Car Racing,CAD Design Studio
+S1046,Chloe Wright,Rocket Design,Drone Programming,Bridge Building Challenge
+S1047,Mason Williams,Solar Car Racing,Bridge Building Challenge,Drone Programming
+S1048,Gabriel Thomas,Solar Car Racing,Robotics Workshop,CAD Design Studio
+S1049,Hunter Johnson,Bridge Building Challenge,3D Printing Lab,Rocket Design
+S1050,Charles Williams,Environmental Engineering,Coding Bootcamp,Robotics Workshop
+S1051,Aiden Allen,CAD Design Studio,Solar Car Racing,Circuit Building
+S1052,Evelyn Wilson,Circuit Building,Drone Programming,Rocket Design
+S1053,Jack Martinez,Rocket Design,CAD Design Studio,3D Printing Lab
+S1054,Aaron Davis,Circuit Building,CAD Design Studio,Rocket Design
+S1055,Jaxon Thomas,Circuit Building,Drone Programming,CAD Design Studio
+S1056,Bella Walker,Bridge Building Challenge,Rocket Design,CAD Design Studio
+S1057,Grace Brown,Robotics Workshop,CAD Design Studio,Coding Bootcamp
+S1058,Liam Hernandez,Environmental Engineering,Drone Programming,3D Printing Lab
+S1059,James Hall,Rocket Design,Drone Programming,Solar Car Racing
+S1060,Evelyn Thomas,Bridge Building Challenge,Rocket Design,Solar Car Racing
+S1061,Hannah Carter,Coding Bootcamp,Drone Programming,Rocket Design
+S1062,Lincoln Rivera,Rocket Design,Bridge Building Challenge,Drone Programming
+S1063,John Young,Solar Car Racing,Bridge Building Challenge,Robotics Workshop
+S1064,Grayson King,Rocket Design,Environmental Engineering,Coding Bootcamp
+S1065,Grace Moore,Rocket Design,Coding Bootcamp,Bridge Building Challenge
+S1066,Jaxon Jackson,Drone Programming,Circuit Building,Environmental Engineering
+S1067,Hannah Nguyen,Rocket Design,Circuit Building,3D Printing Lab
+S1068,Penelope Clark,Rocket Design,Environmental Engineering,CAD Design Studio
+S1069,Addison Green,Environmental Engineering,Coding Bootcamp,Bridge Building Challenge
+S1070,Jayden Ramirez,Circuit Building,CAD Design Studio,Rocket Design
+S1071,Avery Torres,Solar Car Racing,Circuit Building,CAD Design Studio
+S1072,Grace Clark,CAD Design Studio,Environmental Engineering,Solar Car Racing
+S1073,Anna Hill,Circuit Building,Solar Car Racing,Rocket Design
+S1074,Christopher Roberts,Coding Bootcamp,Rocket Design,3D Printing Lab
+S1075,Benjamin Young,Robotics Workshop,Circuit Building,Drone Programming
+S1076,Lucy Ramirez,Bridge Building Challenge,Drone Programming,CAD Design Studio
+S1077,Avery Young,CAD Design Studio,Drone Programming,Circuit Building
+S1078,Lillian Green,Robotics Workshop,Solar Car Racing,Bridge Building Challenge
+S1079,Stella Carter,Coding Bootcamp,Bridge Building Challenge,CAD Design Studio
+S1080,Olivia Rivera,Circuit Building,Solar Car Racing,CAD Design Studio
+S1081,Anthony Scott,Robotics Workshop,Coding Bootcamp,Solar Car Racing
+S1082,Nathan Ramirez,Robotics Workshop,Circuit Building,Drone Programming
+S1083,Julian Roberts,Drone Programming,3D Printing Lab,Solar Car Racing
+S1084,Joseph Rodriguez,Coding Bootcamp,Drone Programming,Robotics Workshop
+S1085,Scarlett Robinson,Coding Bootcamp,Solar Car Racing,Bridge Building Challenge
+S1086,Michael Gonzalez,Rocket Design,Robotics Workshop,Environmental Engineering
+S1087,Zoe Rivera,Environmental Engineering,Rocket Design,3D Printing Lab
+S1088,Zoe Young,Solar Car Racing,Rocket Design,Bridge Building Challenge
+S1089,Ethan Jackson,Coding Bootcamp,Circuit Building,Robotics Workshop
+S1090,Benjamin Scott,Circuit Building,CAD Design Studio,3D Printing Lab
+S1091,Lucy Young,Rocket Design,Circuit Building,Bridge Building Challenge
+S1092,Isaiah Mitchell,CAD Design Studio,Solar Car Racing,Robotics Workshop
+S1093,James White,3D Printing Lab,CAD Design Studio,Bridge Building Challenge
+S1094,Bella Flores,Solar Car Racing,Drone Programming,CAD Design Studio
+S1095,Jack Perez,Robotics Workshop,3D Printing Lab,Coding Bootcamp
+S1096,Chloe Roberts,Solar Car Racing,3D Printing Lab,Robotics Workshop
+S1097,Amelia Clark,Bridge Building Challenge,Solar Car Racing,3D Printing Lab
+S1098,Ava Jones,Solar Car Racing,3D Printing Lab,Environmental Engineering
+S1099,Caleb Lewis,Environmental Engineering,3D Printing Lab,Robotics Workshop
