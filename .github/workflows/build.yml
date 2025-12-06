@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -33,76 +33,76 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v4
-      with:
-        version: '6.5.*'
-        host: ${{ matrix.qt_host }}
-        target: 'desktop'
-        arch: ${{ matrix.qt_arch }}
-        modules: ''
-        cache: true
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: "6.5.*"
+          host: ${{ matrix.qt_host }}
+          target: "desktop"
+          arch: ${{ matrix.qt_arch }}
+          modules: ""
+          cache: true
 
-    - name: Download OR-Tools (Linux/macOS)
-      if: runner.os != 'Windows'
-      run: |
-        wget -q ${{ matrix.ortools_url }}
-        tar -xzf or-tools_*.tar.gz
-        echo "ORTOOLS_ROOT=${{ github.workspace }}/${{ matrix.ortools_dir }}" >> $GITHUB_ENV
+      - name: Download OR-Tools (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          wget -q ${{ matrix.ortools_url }}
+          tar -xzf or-tools_*.tar.gz
+          echo "ORTOOLS_ROOT=${{ github.workspace }}/${{ matrix.ortools_dir }}" >> $GITHUB_ENV
 
-    - name: Download OR-Tools (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        Invoke-WebRequest -Uri "${{ matrix.ortools_url }}" -OutFile "or-tools.zip"
-        Expand-Archive -Path "or-tools.zip" -DestinationPath "."
-        echo "ORTOOLS_ROOT=${{ github.workspace }}\${{ matrix.ortools_dir }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Download OR-Tools (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "${{ matrix.ortools_url }}" -OutFile "or-tools.zip"
+          Expand-Archive -Path "or-tools.zip" -DestinationPath "."
+          echo "ORTOOLS_ROOT=${{ github.workspace }}\${{ matrix.ortools_dir }}" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-    - name: Install Python (for XLSX support)
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      - name: Install Python (for XLSX support)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Configure CMake (Linux/macOS)
-      if: runner.os != 'Windows'
-      run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${ORTOOLS_ROOT};${Qt6_DIR}"
+      - name: Configure CMake (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${ORTOOLS_ROOT};${Qt6_DIR}"
 
-    - name: Configure CMake (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$env:ORTOOLS_ROOT;$env:Qt6_DIR"
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$env:ORTOOLS_ROOT;$env:Qt6_DIR"
 
-    - name: Build
-      run: cmake --build build --config Release -j
+      - name: Build
+        run: cmake --build build --config Release -j
 
-    - name: Upload artifacts (Linux)
-      if: runner.os == 'Linux'
-      uses: actions/upload-artifact@v4
-      with:
-        name: scheduler-linux
-        path: |
-          build/src/EngineeringWeekScheduler
-          README.md
+      - name: Upload artifacts (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduler-linux
+          path: |
+            build/src/EngineeringWeekScheduler
+            README.md
 
-    - name: Upload artifacts (macOS)
-      if: runner.os == 'macOS'
-      uses: actions/upload-artifact@v4
-      with:
-        name: scheduler-macos
-        path: |
-          build/src/EngineeringWeekScheduler
-          README.md
+      - name: Upload artifacts (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduler-macos
+          path: |
+            build/src/EngineeringWeekScheduler
+            README.md
 
-    - name: Upload artifacts (Windows)
-      if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v4
-      with:
-        name: scheduler-windows
-        path: |
-          build/src/Release/EngineeringWeekScheduler.exe
-          README.md
+      - name: Upload artifacts (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduler-windows
+          path: |
+            build/src/Release/EngineeringWeekScheduler.exe
+            README.md

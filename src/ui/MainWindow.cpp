@@ -35,15 +35,6 @@
 #include <string>
 #include <vector>
 
-#if HAVE_QT_CHARTS
-#include <QtCharts/QBarCategoryAxis>
-#include <QtCharts/QBarSeries>
-#include <QtCharts/QBarSet>
-#include <QtCharts/QChart>
-#include <QtCharts/QChartView>
-#include <QtCharts/QValueAxis>
-#endif
-
 namespace {
 QStringList defaultHeaders() {
   return {QStringLiteral("Student ID"), QStringLiteral("Student Name"),
@@ -282,18 +273,10 @@ public:
         {QStringLiteral("Activity"), QStringLiteral("Assigned"),
          QStringLiteral("Capacity"), QStringLiteral("Utilization")});
 
-#if HAVE_QT_CHARTS
-    activityChart->setMinimumHeight(240);
-    activityChart->setRenderHint(QPainter::Antialiasing);
-#endif
-
     auto *resultsLayout = new QVBoxLayout();
     resultsLayout->addWidget(resultsStatus);
     resultsLayout->addWidget(resultsTable);
     resultsLayout->addWidget(activitySummary);
-#if HAVE_QT_CHARTS
-    resultsLayout->addWidget(activityChart);
-#endif
     auto *resultsButtonLayout = new QHBoxLayout();
     resultsButtonLayout->addStretch();
     resultsButtonLayout->addWidget(exportResultsCsvButton);
@@ -822,9 +805,6 @@ public:
   QFutureWatcher<SolverResult> *solverWatcher;
   QProgressDialog *progressDialog;
   QString lastDataPath;
-#if HAVE_QT_CHARTS
-  QtCharts::QChartView *activityChart;
-#endif
   std::optional<SolverResult> lastResult;
   bool hasResult = false;
 };

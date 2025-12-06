@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERS24)
 
 project(EngineeringWeekScheduler VERSION 0.1.0 LANGUAGES CXX)
 
@@ -11,7 +11,6 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets Concurrent)
-find_package(Qt6Charts 6.5 QUIET)
 
 # OR-Tools is optional - if not found, a greedy fallback solver will be used
 find_package(ortools QUIET)

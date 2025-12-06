@@ -37,11 +37,4 @@ else()
     target_compile_definitions(EngineeringWeekScheduler PRIVATE HAVE_OR_TOOLS=0)
 endif()
 
-if(Qt6Charts_FOUND)
-    target_link_libraries(EngineeringWeekScheduler PRIVATE Qt6::Charts)
-    target_compile_definitions(EngineeringWeekScheduler PRIVATE HAVE_QT_CHARTS=1)
-else()
-    target_compile_definitions(EngineeringWeekScheduler PRIVATE HAVE_QT_CHARTS=0)
-endif()
-
 target_compile_features(EngineeringWeekScheduler PRIVATE cxx_std_20)
