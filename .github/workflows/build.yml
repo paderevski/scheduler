@@ -122,12 +122,44 @@ jobs:
         with:
           path: artifacts
 
+      - name: Debug - show artifact structure
+        run: |
+          echo "=== Artifact directory structure ==="
+          find artifacts -type f
+          ls -laR artifacts/
+          echo "==================================="
+
       - name: Prepare release assets
         run: |
           mkdir -p release-assets
-          cp artifacts/scheduler-linux/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-linux
-          cp artifacts/scheduler-macos/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-macos
-          cp artifacts/scheduler-windows/EngineeringWeekScheduler.exe release-assets/EngineeringWeekScheduler-windows.exe
+          # Find and copy binaries - paths depend on upload-artifact behavior
+          # Try both possible locations (with and without build/src/ prefix)
+          if [ -f "artifacts/scheduler-linux/build/src/EngineeringWeekScheduler" ]; then
+            cp artifacts/scheduler-linux/build/src/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-linux
+          elif [ -f "artifacts/scheduler-linux/EngineeringWeekScheduler" ]; then
+            cp artifacts/scheduler-linux/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-linux
+          else
+            echo "ERROR: Linux binary not found!" && exit 1
+          fi
+
+          if [ -f "artifacts/scheduler-macos/build/src/EngineeringWeekScheduler" ]; then
+            cp artifacts/scheduler-macos/build/src/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-macos
+          elif [ -f "artifacts/scheduler-macos/EngineeringWeekScheduler" ]; then
+            cp artifacts/scheduler-macos/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-macos
+          else
+            echo "ERROR: macOS binary not found!" && exit 1
+          fi
+
+          if [ -f "artifacts/scheduler-windows/build/src/Release/EngineeringWeekScheduler.exe" ]; then
+            cp artifacts/scheduler-windows/build/src/Release/EngineeringWeekScheduler.exe release-assets/EngineeringWeekScheduler-windows.exe
+          elif [ -f "artifacts/scheduler-windows/EngineeringWeekScheduler.exe" ]; then
+            cp artifacts/scheduler-windows/EngineeringWeekScheduler.exe release-assets/EngineeringWeekScheduler-windows.exe
+          else
+            echo "ERROR: Windows binary not found!" && exit 1
+          fi
+
+          echo "=== Release assets prepared ==="
+          ls -la release-assets/
 
       - name: Publish GitHub Release
         uses: ncipollo/release-action@v1
