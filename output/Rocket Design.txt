@@ -1,0 +1,9 @@
+Rocket Design
+Enrollment: 5
+Capacity: 20
+
+Andrew Robinson
+Liam Scott
+Sebastian Allen
+Sophia Harris
+Stella Clark

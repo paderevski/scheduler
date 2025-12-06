@@ -11,12 +11,12 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Widgets Concurrent)
+find_package(Qt6 COMPONENTS Charts QUIET)
 
 # OR-Tools is optional - if not found, a greedy fallback solver will be used
 find_package(ortools QUIET)
 
 set(QT_HAS_CHARTS FALSE)
-set(HAVE_OR_TOOLS FALSE)
 
 if(ortools_FOUND)
     set(HAVE_OR_TOOLS TRUE)

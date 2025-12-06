@@ -1,0 +1,14 @@
+CAD Design Studio
+Enrollment: 10
+Capacity: 20
+
+Aiden Nelson
+Amelia King
+Andrew Young
+Aubrey Anderson
+Benjamin Rodriguez
+Carter Harris
+Emily Nguyen
+Isabelle Green
+Leah Martin
+Lillian Johnson

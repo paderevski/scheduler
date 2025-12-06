@@ -1,0 +1,14 @@
+Solar Car Racing
+Enrollment: 10
+Capacity: 20
+
+Abigail Smith
+Charlotte Garcia
+Eleanor Martin
+Henry White
+Isabelle Davis
+Leah Wright
+Mateo Clark
+Matthew Rivera
+Sofia Clark
+Wyatt Perez

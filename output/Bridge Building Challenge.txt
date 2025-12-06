@@ -1,0 +1,10 @@
+Bridge Building Challenge
+Enrollment: 6
+Capacity: 20
+
+Aria Hall
+Avery Miller
+Chloe Allen
+Hannah White
+James Walker
+Michael Jones

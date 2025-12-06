@@ -6,6 +6,8 @@
 
 #include <QAbstractItemView>
 #include <QAction>
+#include <QDir>
+#include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFutureWatcher>
@@ -18,6 +20,7 @@
 #include <QPainter>
 #include <QProgressDialog>
 #include <QPushButton>
+#include <QRegularExpression>
 #include <QSet>
 #include <QSpinBox>
 #include <QString>
@@ -25,6 +28,7 @@
 #include <QTabWidget>
 #include <QTableView>
 #include <QTableWidget>
+#include <QTextStream>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QtConcurrent>
@@ -746,42 +750,172 @@ public:
     if (!hasResult) {
       return;
     }
-    const QString path = QFileDialog::getSaveFileName(
-        q_ptr, QStringLiteral("Export results as CSV"), {},
-        QStringLiteral("CSV Files (*.csv)"));
-    if (path.isEmpty()) {
+    const QString folderPath = QFileDialog::getExistingDirectory(
+        q_ptr, QStringLiteral("Select folder for results export"), {},
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (folderPath.isEmpty()) {
       return;
     }
+
+    QDir dir(folderPath);
+    if (!dir.exists()) {
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("Invalid folder"),
+          QStringLiteral("The selected folder does not exist."));
+      return;
+    }
+
+    // Export main CSV
+    const QString csvPath = dir.filePath(QStringLiteral("results.csv"));
     auto table = resultsToTable(*lastResult);
     std::string error;
-    if (!SpreadsheetBridge::WriteCsv(path.toStdString(), table, &error)) {
+    if (!SpreadsheetBridge::WriteCsv(csvPath.toStdString(), table, &error)) {
       QMessageBox::warning(
-          q_ptr, QStringLiteral("Unable to export"),
-          QStringLiteral("%1\n%2").arg(path, QString::fromStdString(error)));
+          q_ptr, QStringLiteral("Unable to export CSV"),
+          QStringLiteral("%1\n%2").arg(csvPath, QString::fromStdString(error)));
       return;
     }
-    appendDiagnostic(QStringLiteral("Exported solver results to %1").arg(path));
+
+    // Export individual activity rosters
+    int filesCreated = 0;
+    for (const auto &activitySum : lastResult->activitySummary) {
+      const QString activity = toQString(activitySum.activity);
+
+      // Collect students for this activity
+      QStringList studentNames;
+      for (const auto &assignment : lastResult->assignments) {
+        if (assignment.activity == activitySum.activity) {
+          QString name = toQString(assignment.studentName);
+          if (name.isEmpty()) {
+            name = toQString(assignment.studentId);
+          }
+          studentNames.append(name);
+        }
+      }
+
+      // Sort student names alphabetically
+      studentNames.sort(Qt::CaseInsensitive);
+
+      // Create sanitized filename
+      QString filename = activity;
+      filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")), QStringLiteral("_"));
+      filename = dir.filePath(filename + QStringLiteral(".txt"));
+
+      QFile file(filename);
+      if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        appendDiagnostic(QStringLiteral("Warning: Could not create %1").arg(filename));
+        continue;
+      }
+
+      QTextStream out(&file);
+      out << activity << "\n";
+      out << "Enrollment: " << activitySum.assigned << "\n";
+      out << "Capacity: " << activitySum.capacity << "\n";
+      out << "\n";
+
+      for (const QString &name : studentNames) {
+        out << name << "\n";
+      }
+
+      file.close();
+      filesCreated++;
+    }
+
+    appendDiagnostic(QStringLiteral("Exported results.csv and %1 activity rosters to %2")
+                         .arg(filesCreated)
+                         .arg(folderPath));
+
+    QMessageBox::information(
+        q_ptr, QStringLiteral("Export Successful"),
+        QStringLiteral("Successfully exported results.csv and %1 activity roster files to:\n%2")
+            .arg(filesCreated)
+            .arg(folderPath));
   }
 
   void exportResultsXlsx() {
     if (!hasResult) {
       return;
     }
-    const QString path = QFileDialog::getSaveFileName(
-        q_ptr, QStringLiteral("Export results as XLSX"), {},
-        QStringLiteral("Excel Files (*.xlsx)"));
-    if (path.isEmpty()) {
+    const QString folderPath = QFileDialog::getExistingDirectory(
+        q_ptr, QStringLiteral("Select folder for results export"), {},
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (folderPath.isEmpty()) {
       return;
     }
+
+    QDir dir(folderPath);
+    if (!dir.exists()) {
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("Invalid folder"),
+          QStringLiteral("The selected folder does not exist."));
+      return;
+    }
+
+    // Export main XLSX
+    const QString xlsxPath = dir.filePath(QStringLiteral("results.xlsx"));
     auto table = resultsToTable(*lastResult);
     std::string error;
-    if (!SpreadsheetBridge::WriteXlsx(path.toStdString(), table, &error)) {
+    if (!SpreadsheetBridge::WriteXlsx(xlsxPath.toStdString(), table, &error)) {
       QMessageBox::warning(
-          q_ptr, QStringLiteral("Unable to export"),
-          QStringLiteral("%1\n%2").arg(path, QString::fromStdString(error)));
+          q_ptr, QStringLiteral("Unable to export XLSX"),
+          QStringLiteral("%1\n%2").arg(xlsxPath, QString::fromStdString(error)));
       return;
     }
-    appendDiagnostic(QStringLiteral("Exported solver results to %1").arg(path));
+
+    // Export individual activity rosters
+    int filesCreated = 0;
+    for (const auto &activitySum : lastResult->activitySummary) {
+      const QString activity = toQString(activitySum.activity);
+
+      // Collect students for this activity
+      QStringList studentNames;
+      for (const auto &assignment : lastResult->assignments) {
+        if (assignment.activity == activitySum.activity) {
+          QString name = toQString(assignment.studentName);
+          if (name.isEmpty()) {
+            name = toQString(assignment.studentId);
+          }
+          studentNames.append(name);
+        }
+      }
+
+      // Sort student names alphabetically
+      studentNames.sort(Qt::CaseInsensitive);
+
+      // Create sanitized filename
+      QString filename = activity;
+      filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")), QStringLiteral("_"));
+      filename = dir.filePath(filename + QStringLiteral(".txt"));
+
+      QFile file(filename);
+      if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        appendDiagnostic(QStringLiteral("Warning: Could not create %1").arg(filename));
+        continue;
+      }
+
+      QTextStream out(&file);
+      out << activity << "\n";
+      out << "Enrollment: " << activitySum.assigned << "\n";
+      out << "Capacity: " << activitySum.capacity << "\n";
+      out << "\n";
+
+      for (const QString &name : studentNames) {
+        out << name << "\n";
+      }
+
+      file.close();
+      filesCreated++;
+    }
+
+    appendDiagnostic(QStringLiteral("Exported results.xlsx and %1 activity rosters to %2")
+                         .arg(filesCreated)
+                         .arg(folderPath));
+
+    QMessageBox::information(
+        q_ptr, QStringLiteral("Export Successful"),
+        QStringLiteral("Successfully exported results.xlsx and %1 activity roster files to:\n%2")
+            .arg(filesCreated)
+            .arg(folderPath));
   }
 
   MainWindow *q_ptr;
