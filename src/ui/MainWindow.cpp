@@ -264,13 +264,21 @@ public:
     diagnostics->setSelectionMode(QAbstractItemView::NoSelection);
 
     // Setup capacity table
-    capacityTable->setColumnCount(2);
+    capacityTable->setColumnCount(5);
     capacityTable->setHorizontalHeaderLabels(
-        {QStringLiteral("Activity"), QStringLiteral("Capacity")});
+        {QStringLiteral("Activity"), QStringLiteral("Choice 1"),
+         QStringLiteral("Choice 2"), QStringLiteral("Choice 3"),
+         QStringLiteral("Capacity")});
     capacityTable->horizontalHeader()->setSectionResizeMode(
         0, QHeaderView::Stretch);
     capacityTable->horizontalHeader()->setSectionResizeMode(
         1, QHeaderView::ResizeToContents);
+    capacityTable->horizontalHeader()->setSectionResizeMode(
+        2, QHeaderView::ResizeToContents);
+    capacityTable->horizontalHeader()->setSectionResizeMode(
+        3, QHeaderView::ResizeToContents);
+    capacityTable->horizontalHeader()->setSectionResizeMode(
+        4, QHeaderView::ResizeToContents);
     capacityTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     defaultCapacitySpin->setRange(0, 500);
@@ -507,9 +515,41 @@ public:
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
       auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 1));
+          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
       if (activityItem && spinBox) {
         currentCapacities[activityItem->text()] = spinBox->value();
+      }
+    }
+
+    // Count how many students picked each activity as choice 1, 2, 3
+    const QString dayFilter = dayFilterCombo->currentData().toString();
+    QMap<QString, int> choice1Count;
+    QMap<QString, int> choice2Count;
+    QMap<QString, int> choice3Count;
+
+    for (const auto &row : model->rows()) {
+      // Apply day filter
+      if (!dayFilter.isEmpty() && row.day != dayFilter) {
+        continue;
+      }
+
+      if (row.choices.size() > 0) {
+        QString choice = row.choices[0].trimmed();
+        if (!choice.isEmpty()) {
+          choice1Count[choice]++;
+        }
+      }
+      if (row.choices.size() > 1) {
+        QString choice = row.choices[1].trimmed();
+        if (!choice.isEmpty()) {
+          choice2Count[choice]++;
+        }
+      }
+      if (row.choices.size() > 2) {
+        QString choice = row.choices[2].trimmed();
+        if (!choice.isEmpty()) {
+          choice3Count[choice]++;
+        }
       }
     }
 
@@ -522,10 +562,33 @@ public:
       int row = capacityTable->rowCount();
       capacityTable->insertRow(row);
 
+      // Column 0: Activity name
       auto *activityItem = new QTableWidgetItem(activity);
       activityItem->setFlags(Qt::ItemIsEnabled);
       capacityTable->setItem(row, 0, activityItem);
 
+      // Column 1: Choice 1 count
+      auto *choice1Item = new QTableWidgetItem(
+          QString::number(choice1Count.value(activity, 0)));
+      choice1Item->setFlags(Qt::ItemIsEnabled);
+      choice1Item->setTextAlignment(Qt::AlignCenter);
+      capacityTable->setItem(row, 1, choice1Item);
+
+      // Column 2: Choice 2 count
+      auto *choice2Item = new QTableWidgetItem(
+          QString::number(choice2Count.value(activity, 0)));
+      choice2Item->setFlags(Qt::ItemIsEnabled);
+      choice2Item->setTextAlignment(Qt::AlignCenter);
+      capacityTable->setItem(row, 2, choice2Item);
+
+      // Column 3: Choice 3 count
+      auto *choice3Item = new QTableWidgetItem(
+          QString::number(choice3Count.value(activity, 0)));
+      choice3Item->setFlags(Qt::ItemIsEnabled);
+      choice3Item->setTextAlignment(Qt::AlignCenter);
+      capacityTable->setItem(row, 3, choice3Item);
+
+      // Column 4: Capacity spinbox
       auto *spinBox = new QSpinBox(q_ptr);
       spinBox->setRange(0, 500);
       // Use stored capacity if available, otherwise use default
@@ -537,7 +600,7 @@ public:
       QObject::connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged),
                        q_ptr, [this]() { updateTotalCapacity(); });
 
-      capacityTable->setCellWidget(row, 1, spinBox);
+      capacityTable->setCellWidget(row, 4, spinBox);
     }
 
     updateTotalCapacity();
@@ -547,7 +610,7 @@ public:
     int totalCapacity = 0;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 1));
+          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
       if (spinBox) {
         totalCapacity += spinBox->value();
       }
@@ -613,7 +676,7 @@ public:
     int defaultValue = defaultCapacitySpin->value();
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 1));
+          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
       if (spinBox) {
         spinBox->setValue(defaultValue);
       }
@@ -761,7 +824,7 @@ public:
     int totalCapacity = 0;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 1));
+          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
       if (spinBox) {
         totalCapacity += spinBox->value();
       }
@@ -791,7 +854,7 @@ public:
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
       auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 1));
+          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
       if (activityItem && spinBox) {
         std::string activityName = activityItem->text().toStdString();
         options.activityCapacities[activityName] = spinBox->value();
