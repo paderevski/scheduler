@@ -1,0 +1,108 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            qt_host: linux
+            qt_arch: gcc_64
+            ortools_url: https://github.com/google/or-tools/releases/download/v9.11/or-tools_amd64_ubuntu-24.04_cpp_v9.11.4210.tar.gz
+            ortools_dir: or-tools_x86_64_Ubuntu-24.04_cpp_v9.11.4210
+          - os: macos-latest
+            qt_host: mac
+            qt_arch: clang_64
+            ortools_url: https://github.com/google/or-tools/releases/download/v9.11/or-tools_arm64_macOS-14.7_cpp_v9.11.4210.tar.gz
+            ortools_dir: or-tools_arm64_macOS-14.7_cpp_v9.11.4210
+          - os: windows-latest
+            qt_host: windows
+            qt_arch: win64_msvc2019_64
+            ortools_url: https://github.com/google/or-tools/releases/download/v9.11/or-tools_amd64_windows_cpp_v9.11.4210.zip
+            ortools_dir: or-tools_x86_64_Windows-10_cpp_v9.11.4210
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '6.5.*'
+        host: ${{ matrix.qt_host }}
+        target: 'desktop'
+        arch: ${{ matrix.qt_arch }}
+        modules: 'qtcharts'
+        cache: true
+
+    - name: Download OR-Tools (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        wget -q ${{ matrix.ortools_url }}
+        tar -xzf or-tools_*.tar.gz
+        echo "ORTOOLS_ROOT=${{ github.workspace }}/${{ matrix.ortools_dir }}" >> $GITHUB_ENV
+
+    - name: Download OR-Tools (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri "${{ matrix.ortools_url }}" -OutFile "or-tools.zip"
+        Expand-Archive -Path "or-tools.zip" -DestinationPath "."
+        echo "ORTOOLS_ROOT=${{ github.workspace }}\${{ matrix.ortools_dir }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+    - name: Install Python (for XLSX support)
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Configure CMake (Linux/macOS)
+      if: runner.os != 'Windows'
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${ORTOOLS_ROOT};${Qt6_DIR}"
+
+    - name: Configure CMake (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$env:ORTOOLS_ROOT;$env:Qt6_DIR"
+
+    - name: Build
+      run: cmake --build build --config Release -j
+
+    - name: Upload artifacts (Linux)
+      if: runner.os == 'Linux'
+      uses: actions/upload-artifact@v4
+      with:
+        name: scheduler-linux
+        path: |
+          build/src/EngineeringWeekScheduler
+          README.md
+
+    - name: Upload artifacts (macOS)
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v4
+      with:
+        name: scheduler-macos
+        path: |
+          build/src/EngineeringWeekScheduler
+          README.md
+
+    - name: Upload artifacts (Windows)
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: scheduler-windows
+        path: |
+          build/src/Release/EngineeringWeekScheduler.exe
+          README.md
