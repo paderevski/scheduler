@@ -122,11 +122,18 @@ jobs:
         with:
           path: artifacts
 
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          cp artifacts/scheduler-linux/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-linux
+          cp artifacts/scheduler-macos/EngineeringWeekScheduler release-assets/EngineeringWeekScheduler-macos
+          cp artifacts/scheduler-windows/EngineeringWeekScheduler.exe release-assets/EngineeringWeekScheduler-windows.exe
+
       - name: Publish GitHub Release
         uses: ncipollo/release-action@v1
         with:
           tag: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
-          artifacts: "artifacts/scheduler-linux/*,artifacts/scheduler-macos/*,artifacts/scheduler-windows/*"
+          artifacts: "release-assets/*"
           allowUpdates: true
-          artifactErrorsFailBuild: true
+          removeArtifacts: true
