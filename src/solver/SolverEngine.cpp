@@ -165,10 +165,29 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         choiceRank = -1; // Mark as non-preferred
       }
 
+      // Apply attendance weighting
+      double attendanceMultiplier = 1.0;
+      QString present = row.present.trimmed().toLower();
+      if (present == "yes" || present == "y") {
+        // Normalize so "yes" = 1.0
+        attendanceMultiplier = 1.0;
+      } else if (present == "maybe" || present == "m") {
+        // Scale by ratio to "yes" weight
+        attendanceMultiplier = options.weightYes > 0
+            ? static_cast<double>(options.weightMaybe) / options.weightYes
+            : 0.5;
+      } else if (present == "no" || present == "n") {
+        // Scale by ratio to "yes" weight
+        attendanceMultiplier = options.weightYes > 0
+            ? static_cast<double>(options.weightNo) / options.weightYes
+            : 0.1;
+      }
+      // If present field is empty or unrecognized, use 1.0 (treat as "yes")
+
       varMatrix[studentIdx].push_back(
           VarInfo{studentIdx, activityIdx, choiceRank, var});
-      solver.MutableObjective()->SetCoefficient(var,
-                                                static_cast<double>(weight));
+      solver.MutableObjective()->SetCoefficient(
+          var, static_cast<double>(weight) * attendanceMultiplier);
     }
   }
 
@@ -342,6 +361,22 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
       }
       if (usage.value(activityName, 0) < options.activityCapacity) {
         usage[activityName] += 1;
+
+        // Calculate attendance weight multiplier
+        double attendanceMultiplier = 1.0;
+        QString present = row.present.trimmed().toLower();
+        if (present == "yes" || present == "y") {
+          attendanceMultiplier = 1.0;
+        } else if (present == "maybe" || present == "m") {
+          attendanceMultiplier = options.weightYes > 0
+              ? static_cast<double>(options.weightMaybe) / options.weightYes
+              : 0.5;
+        } else if (present == "no" || present == "n") {
+          attendanceMultiplier = options.weightYes > 0
+              ? static_cast<double>(options.weightNo) / options.weightYes
+              : 0.1;
+        }
+
         StudentAssignment assignment;
         assignment.studentId = toStdString(row.studentId);
         assignment.firstName = toStdString(row.firstName);
@@ -353,7 +388,7 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.present = toStdString(row.present);
         assignment.activity = toStdString(activityName);
         assignment.choiceRank = choiceIdx;
-        assignment.score = weightForRank(choiceIdx);
+        assignment.score = weightForRank(choiceIdx) * attendanceMultiplier;
         result.assignments.push_back(std::move(assignment));
         ++result.satisfiedStudents;
         assigned = true;

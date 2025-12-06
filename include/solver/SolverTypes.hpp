@@ -11,6 +11,11 @@ struct SolverOptions {
   // If empty, uses defaultCapacity for all activities
   std::map<std::string, int> activityCapacities;
   int defaultCapacity = 20; // Used when activityCapacities is empty
+
+  // Attendance weights (raw values, will be normalized so "yes" = 1.0)
+  int weightYes = 100;
+  int weightMaybe = 50;
+  int weightNo = 10;
 };
 
 struct StudentAssignment {

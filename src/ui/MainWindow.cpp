@@ -235,10 +235,18 @@ public:
         totalCapacityLabel(new QLabel(q)), defaultCapacitySpin(new QSpinBox(q)),
         setAllCapacitiesButton(new QPushButton(QStringLiteral("Set All"), q)),
         autoCapacityButton(new QPushButton(QStringLiteral("Auto"), q)),
+        weightYesSpin(new QSpinBox(q)),
+        weightMaybeSpin(new QSpinBox(q)),
+        weightNoSpin(new QSpinBox(q)),
+        weightYesNormLabel(new QLabel(q)),
+        weightMaybeNormLabel(new QLabel(q)),
+        weightNoNormLabel(new QLabel(q)),
         dayFilterCombo(new QComboBox(q)),
         runButton(new QPushButton(QStringLiteral("Calculate"), q)),
         resultsStatus(new QLabel(QStringLiteral("No solver run yet."), q)),
-        resultsTable(new QTableWidget(q)), activitySummary(new QTreeWidget(q)),
+        resultsTable(new QTableWidget(q)),
+        satisfactionSummary(new QTableWidget(q)),
+        activitySummary(new QTreeWidget(q)),
         exportResultsCsvButton(
             new QPushButton(QStringLiteral("Export Results (CSV)"), q)),
         exportResultsXlsxButton(
@@ -313,6 +321,39 @@ public:
     dayFilterLayout->addStretch();
     leftLayout->addLayout(dayFilterLayout);
 
+    // Attendance weighting
+    leftLayout->addWidget(new QLabel(QStringLiteral("<b>Attendance Weighting</b>"), q_ptr));
+
+    weightYesSpin->setRange(1, 1000);
+    weightYesSpin->setValue(100);
+    weightMaybeSpin->setRange(0, 1000);
+    weightMaybeSpin->setValue(50);
+    weightNoSpin->setRange(0, 1000);
+    weightNoSpin->setValue(10);
+
+    auto *weightYesLayout = new QHBoxLayout();
+    weightYesLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr));
+    weightYesLayout->addWidget(weightYesSpin);
+    weightYesLayout->addWidget(weightYesNormLabel);
+    weightYesLayout->addStretch();
+    leftLayout->addLayout(weightYesLayout);
+
+    auto *weightMaybeLayout = new QHBoxLayout();
+    weightMaybeLayout->addWidget(new QLabel(QStringLiteral("Maybe:"), q_ptr));
+    weightMaybeLayout->addWidget(weightMaybeSpin);
+    weightMaybeLayout->addWidget(weightMaybeNormLabel);
+    weightMaybeLayout->addStretch();
+    leftLayout->addLayout(weightMaybeLayout);
+
+    auto *weightNoLayout = new QHBoxLayout();
+    weightNoLayout->addWidget(new QLabel(QStringLiteral("No:"), q_ptr));
+    weightNoLayout->addWidget(weightNoSpin);
+    weightNoLayout->addWidget(weightNoNormLabel);
+    weightNoLayout->addStretch();
+    leftLayout->addLayout(weightNoLayout);
+
+    updateWeightLabels();
+
     leftLayout->addStretch();
 
     // Right side: Capacities
@@ -369,9 +410,23 @@ public:
          QStringLiteral("Maybe"), QStringLiteral("No"),
          QStringLiteral("Expected Util.")});
 
+    // Setup satisfaction summary table
+    satisfactionSummary->setColumnCount(6);
+    satisfactionSummary->setHorizontalHeaderLabels(
+        {QStringLiteral("Choice Rank"), QStringLiteral("Total"),
+         QStringLiteral("Total %"), QStringLiteral("Yes"),
+         QStringLiteral("Maybe"), QStringLiteral("No")});
+    satisfactionSummary->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    satisfactionSummary->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    satisfactionSummary->verticalHeader()->setVisible(false);
+
     auto *resultsLayout = new QVBoxLayout();
     resultsLayout->addWidget(resultsStatus);
+    resultsLayout->addWidget(new QLabel(QStringLiteral("<b>Choice Satisfaction</b>"), q_ptr));
+    resultsLayout->addWidget(satisfactionSummary);
+    resultsLayout->addWidget(new QLabel(QStringLiteral("<b>Activity Assignments</b>"), q_ptr));
     resultsLayout->addWidget(resultsTable);
+    resultsLayout->addWidget(new QLabel(QStringLiteral("<b>Activity Utilization</b>"), q_ptr));
     resultsLayout->addWidget(activitySummary);
     auto *resultsButtonLayout = new QHBoxLayout();
     resultsButtonLayout->addStretch();
@@ -453,11 +508,33 @@ public:
 
     QObject::connect(dayFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
                      q_ptr, [this]() { updateSummary(); });
+
+    QObject::connect(weightYesSpin, QOverload<int>::of(&QSpinBox::valueChanged),
+                     q_ptr, [this]() { updateWeightLabels(); });
+    QObject::connect(weightMaybeSpin, QOverload<int>::of(&QSpinBox::valueChanged),
+                     q_ptr, [this]() { updateWeightLabels(); });
+    QObject::connect(weightNoSpin, QOverload<int>::of(&QSpinBox::valueChanged),
+                     q_ptr, [this]() { updateWeightLabels(); });
   }
 
   void appendDiagnostic(const QString &message) {
     diagnostics->addItem(message);
     diagnostics->scrollToBottom();
+  }
+
+  void updateWeightLabels() {
+    int yesVal = weightYesSpin->value();
+    int maybeVal = weightMaybeSpin->value();
+    int noVal = weightNoSpin->value();
+
+    // Normalize so "yes" = 1.0
+    double normYes = 1.0;
+    double normMaybe = yesVal > 0 ? static_cast<double>(maybeVal) / yesVal : 0.0;
+    double normNo = yesVal > 0 ? static_cast<double>(noVal) / yesVal : 0.0;
+
+    weightYesNormLabel->setText(QStringLiteral("(×%1)").arg(normYes, 0, 'f', 2));
+    weightMaybeNormLabel->setText(QStringLiteral("(×%1)").arg(normMaybe, 0, 'f', 2));
+    weightNoNormLabel->setText(QStringLiteral("(×%1)").arg(normNo, 0, 'f', 2));
   }
 
   void updateSummary() {
@@ -849,6 +926,9 @@ public:
 
     SolverOptions options;
     options.defaultCapacity = defaultCapacitySpin->value();
+    options.weightYes = weightYesSpin->value();
+    options.weightMaybe = weightMaybeSpin->value();
+    options.weightNo = weightNoSpin->value();
 
     // Collect per-activity capacities from table
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
@@ -944,6 +1024,91 @@ public:
       resultsTable->setItem(rowIndex, 10, makeItem(score));
       ++rowIndex;
     }
+
+    // Populate satisfaction summary
+    // Count assignments by choice rank and attendance status
+    int choice1Total = 0, choice1Yes = 0, choice1Maybe = 0, choice1No = 0;
+    int choice2Total = 0, choice2Yes = 0, choice2Maybe = 0, choice2No = 0;
+    int choice3Total = 0, choice3Yes = 0, choice3Maybe = 0, choice3No = 0;
+    int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0, notSatisfiedNo = 0;
+
+    for (const auto &assignment : result.assignments) {
+      QString present = toQString(assignment.present).trimmed().toLower();
+      bool isYes = (present == "yes" || present == "y");
+      bool isMaybe = (present == "maybe" || present == "m");
+      bool isNo = (present == "no" || present == "n");
+
+      if (assignment.choiceRank == 0) {
+        choice1Total++;
+        if (isYes) choice1Yes++;
+        else if (isMaybe) choice1Maybe++;
+        else if (isNo) choice1No++;
+      } else if (assignment.choiceRank == 1) {
+        choice2Total++;
+        if (isYes) choice2Yes++;
+        else if (isMaybe) choice2Maybe++;
+        else if (isNo) choice2No++;
+      } else if (assignment.choiceRank == 2) {
+        choice3Total++;
+        if (isYes) choice3Yes++;
+        else if (isMaybe) choice3Maybe++;
+        else if (isNo) choice3No++;
+      } else {
+        notSatisfiedTotal++;
+        if (isYes) notSatisfiedYes++;
+        else if (isMaybe) notSatisfiedMaybe++;
+        else if (isNo) notSatisfiedNo++;
+      }
+    }
+
+    int totalStudents = result.assignments.size();
+
+    auto makeSatisfactionItem = [](const QString &text, bool center = false) {
+      auto *item = new QTableWidgetItem(text);
+      item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+      if (center) {
+        item->setTextAlignment(Qt::AlignCenter);
+      }
+      return item;
+    };
+
+    satisfactionSummary->setRowCount(4);
+
+    // Row 0: 1st Choice
+    satisfactionSummary->setItem(0, 0, makeSatisfactionItem(QStringLiteral("1st Choice")));
+    satisfactionSummary->setItem(0, 1, makeSatisfactionItem(QString::number(choice1Total), true));
+    satisfactionSummary->setItem(0, 2, makeSatisfactionItem(
+        totalStudents > 0 ? QStringLiteral("%1%").arg(choice1Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
+    satisfactionSummary->setItem(0, 3, makeSatisfactionItem(QString::number(choice1Yes), true));
+    satisfactionSummary->setItem(0, 4, makeSatisfactionItem(QString::number(choice1Maybe), true));
+    satisfactionSummary->setItem(0, 5, makeSatisfactionItem(QString::number(choice1No), true));
+
+    // Row 1: 2nd Choice
+    satisfactionSummary->setItem(1, 0, makeSatisfactionItem(QStringLiteral("2nd Choice")));
+    satisfactionSummary->setItem(1, 1, makeSatisfactionItem(QString::number(choice2Total), true));
+    satisfactionSummary->setItem(1, 2, makeSatisfactionItem(
+        totalStudents > 0 ? QStringLiteral("%1%").arg(choice2Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
+    satisfactionSummary->setItem(1, 3, makeSatisfactionItem(QString::number(choice2Yes), true));
+    satisfactionSummary->setItem(1, 4, makeSatisfactionItem(QString::number(choice2Maybe), true));
+    satisfactionSummary->setItem(1, 5, makeSatisfactionItem(QString::number(choice2No), true));
+
+    // Row 2: 3rd Choice
+    satisfactionSummary->setItem(2, 0, makeSatisfactionItem(QStringLiteral("3rd Choice")));
+    satisfactionSummary->setItem(2, 1, makeSatisfactionItem(QString::number(choice3Total), true));
+    satisfactionSummary->setItem(2, 2, makeSatisfactionItem(
+        totalStudents > 0 ? QStringLiteral("%1%").arg(choice3Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
+    satisfactionSummary->setItem(2, 3, makeSatisfactionItem(QString::number(choice3Yes), true));
+    satisfactionSummary->setItem(2, 4, makeSatisfactionItem(QString::number(choice3Maybe), true));
+    satisfactionSummary->setItem(2, 5, makeSatisfactionItem(QString::number(choice3No), true));
+
+    // Row 3: Not Satisfied (fallback)
+    satisfactionSummary->setItem(3, 0, makeSatisfactionItem(QStringLiteral("Not Satisfied")));
+    satisfactionSummary->setItem(3, 1, makeSatisfactionItem(QString::number(notSatisfiedTotal), true));
+    satisfactionSummary->setItem(3, 2, makeSatisfactionItem(
+        totalStudents > 0 ? QStringLiteral("%1%").arg(notSatisfiedTotal * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
+    satisfactionSummary->setItem(3, 3, makeSatisfactionItem(QString::number(notSatisfiedYes), true));
+    satisfactionSummary->setItem(3, 4, makeSatisfactionItem(QString::number(notSatisfiedMaybe), true));
+    satisfactionSummary->setItem(3, 5, makeSatisfactionItem(QString::number(notSatisfiedNo), true));
 
     activitySummary->clear();
     for (const auto &summary : result.activitySummary) {
@@ -1295,10 +1460,17 @@ public:
   QSpinBox *defaultCapacitySpin;
   QPushButton *setAllCapacitiesButton;
   QPushButton *autoCapacityButton;
+  QSpinBox *weightYesSpin;
+  QSpinBox *weightMaybeSpin;
+  QSpinBox *weightNoSpin;
+  QLabel *weightYesNormLabel;
+  QLabel *weightMaybeNormLabel;
+  QLabel *weightNoNormLabel;
   QComboBox *dayFilterCombo;
   QPushButton *runButton;
   QLabel *resultsStatus;
   QTableWidget *resultsTable;
+  QTableWidget *satisfactionSummary;
   QTreeWidget *activitySummary;
   QPushButton *exportResultsCsvButton;
   QPushButton *exportResultsXlsxButton;
