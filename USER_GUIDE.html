@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>USER_GUIDE</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<h1 id="engineering-week-scheduler---user-guide">Engineering Week
+Scheduler - User Guide</h1>
+<h2 id="overview">Overview</h2>
+<p>The Engineering Week Scheduler is a desktop application that
+optimally assigns students to activities based on their preferences,
+while respecting capacity constraints and attendance patterns. The
+application uses constraint optimization to maximize student
+satisfaction.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#data-tab">Data Tab</a></li>
+<li><a href="#options-tab">Options Tab</a></li>
+<li><a href="#results-tab">Results Tab</a></li>
+<li><a href="#exporting-results">Exporting Results</a></li>
+<li><a href="#tips-and-best-practices">Tips and Best Practices</a></li>
+</ol>
+<hr />
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="launching-the-application">Launching the Application</h3>
+<p>Run the application executable. The main window has three tabs: -
+<strong>Data</strong>: Import and view student preference data -
+<strong>Options</strong>: Configure solver settings and capacities -
+<strong>Results</strong>: View optimization results and activity
+assignments</p>
+<h3 id="required-data-format">Required Data Format</h3>
+<p>Your input file (CSV or Excel) should contain the following
+columns:</p>
+<ul>
+<li><strong>Student ID</strong>: Unique identifier for each student</li>
+<li><strong>First Name</strong>: Student’s first name</li>
+<li><strong>Last Name</strong>: Student’s last name</li>
+<li><strong>Grade</strong>: Student’s grade level</li>
+<li><strong>Day</strong>: Day designation (e.g., “A Day”, “B Day”)</li>
+<li><strong>Teacher</strong>: Teacher name</li>
+<li><strong>Pathway</strong>: Student’s pathway or program</li>
+<li><strong>Present</strong>: Attendance likelihood (“Yes”, “Maybe”, or
+“No”)</li>
+<li><strong>Choice 1, Choice 2, Choice 3, …</strong>: Student’s activity
+preferences in order</li>
+</ul>
+<hr />
+<h2 id="data-tab">Data Tab</h2>
+<h3 id="importing-data">Importing Data</h3>
+<ol type="1">
+<li>Click <strong>File → Open Data…</strong> (or press
+<strong>Cmd+O</strong> on Mac / <strong>Ctrl+O</strong> on Windows)</li>
+<li>Select your CSV or Excel file</li>
+<li>Map the columns from your file to the required fields</li>
+<li>Click <strong>OK</strong> to import</li>
+</ol>
+<h3 id="column-mapping-dialog">Column Mapping Dialog</h3>
+<p>If your spreadsheet uses different column names, the Column Mapping
+dialog allows you to map your columns to the expected fields: - Use the
+dropdown menus to match each required field to a column in your file -
+The system will attempt to auto-detect common column names - Click
+<strong>OK</strong> when mapping is complete</p>
+<h3 id="viewing-data">Viewing Data</h3>
+<p>The Data tab displays all imported student records in a table format.
+You can: - Scroll through the data - Verify that all information
+imported correctly - Check for any missing or incorrect data</p>
+<h3 id="diagnostics">Diagnostics</h3>
+<p>The left panel shows: - <strong>Students</strong>: Total count and
+any missing student IDs - <strong>Blank choices</strong>: Number of
+empty preference fields - <strong>Unique activities</strong>: Number of
+distinct activities detected</p>
+<hr />
+<h2 id="options-tab">Options Tab</h2>
+<p>The Options tab is divided into two sections:</p>
+<h3 id="left-panel-filters-and-weighting">Left Panel: Filters and
+Weighting</h3>
+<h4 id="day-filter">Day Filter</h4>
+<p>Filter students by day designation: - <strong>All Days</strong>:
+Include all students - <strong>Day A</strong>: Only students assigned to
+Day A - <strong>Day B</strong>: Only students assigned to Day B</p>
+<p>This filter affects: - Student count in diagnostics - Auto-capacity
+calculation - Which students the solver processes</p>
+<h4 id="attendance-weighting">Attendance Weighting</h4>
+<p>Control how the solver prioritizes students based on attendance
+likelihood:</p>
+<p><strong>Enable Attendance Weighting</strong> checkbox: -
+<strong>Checked</strong>: Use custom weights to prioritize students by
+attendance status - <strong>Unchecked</strong>: Treat all students
+equally (all weights = 1.0)</p>
+<p>When enabled, set weights for each attendance status: -
+<strong>Yes</strong>: Students confirmed to attend (default: 100, always
+normalized to ×1.00) - <strong>Maybe</strong>: Students who might attend
+(default: 50, normalized to ×0.50) - <strong>No</strong>: Students
+unlikely to attend (default: 10, normalized to ×0.10)</p>
+<p><strong>How It Works:</strong> - Higher weights mean higher priority
+for preferred choices - A “Yes” student’s 2nd choice may be prioritized
+over a “No” student’s 1st choice - Normalized multipliers show the
+relative weight (Yes is always 1.00) - All students still get assigned;
+weighting only affects assignment quality</p>
+<p><strong>Example Scenarios:</strong></p>
+<ul>
+<li><strong>Strong prioritization</strong>: Yes=100, Maybe=10, No=1
+(heavily favor confirmed attendees)</li>
+<li><strong>Moderate prioritization</strong>: Yes=100, Maybe=50, No=10
+(default, balanced approach)</li>
+<li><strong>Weak prioritization</strong>: Yes=100, Maybe=90, No=80
+(nearly equal treatment)</li>
+</ul>
+<h3 id="right-panel-activity-capacities">Right Panel: Activity
+Capacities</h3>
+<h4 id="default-capacity-controls">Default Capacity Controls</h4>
+<ul>
+<li><strong>Default capacity</strong>: Set a base capacity value</li>
+<li><strong>Auto</strong>: Automatically calculate capacity as ⌈filtered
+students ÷ number of activities⌉</li>
+<li><strong>Set All</strong>: Apply the default capacity to all
+activities</li>
+</ul>
+<h4 id="activity-capacities-table">Activity Capacities Table</h4>
+<p>Shows all detected activities with:</p>
+<ul>
+<li><strong>Activity</strong>: Activity name</li>
+<li><strong>Choice 1, 2, 3</strong>: Count of students who selected this
+as their 1st, 2nd, or 3rd choice</li>
+<li><strong>Capacity</strong>: Maximum students for this activity
+(editable)</li>
+</ul>
+<p><strong>Tips:</strong></p>
+<ul>
+<li>Review the choice counts to identify popular activities</li>
+<li>Increase capacity for high-demand activities</li>
+<li>Total capacity should equal or exceed the number of students</li>
+<li>Red warning appears if total capacity is insufficient</li>
+</ul>
+<h4 id="calculate-button">Calculate Button</h4>
+<p>Click <strong>Calculate</strong> to run the optimization solver. The
+solver will:</p>
+<ol type="1">
+<li>Validate that sufficient capacity exists</li>
+<li>Apply attendance weighting (if enabled)</li>
+<li>Find optimal assignments to maximize student satisfaction</li>
+<li>Display results in the Results tab</li>
+</ol>
+<hr />
+<h2 id="results-tab">Results Tab</h2>
+<h3 id="status-bar">Status Bar</h3>
+<p>Shows: - Number of satisfied students (got one of their choices) -
+Total number of students - Solver runtime in milliseconds</p>
+<h3 id="results-table">Results Table</h3>
+<p>Displays all assignments with columns:</p>
+<ul>
+<li><strong>Student ID, First Name, Last Name</strong></li>
+<li><strong>Grade, Day, Teacher, Pathway, Present</strong></li>
+<li><strong>Activity</strong>: Assigned activity</li>
+<li><strong>Choice</strong>: Which preference this was (1, 2, 3, or “-”
+for fallback)</li>
+<li><strong>Score</strong>: Assignment quality score</li>
+</ul>
+<h3 id="choice-satisfaction-summary">Choice Satisfaction Summary</h3>
+<p>Table showing satisfaction breakdown:</p>
+<ul>
+<li><strong>Rank</strong>: 1st Choice, 2nd Choice, 3rd Choice, Not
+Satisfied</li>
+<li><strong>Total</strong>: Number of students in this category</li>
+<li><strong>Total %</strong>: Percentage of all students</li>
+<li><strong>Yes, Maybe, No</strong>: Breakdown by attendance status</li>
+</ul>
+<p>Use this to evaluate:</p>
+<ul>
+<li>Overall satisfaction rate</li>
+<li>Whether attendance weighting is working as intended</li>
+<li>Impact of capacity constraints</li>
+</ul>
+<h3 id="activity-summary">Activity Summary</h3>
+<p>Tree view showing each activity:</p>
+<ul>
+<li><strong>Activity</strong>: Activity name</li>
+<li><strong>Assigned</strong>: Number of students assigned</li>
+<li><strong>Capacity</strong>: Maximum capacity</li>
+<li><strong>Yes, Maybe, No</strong>: Attendance breakdown</li>
+<li><strong>Expected Utilization</strong>: (Yes + Maybe×0.5) ÷
+Capacity</li>
+</ul>
+<p>Expected utilization helps predict actual attendance:</p>
+<ul>
+<li>100%: Activity will likely be full</li>
+<li><blockquote>
+<p>100%: Activity may be overcrowded if all “maybe” students attend</p>
+</blockquote></li>
+<li>&lt;100%: Activity has room for more students</li>
+</ul>
+<hr />
+<h2 id="exporting-results">Exporting Results</h2>
+<h3 id="export-results-csv">Export Results (CSV)</h3>
+<p><strong>File → Export Results (CSV)</strong> or click the button in
+Results tab:</p>
+<ol type="1">
+<li>Select a destination folder</li>
+<li>The following files are created:
+<ul>
+<li><strong>results.csv</strong>: Complete assignment table</li>
+<li><strong>summary.txt</strong>: Comprehensive text report</li>
+<li><strong>[Activity Name].txt</strong>: Individual roster for each
+activity</li>
+</ul></li>
+</ol>
+<h4 id="summary-report-contents">Summary Report Contents</h4>
+<p>The <code>summary.txt</code> file includes:</p>
+<ul>
+<li><strong>Solver Options</strong>: Day filter, capacity settings,
+attendance weights</li>
+<li><strong>Overall Results</strong>: Student counts, satisfaction rate,
+runtime</li>
+<li><strong>Choice Satisfaction Summary</strong>: Detailed breakdown
+table</li>
+<li><strong>Activity Summary</strong>: All activities with utilization
+metrics</li>
+</ul>
+<h4 id="activity-roster-files">Activity Roster Files</h4>
+<p>Each activity gets a text file with:</p>
+<ul>
+<li>Activity name, enrollment, and capacity</li>
+<li>Right-aligned columns: Last Name, First Name, Student ID, Pathway,
+Grade, Present</li>
+<li>Students sorted alphabetically by last name</li>
+</ul>
+<h3 id="export-results-xlsx">Export Results (XLSX)</h3>
+<p>Similar to CSV export but creates:</p>
+<ul>
+<li><strong>results.xlsx</strong>: Excel workbook with assignment
+table</li>
+<li><strong>summary.txt</strong>: Same text report</li>
+<li><strong>[Activity Name].txt</strong>: Same activity rosters</li>
+</ul>
+<h3 id="export-data">Export Data</h3>
+<p><strong>File menu</strong> also provides:</p>
+<ul>
+<li><strong>Export Data as CSV</strong>: Export current student
+preference data</li>
+<li><strong>Export Data as XLSX</strong>: Export as Excel workbook</li>
+</ul>
+<p>Use these to save a modified dataset or share input data.</p>
+<hr />
+<h2 id="tips-and-best-practices">Tips and Best Practices</h2>
+<h3 id="data-preparation">Data Preparation</h3>
+<ol type="1">
+<li><strong>Clean your data</strong>: Remove duplicate student IDs, fix
+typos in activity names</li>
+<li><strong>Consistent naming</strong>: Use the same activity name
+spelling throughout</li>
+<li><strong>Attendance field</strong>: Use “Yes”, “Maybe”, or “No”
+(case-insensitive, “Y”/“M”/“N” also work)</li>
+<li><strong>Complete preferences</strong>: Students should provide at
+least 3 choices</li>
+</ol>
+<h3 id="setting-capacities">Setting Capacities</h3>
+<ol type="1">
+<li><strong>Start with Auto</strong>: Click “Auto” for an initial
+balanced distribution</li>
+<li><strong>Adjust for demand</strong>: Review Choice 1/2/3 counts and
+increase capacity for popular activities</li>
+<li><strong>Account for attendance</strong>: Consider reducing capacity
+for activities with many “No” students</li>
+<li><strong>Buffer room</strong>: Consider setting total capacity
+slightly above student count</li>
+</ol>
+<h3 id="using-attendance-weighting">Using Attendance Weighting</h3>
+<ol type="1">
+<li><strong>Test different settings</strong>: Run solver multiple times
+with different weights</li>
+<li><strong>Compare satisfaction</strong>: Check the Choice Satisfaction
+Summary to see impact</li>
+<li><strong>Balance fairness</strong>: Very high weights may
+over-prioritize “Yes” students</li>
+<li><strong>Consider your goals</strong>:
+<ul>
+<li>Maximize room utilization? Use strong weighting</li>
+<li>Ensure fair access? Use weak weighting or disable</li>
+</ul></li>
+</ol>
+<h3 id="interpreting-results">Interpreting Results</h3>
+<ol type="1">
+<li><strong>Satisfaction rate</strong>: Percentage of students who got a
+top-3 choice</li>
+<li><strong>Not Satisfied</strong>: Students assigned to fallback (none
+of their choices available)</li>
+<li><strong>Expected Utilization</strong>:
+<ul>
+<li>&lt;80%: Consider reducing capacity or combining with similar
+activities</li>
+<li><blockquote>
+<p>120%: Consider increasing capacity or adding another session</p>
+</blockquote></li>
+</ul></li>
+<li><strong>Attendance patterns</strong>: If many “Maybe” students in
+one activity, have a backup plan</li>
+</ol>
+<h3 id="iterative-refinement">Iterative Refinement</h3>
+<ol type="1">
+<li>Run the solver with initial settings</li>
+<li>Review the Choice Satisfaction Summary</li>
+<li>Adjust capacities for over/under-subscribed activities</li>
+<li>Modify attendance weights if needed</li>
+<li>Re-run solver and compare results</li>
+<li>Export when satisfied with the outcome</li>
+</ol>
+<h3 id="handling-day-aday-b-schedules">Handling Day A/Day B
+Schedules</h3>
+<ol type="1">
+<li><strong>Import all students</strong> in one file</li>
+<li><strong>Use Day Filter</strong> to process each day separately:
+<ul>
+<li>Set filter to “Day A”, run solver, export results</li>
+<li>Set filter to “Day B”, run solver, export results</li>
+</ul></li>
+<li><strong>Or import separately</strong>: Split your data file by day
+before importing</li>
+</ol>
+<h3 id="troubleshooting">Troubleshooting</h3>
+<p><strong>“Insufficient Capacity” warning:</strong></p>
+<ul>
+<li>Total capacity is less than number of students</li>
+<li>Increase capacities or click “Auto” to recalculate</li>
+<li>Can proceed anyway, but some students won’t be assigned</li>
+</ul>
+<p><strong>“No students match the selected day filter”:</strong></p>
+<ul>
+<li>Check that your data has the correct day values</li>
+<li>Try “All Days” filter</li>
+<li>Verify the Day column was mapped correctly during import</li>
+</ul>
+<p><strong>Blank choices in diagnostics:</strong></p>
+<ul>
+<li>Normal if students provided fewer than maximum choices</li>
+<li>Ensure students have at least 1-3 choices for best results</li>
+</ul>
+<p><strong>High “Not Satisfied” count:</strong></p>
+<ul>
+<li>Capacities may be too low for demand distribution</li>
+<li>Some activities may be over-requested</li>
+<li>Consider increasing capacities or adding more activity options</li>
+</ul>
+<hr />
+<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+<ul>
+<li><strong>Cmd/Ctrl + O</strong>: Open data file</li>
+<li><strong>Cmd/Ctrl + Q</strong>: Quit application</li>
+</ul>
+<hr />
+<h2 id="technical-details">Technical Details</h2>
+<h3 id="optimization-algorithm">Optimization Algorithm</h3>
+<p>The solver uses OR-Tools’ CBC (Coin-or Branch and Cut) mixed-integer
+programming solver with: - Binary variables for each student-activity
+assignment - Constraint: Each student assigned to exactly one activity -
+Constraint: Activity assignments ≤ capacity - Objective: Maximize sum of
+(preference weight × attendance multiplier) - Fallback: Greedy algorithm
+if OR-Tools solver fails</p>
+<h3 id="preference-weights">Preference Weights</h3>
+<ul>
+<li>1st choice: 100 points</li>
+<li>2nd choice: 50 points</li>
+<li>3rd choice: 25 points</li>
+<li>Fallback: 1 point</li>
+</ul>
+<p>These are multiplied by attendance weights when weighting is
+enabled.</p>
+<h3 id="expected-utilization-calculation">Expected Utilization
+Calculation</h3>
+<pre><code>Expected = (Yes_count × 1.0) + (Maybe_count × 0.5) + (No_count × 0.0)
+Utilization = Expected ÷ Capacity</code></pre>
+<p>This provides a more realistic estimate than raw assigned count.</p>
+<hr />
+<h2 id="support-and-feedback">Support and Feedback</h2>
+<p>For issues, questions, or feature requests, please contact your
+system administrator or the development team.</p>
+<p><strong>Version</strong>: 1.0 <strong>Last Updated</strong>: December
+2025</p>
+</body>
+</html>

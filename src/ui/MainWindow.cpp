@@ -1385,7 +1385,7 @@ public:
       return;
     }
 
-    // Export individual activity rosters
+    // Export individual activity rosters as HTML
     int filesCreated = 0;
     for (const auto &activitySum : lastResult->activitySummary) {
       const QString activity = toQString(activitySum.activity);
@@ -1425,7 +1425,7 @@ public:
       // Create sanitized filename
       QString filename = activity;
       filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")), QStringLiteral("_"));
-      filename = dir.filePath(filename + QStringLiteral(".txt"));
+      filename = dir.filePath(filename + QStringLiteral(".html"));
 
       QFile file(filename);
       if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -1434,47 +1434,55 @@ public:
       }
 
       QTextStream out(&file);
-      out << activity << "\n";
-      out << "Enrollment: " << activitySum.assigned << "\n";
-      out << "Capacity: " << activitySum.capacity << "\n";
-      out << "\n";
 
-      // Column widths
-      const int lastNameWidth = 20;
-      const int firstNameWidth = 20;
-      const int idWidth = 15;
-      const int pathwayWidth = 20;
-      const int gradeWidth = 8;
-      const int presentWidth = 10;
+      // Write HTML header
+      out << "<!DOCTYPE html>\n";
+      out << "<html>\n<head>\n";
+      out << "<meta charset=\"UTF-8\">\n";
+      out << "<title>" << activity << "</title>\n";
+      out << "<style>\n";
+      out << "body { font-family: Arial, sans-serif; margin: 20px; }\n";
+      out << "h1 { color: #333; }\n";
+      out << ".info { margin-bottom: 20px; color: #666; }\n";
+      out << "table { border-collapse: collapse; width: 100%; }\n";
+      out << "th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\n";
+      out << "th { background-color: #4CAF50; color: white; }\n";
+      out << "tr:nth-child(even) { background-color: #f2f2f2; }\n";
+      out << "tr:hover { background-color: #ddd; }\n";
+      out << "</style>\n";
+      out << "</head>\n<body>\n";
 
-      // Write header
-      out << qSetFieldWidth(lastNameWidth) << Qt::right << "Last Name"
-          << qSetFieldWidth(firstNameWidth) << Qt::right << "First Name"
-          << qSetFieldWidth(idWidth) << Qt::right << "Student ID"
-          << qSetFieldWidth(pathwayWidth) << Qt::right << "Pathway"
-          << qSetFieldWidth(gradeWidth) << Qt::right << "Grade"
-          << qSetFieldWidth(presentWidth) << Qt::right << "Present"
-          << qSetFieldWidth(0) << "\n";
+      // Write activity info
+      out << "<h1>" << activity << "</h1>\n";
+      out << "<div class=\"info\">\n";
+      out << "<p><strong>Enrollment:</strong> " << activitySum.assigned << "</p>\n";
+      out << "<p><strong>Capacity:</strong> " << activitySum.capacity << "</p>\n";
+      out << "</div>\n";
 
-      // Write separator line
-      out << qSetFieldWidth(lastNameWidth) << Qt::right << QString(lastNameWidth - 1, '-')
-          << qSetFieldWidth(firstNameWidth) << Qt::right << QString(firstNameWidth - 1, '-')
-          << qSetFieldWidth(idWidth) << Qt::right << QString(idWidth - 1, '-')
-          << qSetFieldWidth(pathwayWidth) << Qt::right << QString(pathwayWidth - 1, '-')
-          << qSetFieldWidth(gradeWidth) << Qt::right << QString(gradeWidth - 1, '-')
-          << qSetFieldWidth(presentWidth) << Qt::right << QString(presentWidth - 1, '-')
-          << qSetFieldWidth(0) << "\n";
+      // Write table
+      out << "<table>\n<thead>\n<tr>\n";
+      out << "<th>Last Name</th>\n";
+      out << "<th>First Name</th>\n";
+      out << "<th>Student ID</th>\n";
+      out << "<th>Pathway</th>\n";
+      out << "<th>Grade</th>\n";
+      out << "<th>Present</th>\n";
+      out << "</tr>\n</thead>\n<tbody>\n";
 
       // Write student data
       for (const auto &student : students) {
-        out << qSetFieldWidth(lastNameWidth) << Qt::right << student.lastName
-            << qSetFieldWidth(firstNameWidth) << Qt::right << student.firstName
-            << qSetFieldWidth(idWidth) << Qt::right << student.studentId
-            << qSetFieldWidth(pathwayWidth) << Qt::right << student.pathway
-            << qSetFieldWidth(gradeWidth) << Qt::right << student.grade
-            << qSetFieldWidth(presentWidth) << Qt::right << student.present
-            << qSetFieldWidth(0) << "\n";
+        out << "<tr>\n";
+        out << "<td>" << student.lastName << "</td>\n";
+        out << "<td>" << student.firstName << "</td>\n";
+        out << "<td>" << student.studentId << "</td>\n";
+        out << "<td>" << student.pathway << "</td>\n";
+        out << "<td>" << student.grade << "</td>\n";
+        out << "<td>" << student.present << "</td>\n";
+        out << "</tr>\n";
       }
+
+      out << "</tbody>\n</table>\n";
+      out << "</body>\n</html>\n";
 
       file.close();
       filesCreated++;
@@ -1484,13 +1492,13 @@ public:
     const QString summaryPath = dir.filePath(QStringLiteral("summary.txt"));
     exportSummaryReport(summaryPath);
 
-    appendDiagnostic(QStringLiteral("Exported results.csv, summary.txt, and %1 activity rosters to %2")
+    appendDiagnostic(QStringLiteral("Exported results.csv, summary.txt, and %1 activity roster HTML files to %2")
                          .arg(filesCreated)
                          .arg(folderPath));
 
     QMessageBox::information(
         q_ptr, QStringLiteral("Export Successful"),
-        QStringLiteral("Successfully exported results.csv, summary.txt, and %1 activity roster files to:\n%2")
+        QStringLiteral("Successfully exported results.csv, summary.txt, and %1 activity roster HTML files to:\n%2")
             .arg(filesCreated)
             .arg(folderPath));
   }
@@ -1525,7 +1533,7 @@ public:
       return;
     }
 
-    // Export individual activity rosters
+    // Export individual activity rosters as HTML
     int filesCreated = 0;
     for (const auto &activitySum : lastResult->activitySummary) {
       const QString activity = toQString(activitySum.activity);
@@ -1565,7 +1573,7 @@ public:
       // Create sanitized filename
       QString filename = activity;
       filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")), QStringLiteral("_"));
-      filename = dir.filePath(filename + QStringLiteral(".txt"));
+      filename = dir.filePath(filename + QStringLiteral(".html"));
 
       QFile file(filename);
       if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -1574,59 +1582,67 @@ public:
       }
 
       QTextStream out(&file);
-      out << activity << "\n";
-      out << "Enrollment: " << activitySum.assigned << "\n";
-      out << "Capacity: " << activitySum.capacity << "\n";
-      out << "\n";
 
-      // Column widths
-      const int lastNameWidth = 20;
-      const int firstNameWidth = 20;
-      const int idWidth = 15;
-      const int pathwayWidth = 20;
-      const int gradeWidth = 8;
-      const int presentWidth = 10;
+      // Write HTML header
+      out << "<!DOCTYPE html>\n";
+      out << "<html>\n<head>\n";
+      out << "<meta charset=\"UTF-8\">\n";
+      out << "<title>" << activity << "</title>\n";
+      out << "<style>\n";
+      out << "body { font-family: Arial, sans-serif; margin: 20px; }\n";
+      out << "h1 { color: #333; }\n";
+      out << ".info { margin-bottom: 20px; color: #666; }\n";
+      out << "table { border-collapse: collapse; width: 100%; }\n";
+      out << "th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }\n";
+      out << "th { background-color: #4CAF50; color: white; }\n";
+      out << "tr:nth-child(even) { background-color: #f2f2f2; }\n";
+      out << "tr:hover { background-color: #ddd; }\n";
+      out << "</style>\n";
+      out << "</head>\n<body>\n";
 
-      // Write header
-      out << qSetFieldWidth(lastNameWidth) << Qt::right << "Last Name"
-          << qSetFieldWidth(firstNameWidth) << Qt::right << "First Name"
-          << qSetFieldWidth(idWidth) << Qt::right << "Student ID"
-          << qSetFieldWidth(pathwayWidth) << Qt::right << "Pathway"
-          << qSetFieldWidth(gradeWidth) << Qt::right << "Grade"
-          << qSetFieldWidth(presentWidth) << Qt::right << "Present"
-          << qSetFieldWidth(0) << "\n";
+      // Write activity info
+      out << "<h1>" << activity << "</h1>\n";
+      out << "<div class=\"info\">\n";
+      out << "<p><strong>Enrollment:</strong> " << activitySum.assigned << "</p>\n";
+      out << "<p><strong>Capacity:</strong> " << activitySum.capacity << "</p>\n";
+      out << "</div>\n";
 
-      // Write separator line
-      out << qSetFieldWidth(lastNameWidth) << Qt::right << QString(lastNameWidth - 1, '-')
-          << qSetFieldWidth(firstNameWidth) << Qt::right << QString(firstNameWidth - 1, '-')
-          << qSetFieldWidth(idWidth) << Qt::right << QString(idWidth - 1, '-')
-          << qSetFieldWidth(pathwayWidth) << Qt::right << QString(pathwayWidth - 1, '-')
-          << qSetFieldWidth(gradeWidth) << Qt::right << QString(gradeWidth - 1, '-')
-          << qSetFieldWidth(presentWidth) << Qt::right << QString(presentWidth - 1, '-')
-          << qSetFieldWidth(0) << "\n";
+      // Write table
+      out << "<table>\n<thead>\n<tr>\n";
+      out << "<th>Last Name</th>\n";
+      out << "<th>First Name</th>\n";
+      out << "<th>Student ID</th>\n";
+      out << "<th>Pathway</th>\n";
+      out << "<th>Grade</th>\n";
+      out << "<th>Present</th>\n";
+      out << "</tr>\n</thead>\n<tbody>\n";
 
       // Write student data
       for (const auto &student : students) {
-        out << qSetFieldWidth(lastNameWidth) << Qt::right << student.lastName
-            << qSetFieldWidth(firstNameWidth) << Qt::right << student.firstName
-            << qSetFieldWidth(idWidth) << Qt::right << student.studentId
-            << qSetFieldWidth(pathwayWidth) << Qt::right << student.pathway
-            << qSetFieldWidth(gradeWidth) << Qt::right << student.grade
-            << qSetFieldWidth(presentWidth) << Qt::right << student.present
-            << qSetFieldWidth(0) << "\n";
+        out << "<tr>\n";
+        out << "<td>" << student.lastName << "</td>\n";
+        out << "<td>" << student.firstName << "</td>\n";
+        out << "<td>" << student.studentId << "</td>\n";
+        out << "<td>" << student.pathway << "</td>\n";
+        out << "<td>" << student.grade << "</td>\n";
+        out << "<td>" << student.present << "</td>\n";
+        out << "</tr>\n";
       }
+
+      out << "</tbody>\n</table>\n";
+      out << "</body>\n</html>\n";
 
       file.close();
       filesCreated++;
     }
 
-    appendDiagnostic(QStringLiteral("Exported results.xlsx and %1 activity rosters to %2")
+    appendDiagnostic(QStringLiteral("Exported results.xlsx and %1 activity roster HTML files to %2")
                          .arg(filesCreated)
                          .arg(folderPath));
 
     QMessageBox::information(
         q_ptr, QStringLiteral("Export Successful"),
-        QStringLiteral("Successfully exported results.xlsx and %1 activity roster files to:\n%2")
+        QStringLiteral("Successfully exported results.xlsx and %1 activity roster HTML files to:\n%2")
             .arg(filesCreated)
             .arg(folderPath));
   }

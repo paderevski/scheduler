@@ -27,6 +27,7 @@ Run the application executable. The main window has three tabs:
 ### Required Data Format
 
 Your input file (CSV or Excel) should contain the following columns:
+
 - **Student ID**: Unique identifier for each student
 - **First Name**: Student's first name
 - **Last Name**: Student's last name
@@ -109,6 +110,7 @@ When enabled, set weights for each attendance status:
 - All students still get assigned; weighting only affects assignment quality
 
 **Example Scenarios:**
+
 - **Strong prioritization**: Yes=100, Maybe=10, No=1 (heavily favor confirmed attendees)
 - **Moderate prioritization**: Yes=100, Maybe=50, No=10 (default, balanced approach)
 - **Weak prioritization**: Yes=100, Maybe=90, No=80 (nearly equal treatment)
@@ -124,11 +126,13 @@ When enabled, set weights for each attendance status:
 #### Activity Capacities Table
 
 Shows all detected activities with:
+
 - **Activity**: Activity name
 - **Choice 1, 2, 3**: Count of students who selected this as their 1st, 2nd, or 3rd choice
 - **Capacity**: Maximum students for this activity (editable)
 
 **Tips:**
+
 - Review the choice counts to identify popular activities
 - Increase capacity for high-demand activities
 - Total capacity should equal or exceed the number of students
@@ -137,6 +141,7 @@ Shows all detected activities with:
 #### Calculate Button
 
 Click **Calculate** to run the optimization solver. The solver will:
+
 1. Validate that sufficient capacity exists
 2. Apply attendance weighting (if enabled)
 3. Find optimal assignments to maximize student satisfaction
@@ -156,6 +161,7 @@ Shows:
 ### Results Table
 
 Displays all assignments with columns:
+
 - **Student ID, First Name, Last Name**
 - **Grade, Day, Teacher, Pathway, Present**
 - **Activity**: Assigned activity
@@ -165,12 +171,14 @@ Displays all assignments with columns:
 ### Choice Satisfaction Summary
 
 Table showing satisfaction breakdown:
+
 - **Rank**: 1st Choice, 2nd Choice, 3rd Choice, Not Satisfied
 - **Total**: Number of students in this category
 - **Total %**: Percentage of all students
 - **Yes, Maybe, No**: Breakdown by attendance status
 
 Use this to evaluate:
+
 - Overall satisfaction rate
 - Whether attendance weighting is working as intended
 - Impact of capacity constraints
@@ -178,6 +186,7 @@ Use this to evaluate:
 ### Activity Summary
 
 Tree view showing each activity:
+
 - **Activity**: Activity name
 - **Assigned**: Number of students assigned
 - **Capacity**: Maximum capacity
@@ -185,6 +194,7 @@ Tree view showing each activity:
 - **Expected Utilization**: (Yes + Maybe×0.5) ÷ Capacity
 
 Expected utilization helps predict actual attendance:
+
 - 100%: Activity will likely be full
 - >100%: Activity may be overcrowded if all "maybe" students attend
 - <100%: Activity has room for more students
@@ -201,11 +211,14 @@ Expected utilization helps predict actual attendance:
 2. The following files are created:
    - **results.csv**: Complete assignment table
    - **summary.txt**: Comprehensive text report
-   - **[Activity Name].txt**: Individual roster for each activity
+   - **[Activity Name].html**: Individual roster for each activity (HTML format)
+
+**Why HTML?** Activity rosters are exported as HTML files instead of plain text because they display perfectly in Google Drive with proper formatting, borders, and styling. You can open them directly in Google Drive, print them, or share links with colleagues.
 
 #### Summary Report Contents
 
 The `summary.txt` file includes:
+
 - **Solver Options**: Day filter, capacity settings, attendance weights
 - **Overall Results**: Student counts, satisfaction rate, runtime
 - **Choice Satisfaction Summary**: Detailed breakdown table
@@ -213,21 +226,26 @@ The `summary.txt` file includes:
 
 #### Activity Roster Files
 
-Each activity gets a text file with:
-- Activity name, enrollment, and capacity
-- Right-aligned columns: Last Name, First Name, Student ID, Pathway, Grade, Present
+Each activity gets an HTML file with:
+
+- Activity name as heading
+- Enrollment and capacity information
+- Formatted table with columns: Last Name, First Name, Student ID, Pathway, Grade, Present
 - Students sorted alphabetically by last name
+- Professional styling with alternating row colors and hover effects
 
 ### Export Results (XLSX)
 
 Similar to CSV export but creates:
+
 - **results.xlsx**: Excel workbook with assignment table
 - **summary.txt**: Same text report
-- **[Activity Name].txt**: Same activity rosters
+- **[Activity Name].html**: Same activity rosters (HTML format)
 
 ### Export Data
 
 **File menu** also provides:
+
 - **Export Data as CSV**: Export current student preference data
 - **Export Data as XLSX**: Export as Excel workbook
 
@@ -289,20 +307,24 @@ Use these to save a modified dataset or share input data.
 ### Troubleshooting
 
 **"Insufficient Capacity" warning:**
+
 - Total capacity is less than number of students
 - Increase capacities or click "Auto" to recalculate
 - Can proceed anyway, but some students won't be assigned
 
 **"No students match the selected day filter":**
+
 - Check that your data has the correct day values
 - Try "All Days" filter
 - Verify the Day column was mapped correctly during import
 
 **Blank choices in diagnostics:**
+
 - Normal if students provided fewer than maximum choices
 - Ensure students have at least 1-3 choices for best results
 
 **High "Not Satisfied" count:**
+
 - Capacities may be too low for demand distribution
 - Some activities may be over-requested
 - Consider increasing capacities or adding more activity options
