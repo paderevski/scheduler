@@ -38,6 +38,15 @@
 #include <QVBoxLayout>
 #include <QtConcurrent>
 
+#if HAVE_QT_CHARTS
+#include <QtCharts/QChartView>
+#include <QtCharts/QChart>
+#include <QtCharts/QBarSet>
+#include <QtCharts/QBarSeries>
+#include <QtCharts/QBarCategoryAxis>
+#include <QtCharts/QValueAxis>
+#endif
+
 #include <algorithm>
 #include <optional>
 #include <sstream>
@@ -259,8 +268,8 @@ public:
         progressDialog(new QProgressDialog(QStringLiteral("Running solver..."),
                                            QString(), 0, 0, q))
 #if HAVE_QT_CHARTS
-        ,
-        activityChart(new QtCharts::QChartView(new QtCharts::QChart(), q))
+  ,
+  activityChart(new QChartView(new QChart(), q))
 #endif
   {
     setupUi();
@@ -1172,10 +1181,10 @@ public:
 
 #if HAVE_QT_CHARTS
     if (activityChart) {
-      auto *chart = new QtCharts::QChart();
+      auto *chart = new QChart();
       chart->setTitle(QStringLiteral("Activity utilization"));
-      auto *assignedSet = new QtCharts::QBarSet(QStringLiteral("Assigned"));
-      auto *capacitySet = new QtCharts::QBarSet(QStringLiteral("Capacity"));
+      auto *assignedSet = new QBarSet(QStringLiteral("Assigned"));
+      auto *capacitySet = new QBarSet(QStringLiteral("Capacity"));
       QStringList categories;
 
       for (const auto &summary : result.activitySummary) {
@@ -1184,17 +1193,17 @@ public:
         capacitySet->append(summary.capacity);
       }
 
-      auto *series = new QtCharts::QBarSeries();
+      auto *series = new QBarSeries();
       series->append(assignedSet);
       series->append(capacitySet);
       chart->addSeries(series);
 
-      auto *axisX = new QtCharts::QBarCategoryAxis();
+      auto *axisX = new QBarCategoryAxis();
       axisX->append(categories);
       chart->addAxis(axisX, Qt::AlignBottom);
       series->attachAxis(axisX);
 
-      auto *axisY = new QtCharts::QValueAxis();
+      auto *axisY = new QValueAxis();
       axisY->setTitleText(QStringLiteral("Students"));
       chart->addAxis(axisY, Qt::AlignLeft);
       series->attachAxis(axisY);
@@ -1750,6 +1759,9 @@ public:
   QTreeWidget *activitySummary;
   QPushButton *exportResultsCsvButton;
   QPushButton *exportResultsXlsxButton;
+#if HAVE_QT_CHARTS
+  QChartView *activityChart;
+#endif
   QFutureWatcher<SolverResult> *solverWatcher;
   QProgressDialog *progressDialog;
   QString lastDataPath;
