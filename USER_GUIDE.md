@@ -256,7 +256,7 @@ Use these to save a modified dataset or share input data.
 1. **Test different settings**: Run solver multiple times with different weights
 2. **Compare satisfaction**: Check the Choice Satisfaction Summary to see impact
 3. **Balance fairness**: Very high weights may over-prioritize "Yes" students
-4. **Consider your goals**: 
+4. **Consider your goals**:
    - Maximize room utilization? Use strong weighting
    - Ensure fair access? Use weak weighting or disable
 
@@ -264,7 +264,7 @@ Use these to save a modified dataset or share input data.
 
 1. **Satisfaction rate**: Percentage of students who got a top-3 choice
 2. **Not Satisfied**: Students assigned to fallback (none of their choices available)
-3. **Expected Utilization**: 
+3. **Expected Utilization**:
    - <80%: Consider reducing capacity or combining with similar activities
    - >120%: Consider increasing capacity or adding another session
 4. **Attendance patterns**: If many "Maybe" students in one activity, have a backup plan
@@ -330,7 +330,7 @@ The solver uses OR-Tools' CBC (Coin-or Branch and Cut) mixed-integer programming
 ### Preference Weights
 
 - 1st choice: 100 points
-- 2nd choice: 50 points  
+- 2nd choice: 50 points
 - 3rd choice: 25 points
 - Fallback: 1 point
 
@@ -351,5 +351,5 @@ This provides a more realistic estimate than raw assigned count.
 
 For issues, questions, or feature requests, please contact your system administrator or the development team.
 
-**Version**: 1.0  
+**Version**: 1.0
 **Last Updated**: December 2025
