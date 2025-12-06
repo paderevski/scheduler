@@ -954,19 +954,36 @@ public:
       const QString activity = toQString(activitySum.activity);
 
       // Collect students for this activity
-      QStringList studentNames;
+      struct StudentInfo {
+        QString lastName;
+        QString firstName;
+        QString studentId;
+        QString pathway;
+        QString grade;
+        QString present;
+      };
+      std::vector<StudentInfo> students;
+
       for (const auto &assignment : lastResult->assignments) {
         if (assignment.activity == activitySum.activity) {
-          QString name = toQString(assignment.fullName());
-          if (name.isEmpty()) {
-            name = toQString(assignment.studentId);
-          }
-          studentNames.append(name);
+          StudentInfo info;
+          info.lastName = toQString(assignment.lastName);
+          info.firstName = toQString(assignment.firstName);
+          info.studentId = toQString(assignment.studentId);
+          info.pathway = toQString(assignment.pathway);
+          info.grade = toQString(assignment.grade);
+          info.present = toQString(assignment.present);
+          students.push_back(info);
         }
       }
 
-      // Sort student names alphabetically
-      studentNames.sort(Qt::CaseInsensitive);
+      // Sort by last name, then first name
+      std::sort(students.begin(), students.end(), [](const StudentInfo &a, const StudentInfo &b) {
+        if (a.lastName != b.lastName) {
+          return a.lastName.compare(b.lastName, Qt::CaseInsensitive) < 0;
+        }
+        return a.firstName.compare(b.firstName, Qt::CaseInsensitive) < 0;
+      });
 
       // Create sanitized filename
       QString filename = activity;
@@ -985,8 +1002,41 @@ public:
       out << "Capacity: " << activitySum.capacity << "\n";
       out << "\n";
 
-      for (const QString &name : studentNames) {
-        out << name << "\n";
+      // Column widths
+      const int lastNameWidth = 20;
+      const int firstNameWidth = 20;
+      const int idWidth = 15;
+      const int pathwayWidth = 20;
+      const int gradeWidth = 8;
+      const int presentWidth = 10;
+
+      // Write header
+      out << qSetFieldWidth(lastNameWidth) << Qt::right << "Last Name"
+          << qSetFieldWidth(firstNameWidth) << Qt::right << "First Name"
+          << qSetFieldWidth(idWidth) << Qt::right << "Student ID"
+          << qSetFieldWidth(pathwayWidth) << Qt::right << "Pathway"
+          << qSetFieldWidth(gradeWidth) << Qt::right << "Grade"
+          << qSetFieldWidth(presentWidth) << Qt::right << "Present"
+          << qSetFieldWidth(0) << "\n";
+
+      // Write separator line
+      out << qSetFieldWidth(lastNameWidth) << Qt::right << QString(lastNameWidth - 1, '-')
+          << qSetFieldWidth(firstNameWidth) << Qt::right << QString(firstNameWidth - 1, '-')
+          << qSetFieldWidth(idWidth) << Qt::right << QString(idWidth - 1, '-')
+          << qSetFieldWidth(pathwayWidth) << Qt::right << QString(pathwayWidth - 1, '-')
+          << qSetFieldWidth(gradeWidth) << Qt::right << QString(gradeWidth - 1, '-')
+          << qSetFieldWidth(presentWidth) << Qt::right << QString(presentWidth - 1, '-')
+          << qSetFieldWidth(0) << "\n";
+
+      // Write student data
+      for (const auto &student : students) {
+        out << qSetFieldWidth(lastNameWidth) << Qt::right << student.lastName
+            << qSetFieldWidth(firstNameWidth) << Qt::right << student.firstName
+            << qSetFieldWidth(idWidth) << Qt::right << student.studentId
+            << qSetFieldWidth(pathwayWidth) << Qt::right << student.pathway
+            << qSetFieldWidth(gradeWidth) << Qt::right << student.grade
+            << qSetFieldWidth(presentWidth) << Qt::right << student.present
+            << qSetFieldWidth(0) << "\n";
       }
 
       file.close();
@@ -1040,19 +1090,36 @@ public:
       const QString activity = toQString(activitySum.activity);
 
       // Collect students for this activity
-      QStringList studentNames;
+      struct StudentInfo {
+        QString lastName;
+        QString firstName;
+        QString studentId;
+        QString pathway;
+        QString grade;
+        QString present;
+      };
+      std::vector<StudentInfo> students;
+
       for (const auto &assignment : lastResult->assignments) {
         if (assignment.activity == activitySum.activity) {
-          QString name = toQString(assignment.fullName());
-          if (name.isEmpty()) {
-            name = toQString(assignment.studentId);
-          }
-          studentNames.append(name);
+          StudentInfo info;
+          info.lastName = toQString(assignment.lastName);
+          info.firstName = toQString(assignment.firstName);
+          info.studentId = toQString(assignment.studentId);
+          info.pathway = toQString(assignment.pathway);
+          info.grade = toQString(assignment.grade);
+          info.present = toQString(assignment.present);
+          students.push_back(info);
         }
       }
 
-      // Sort student names alphabetically
-      studentNames.sort(Qt::CaseInsensitive);
+      // Sort by last name, then first name
+      std::sort(students.begin(), students.end(), [](const StudentInfo &a, const StudentInfo &b) {
+        if (a.lastName != b.lastName) {
+          return a.lastName.compare(b.lastName, Qt::CaseInsensitive) < 0;
+        }
+        return a.firstName.compare(b.firstName, Qt::CaseInsensitive) < 0;
+      });
 
       // Create sanitized filename
       QString filename = activity;
@@ -1071,8 +1138,41 @@ public:
       out << "Capacity: " << activitySum.capacity << "\n";
       out << "\n";
 
-      for (const QString &name : studentNames) {
-        out << name << "\n";
+      // Column widths
+      const int lastNameWidth = 20;
+      const int firstNameWidth = 20;
+      const int idWidth = 15;
+      const int pathwayWidth = 20;
+      const int gradeWidth = 8;
+      const int presentWidth = 10;
+
+      // Write header
+      out << qSetFieldWidth(lastNameWidth) << Qt::right << "Last Name"
+          << qSetFieldWidth(firstNameWidth) << Qt::right << "First Name"
+          << qSetFieldWidth(idWidth) << Qt::right << "Student ID"
+          << qSetFieldWidth(pathwayWidth) << Qt::right << "Pathway"
+          << qSetFieldWidth(gradeWidth) << Qt::right << "Grade"
+          << qSetFieldWidth(presentWidth) << Qt::right << "Present"
+          << qSetFieldWidth(0) << "\n";
+
+      // Write separator line
+      out << qSetFieldWidth(lastNameWidth) << Qt::right << QString(lastNameWidth - 1, '-')
+          << qSetFieldWidth(firstNameWidth) << Qt::right << QString(firstNameWidth - 1, '-')
+          << qSetFieldWidth(idWidth) << Qt::right << QString(idWidth - 1, '-')
+          << qSetFieldWidth(pathwayWidth) << Qt::right << QString(pathwayWidth - 1, '-')
+          << qSetFieldWidth(gradeWidth) << Qt::right << QString(gradeWidth - 1, '-')
+          << qSetFieldWidth(presentWidth) << Qt::right << QString(presentWidth - 1, '-')
+          << qSetFieldWidth(0) << "\n";
+
+      // Write student data
+      for (const auto &student : students) {
+        out << qSetFieldWidth(lastNameWidth) << Qt::right << student.lastName
+            << qSetFieldWidth(firstNameWidth) << Qt::right << student.firstName
+            << qSetFieldWidth(idWidth) << Qt::right << student.studentId
+            << qSetFieldWidth(pathwayWidth) << Qt::right << student.pathway
+            << qSetFieldWidth(gradeWidth) << Qt::right << student.grade
+            << qSetFieldWidth(presentWidth) << Qt::right << student.present
+            << qSetFieldWidth(0) << "\n";
       }
 
       file.close();
