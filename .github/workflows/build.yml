@@ -43,6 +43,7 @@ jobs:
         host: ${{ matrix.qt_host }}
         target: 'desktop'
         arch: ${{ matrix.qt_arch }}
+        modules: 'qtcharts'
         cache: true
 
     - name: Download OR-Tools (Linux/macOS)
