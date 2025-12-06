@@ -1,4 +1,4 @@
-cmake_minimum_required(VERS24)
+cmake_minimum_required(VERSION 3.24)
 
 project(EngineeringWeekScheduler VERSION 0.1.0 LANGUAGES CXX)
 
