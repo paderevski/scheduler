@@ -26,7 +26,7 @@ else()
     message(STATUS "OR-Tools not found - using greedy fallback solver")
 endif()
 
-if(TARGET Qt6::Charts)
+if(Qt6Charts_FOUND)
     set(QT_HAS_CHARTS TRUE)
     message(STATUS "Qt6::Charts target located")
 else()
