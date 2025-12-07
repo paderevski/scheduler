@@ -238,15 +238,62 @@ jobs:
           # Bundle OR-Tools DLLs
           Copy-Item "$env:ORTOOLS_ROOT/bin/*.dll" dist/ -ErrorAction SilentlyContinue
 
-          # Create a zip file
-          Compress-Archive -Path dist/* -DestinationPath EngineeringWeekScheduler-windows.zip
+      - name: Create Inno Setup script
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart('v')
+          if ([string]::IsNullOrEmpty($version)) {
+            $version = "${{ github.event.inputs.tag }}".TrimStart('v')
+          }
+          if ([string]::IsNullOrEmpty($version)) {
+            $version = "1.0.0"
+          }
+
+          $innoScript = @"
+          [Setup]
+          AppName=Engineering Week Scheduler
+          AppVersion=$version
+          AppPublisher=Your Name
+          DefaultDirName={autopf}\EngineeringWeekScheduler
+          DefaultGroupName=Engineering Week Scheduler
+          OutputDir=installer
+          OutputBaseFilename=EngineeringWeekScheduler-$version-setup
+          Compression=lzma2
+          SolidCompression=yes
+          ArchitecturesInstallIn64BitMode=x64compatible
+          WizardStyle=modern
+
+          [Files]
+          Source: "dist\*"; DestDir: "{app}"; Flags: recursesubdirs
+
+          [Icons]
+          Name: "{group}\Engineering Week Scheduler"; Filename: "{app}\EngineeringWeekScheduler.exe"
+          Name: "{group}\Uninstall Engineering Week Scheduler"; Filename: "{uninstallexe}"
+          Name: "{autodesktop}\Engineering Week Scheduler"; Filename: "{app}\EngineeringWeekScheduler.exe"; Tasks: desktopicon
+
+          [Tasks]
+          Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional icons:"
+
+          [Run]
+          Filename: "{app}\EngineeringWeekScheduler.exe"; Description: "Launch Engineering Week Scheduler"; Flags: nowait postinstall skipifsilent
+          "@
+
+          $innoScript | Out-File -FilePath "installer.iss" -Encoding UTF8
+          New-Item -ItemType Directory -Force -Path installer
+
+      - name: Build Windows Installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer.iss
 
       - name: Upload artifacts (Windows)
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-windows
-          path: EngineeringWeekScheduler-windows.zip
+          path: installer/*.exe
 
   release:
     needs: build
@@ -272,7 +319,7 @@ jobs:
           # Copy single-file artifacts directly
           cp artifacts/scheduler-linux/*.AppImage release-assets/ || true
           cp artifacts/scheduler-macos/*.dmg release-assets/ || true
-          cp artifacts/scheduler-windows/*.zip release-assets/ || true
+          cp artifacts/scheduler-windows/*.exe release-assets/ || true
 
           echo "=== Release assets prepared ==="
           ls -la release-assets/
@@ -289,7 +336,7 @@ jobs:
 
             **macOS:** Download the `.dmg` file, open it, and drag the app to Applications.
 
-            **Windows:** Download and extract the `.zip` file, then run `EngineeringWeekScheduler.exe`.
+            **Windows:** Download and run the `-setup.exe` installer.
           artifacts: "release-assets/*"
           allowUpdates: true
           removeArtifacts: true
