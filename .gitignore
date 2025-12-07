@@ -15,7 +15,7 @@ Makefile
 *.dylib
 *.dll
 *.exe
-EngineeringWeekScheduler
+ClickSort
 *.app
 
 # Qt generated files
