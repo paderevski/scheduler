@@ -32,6 +32,7 @@
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QSet>
+#include <QSettings>
 #include <QSpinBox>
 #include <QStackedWidget>
 #include <QString>
@@ -302,6 +303,7 @@ public:
         welcomeWidget(new QWidget(q)),
         tableView(new QTableView(q)),
         model(new PreferenceModel(q)), diagnostics(new QListWidget(q)),
+        recentProjectsList(new QListWidget(q)),
         studentCountLabel(new QLabel(q)), choiceCountLabel(new QLabel(q)),
         activityCountLabel(new QLabel(q)), capacityTable(new QTableWidget(q)),
         totalCapacityLabel(new QLabel(q)), defaultCapacitySpin(new QSpinBox(q)),
@@ -607,11 +609,48 @@ public:
     welcomeLabel->setAlignment(Qt::AlignCenter);
     layout->addWidget(welcomeLabel);
 
-    layout->addSpacing(10);
+    layout->addSpacing(30);
 
-    // Action buttons
+    // Two-column layout: Recent Projects (left) and Action Buttons (right)
+    auto *columnsLayout = new QHBoxLayout();
+    columnsLayout->setSpacing(40);
+
+    // Left column: Recent Projects
+    auto *recentLayout = new QVBoxLayout();
+    auto *recentLabel = new QLabel(QStringLiteral("<b>Recent Projects</b>"), welcomeWidget);
+    recentLayout->addWidget(recentLabel);
+
+    recentProjectsList->setSelectionMode(QAbstractItemView::SingleSelection);
+    recentProjectsList->setMaximumHeight(300);
+    recentProjectsList->setStyleSheet(QStringLiteral(
+      "QListWidget { border: 1px solid #ccc; border-radius: 4px; padding: 5px; }"
+      "QListWidget::item { padding: 8px; }"
+      "QListWidget::item:hover { background-color: #e8e8e8; }"
+    ));
+    QObject::connect(recentProjectsList, &QListWidget::itemDoubleClicked, q_ptr,
+                     [this](QListWidgetItem *item) {
+                       QString path = item->data(Qt::UserRole).toString();
+                       if (!path.isEmpty() && QFile::exists(path)) {
+                         doLoadProject(path);
+                       }
+                     });
+    recentLayout->addWidget(recentProjectsList);
+
+    auto *clearRecentButton = new QPushButton(QStringLiteral("Clear Recent"), welcomeWidget);
+    clearRecentButton->setMaximumWidth(120);
+    QObject::connect(clearRecentButton, &QPushButton::clicked, q_ptr, [this]() {
+      QSettings settings;
+      settings.remove(QStringLiteral("recentProjects"));
+      updateRecentProjects();
+    });
+    recentLayout->addWidget(clearRecentButton);
+    recentLayout->addStretch();
+
+    // Right column: Action buttons
     auto *buttonLayout = new QVBoxLayout();
-    buttonLayout->setSpacing(15);
+    auto *actionsLabel = new QLabel(QStringLiteral("<b>Actions</b>"), welcomeWidget);
+    buttonLayout->addWidget(actionsLabel);
+    buttonLayout->addSpacing(5);
 
     auto *openProjectButton = new QPushButton(QStringLiteral("Open Project"), welcomeWidget);
     openProjectButton->setMinimumHeight(50);
@@ -637,19 +676,57 @@ public:
       dataStack->setCurrentIndex(0); // Stay on welcome screen
     });
     buttonLayout->addWidget(newProjectButton);
+    buttonLayout->addStretch();
 
-    // Center the buttons
-    auto *buttonWidget = new QWidget(welcomeWidget);
-    buttonWidget->setLayout(buttonLayout);
-    buttonWidget->setMaximumWidth(400);
-
-    auto *centerLayout = new QHBoxLayout();
-    centerLayout->addStretch();
-    centerLayout->addWidget(buttonWidget);
-    centerLayout->addStretch();
-
-    layout->addLayout(centerLayout);
+    // Add columns to main layout
+    columnsLayout->addLayout(recentLayout, 1);
+    columnsLayout->addLayout(buttonLayout, 1);
+    layout->addLayout(columnsLayout);
     layout->addStretch();
+
+    // Load recent projects
+    updateRecentProjects();
+  }
+
+  void updateRecentProjects() {
+    recentProjectsList->clear();
+    QSettings settings;
+    QStringList recent = settings.value(QStringLiteral("recentProjects")).toStringList();
+
+    for (const QString &path : recent) {
+      if (QFile::exists(path)) {
+        auto *item = new QListWidgetItem(QFileInfo(path).fileName());
+        item->setData(Qt::UserRole, path);
+        item->setToolTip(path);
+        recentProjectsList->addItem(item);
+      }
+    }
+
+    if (recentProjectsList->count() == 0) {
+      auto *item = new QListWidgetItem(QStringLiteral("No recent projects"));
+      item->setFlags(Qt::NoItemFlags);
+      item->setForeground(QColor(Qt::gray));
+      recentProjectsList->addItem(item);
+    }
+  }
+
+  void addToRecentProjects(const QString &path) {
+    QSettings settings;
+    QStringList recent = settings.value(QStringLiteral("recentProjects")).toStringList();
+
+    // Remove if already exists
+    recent.removeAll(path);
+
+    // Add to front
+    recent.prepend(path);
+
+    // Keep only 5 most recent
+    while (recent.size() > 5) {
+      recent.removeLast();
+    }
+
+    settings.setValue(QStringLiteral("recentProjects"), recent);
+    updateRecentProjects();
   }
 
   void setupMenu() {
@@ -1212,6 +1289,7 @@ public:
     file.close();
 
     currentProjectPath = path;
+    addToRecentProjects(path);
     updateWindowTitle();
     appendDiagnostic(QStringLiteral("Saved project to %1").arg(QFileInfo(path).fileName()));
   }
@@ -1357,6 +1435,7 @@ public:
     }
 
     currentProjectPath = path;
+    addToRecentProjects(path);
     updateWindowTitle();
     appendDiagnostic(QStringLiteral("Loaded project from %1").arg(QFileInfo(path).fileName()));
 
@@ -2053,6 +2132,7 @@ public:
   QString currentProjectPath;
   QWidget *welcomeWidget;
   QStackedWidget *dataStack;
+  QListWidget *recentProjectsList;
   std::optional<SolverResult> lastResult;
   std::optional<SolverOptions> lastOptions;
   QString lastDayFilter;
