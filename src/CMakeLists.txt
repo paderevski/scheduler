@@ -5,6 +5,7 @@ set(SCHEDULER_SOURCES
     models/PreferenceModel.cpp
     solver/SolverEngine.cpp
     utils/SpreadsheetBridge.cpp
+    resources/images.qrc
 )
 
 set(SCHEDULER_HEADERS

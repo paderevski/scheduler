@@ -579,9 +579,18 @@ public:
     layout->setContentsMargins(40, 40, 40, 40);
     layout->setSpacing(20);
 
-    // Add logo
-    QString logoPath = QStringLiteral("/Users/pewhite/github/scheduler/include/logo.jpeg");
-    QPixmap logoPixmap(logoPath);
+    // Add logo: prefer embedded resource, fall back to repo-relative file for dev
+    QPixmap logoPixmap;
+    // Try resource first
+    logoPixmap.load(QStringLiteral(":/images/logo.jpeg"));
+    if (logoPixmap.isNull()) {
+      // Fallback: relative to source tree (useful during development)
+      const QString devPath = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(QStringLiteral("../../include/logo.jpeg"));
+      if (QFile::exists(devPath)) {
+        logoPixmap.load(devPath);
+      }
+    }
+
     if (!logoPixmap.isNull()) {
       // Scale logo to reasonable size
       logoPixmap = logoPixmap.scaledToWidth(300, Qt::SmoothTransformation);
