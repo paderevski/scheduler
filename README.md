@@ -48,6 +48,7 @@ To run the prototype after a successful build:
 ## Solver Model
 
 The OR-Tools CBC mixed-integer programming solver:
+
 - **Decision variables**: Binary variables for each student-activity pair (1 = assigned, 0 = not assigned)
 - **Constraints**:
   - Each student must be assigned to exactly 1 activity
