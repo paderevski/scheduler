@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDateTime>
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
@@ -17,6 +18,9 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QLabel>
 #include <QListWidget>
 #include <QMenuBar>
@@ -41,10 +45,9 @@
 #if HAVE_QT_CHARTS
 #include <QtCharts/QChartView>
 #include <QtCharts/QChart>
-#include <QtCharts/QBarSet>
-#include <QtCharts/QBarSeries>
-#include <QtCharts/QBarCategoryAxis>
-#include <QtCharts/QValueAxis>
+#include <QtCharts/QPieSeries>
+#include <QtCharts/QPieSlice>
+#include <QtCharts/QLegend>
 #endif
 
 #include <algorithm>
@@ -322,7 +325,10 @@ public:
                                            QString(), 0, 0, q))
 #if HAVE_QT_CHARTS
   ,
-  activityChart(new QChartView(new QChart(), q))
+  overallChart(new QChartView(new QChart(), q)),
+  yesChart(new QChartView(new QChart(), q)),
+  maybeChart(new QChartView(new QChart(), q)),
+  noChart(new QChartView(new QChart(), q))
 #endif
   {
     setupUi();
@@ -496,8 +502,20 @@ public:
     resultsLayout->addWidget(new QLabel(QStringLiteral("<b>Activity Utilization</b>"), q_ptr));
     resultsLayout->addWidget(activitySummary);
 #if HAVE_QT_CHARTS
-    activityChart->setMinimumHeight(250);
-    resultsLayout->addWidget(activityChart);
+    overallChart->setMinimumHeight(200);
+    yesChart->setMinimumHeight(200);
+    maybeChart->setMinimumHeight(200);
+    noChart->setMinimumHeight(200);
+
+    auto *chartsLabel = new QLabel(QStringLiteral("<b>Choice Satisfaction by Attendance</b>"), q_ptr);
+    resultsLayout->addWidget(chartsLabel);
+
+    auto *chartsGrid = new QGridLayout();
+    chartsGrid->addWidget(overallChart, 0, 0);
+    chartsGrid->addWidget(yesChart, 0, 1);
+    chartsGrid->addWidget(maybeChart, 0,2);
+    chartsGrid->addWidget(noChart, 0,3);
+    resultsLayout->addLayout(chartsGrid);
 #endif
     auto *resultsButtonLayout = new QHBoxLayout();
     resultsButtonLayout->addStretch();
@@ -543,9 +561,26 @@ public:
 
   void setupMenu() {
     auto *fileMenu = q_ptr->menuBar()->addMenu(QStringLiteral("File"));
-    auto *openAction = fileMenu->addAction(QStringLiteral("Open Data..."));
-    openAction->setShortcut(QKeySequence::Open);
-    QObject::connect(openAction, &QAction::triggered, q_ptr,
+
+    auto *openProjectAction = fileMenu->addAction(QStringLiteral("Open Project..."));
+    openProjectAction->setShortcut(QKeySequence::Open);
+    QObject::connect(openProjectAction, &QAction::triggered, q_ptr,
+                     [this]() { loadProject(); });
+
+    auto *saveProjectAction = fileMenu->addAction(QStringLiteral("Save Project"));
+    saveProjectAction->setShortcut(QKeySequence::Save);
+    QObject::connect(saveProjectAction, &QAction::triggered, q_ptr,
+                     [this]() { saveProject(); });
+
+    auto *saveProjectAsAction = fileMenu->addAction(QStringLiteral("Save Project As..."));
+    saveProjectAsAction->setShortcut(QKeySequence::SaveAs);
+    QObject::connect(saveProjectAsAction, &QAction::triggered, q_ptr,
+                     [this]() { saveProjectAs(); });
+
+    fileMenu->addSeparator();
+
+    auto *openDataAction = fileMenu->addAction(QStringLiteral("Import Data from CSV/XLSX..."));
+    QObject::connect(openDataAction, &QAction::triggered, q_ptr,
                      [this]() { openDataFile(); });
 
     auto *exportCsvAction =
@@ -948,6 +983,293 @@ public:
     appendDiagnostic(QStringLiteral("Exported data to %1").arg(path));
   }
 
+  void saveProject() {
+    if (currentProjectPath.isEmpty()) {
+      saveProjectAs();
+    } else {
+      doSaveProject(currentProjectPath);
+    }
+  }
+
+  void saveProjectAs() {
+    const QString path = QFileDialog::getSaveFileName(
+        q_ptr, QStringLiteral("Save Project As"),
+        currentProjectPath.isEmpty() ? QStringLiteral("untitled.clicksort") : currentProjectPath,
+        QStringLiteral("ClickSort Projects (*.clicksort)"));
+    if (path.isEmpty()) {
+      return;
+    }
+    doSaveProject(path);
+  }
+
+  void doSaveProject(const QString &path) {
+    QJsonObject root;
+    root["version"] = "1.0";
+
+    // Save settings
+    QJsonObject settings;
+    settings["defaultCapacity"] = defaultCapacitySpin->value();
+    settings["weightingEnabled"] = weightingEnabledCheck->isChecked();
+
+    QJsonObject weights;
+    weights["yes"] = weightYesSpin->value();
+    weights["maybe"] = weightMaybeSpin->value();
+    weights["no"] = weightNoSpin->value();
+    settings["weights"] = weights;
+
+    settings["dayFilter"] = dayFilterCombo->currentData().toString();
+
+    // Save activity capacities
+    QJsonObject activityCapacities;
+    for (int row = 0; row < capacityTable->rowCount(); ++row) {
+      auto *activityItem = capacityTable->item(row, 0);
+      auto *spinBox = qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
+      if (activityItem && spinBox) {
+        activityCapacities[activityItem->text()] = spinBox->value();
+      }
+    }
+    settings["activityCapacities"] = activityCapacities;
+    root["settings"] = settings;
+
+    // Save student data
+    QJsonArray students;
+    for (const auto &row : model->rows()) {
+      QJsonObject student;
+      student["studentId"] = row.studentId;
+      student["firstName"] = row.firstName;
+      student["lastName"] = row.lastName;
+      student["grade"] = row.grade;
+      student["day"] = row.day;
+      student["teacher"] = row.teacher;
+      student["pathway"] = row.pathway;
+      student["present"] = row.present;
+
+      QJsonArray choices;
+      for (const auto &choice : row.choices) {
+        choices.append(choice);
+      }
+      student["choices"] = choices;
+
+      students.append(student);
+    }
+    root["students"] = students;
+
+    // Save solution if available
+    if (hasResult && lastResult) {
+      QJsonObject solution;
+      solution["totalStudents"] = lastResult->totalStudents;
+      solution["satisfiedStudents"] = lastResult->satisfiedStudents;
+      solution["runtimeMs"] = static_cast<qint64>(lastResult->runtimeMs);
+
+      QJsonArray assignments;
+      for (const auto &assignment : lastResult->assignments) {
+        QJsonObject assgn;
+        assgn["studentId"] = QString::fromStdString(assignment.studentId);
+        assgn["firstName"] = QString::fromStdString(assignment.firstName);
+        assgn["lastName"] = QString::fromStdString(assignment.lastName);
+        assgn["grade"] = QString::fromStdString(assignment.grade);
+        assgn["day"] = QString::fromStdString(assignment.day);
+        assgn["teacher"] = QString::fromStdString(assignment.teacher);
+        assgn["pathway"] = QString::fromStdString(assignment.pathway);
+        assgn["present"] = QString::fromStdString(assignment.present);
+        assgn["activity"] = QString::fromStdString(assignment.activity);
+        assgn["choiceRank"] = assignment.choiceRank;
+        assgn["score"] = assignment.score;
+        assignments.append(assgn);
+      }
+      solution["assignments"] = assignments;
+
+      QJsonArray activitySummaries;
+      for (const auto &summary : lastResult->activitySummary) {
+        QJsonObject summ;
+        summ["activity"] = QString::fromStdString(summary.activity);
+        summ["assigned"] = summary.assigned;
+        summ["capacity"] = summary.capacity;
+        summ["presentYes"] = summary.presentYes;
+        summ["presentMaybe"] = summary.presentMaybe;
+        summ["presentNo"] = summary.presentNo;
+        activitySummaries.append(summ);
+      }
+      solution["activitySummary"] = activitySummaries;
+
+      root["solution"] = solution;
+    }
+
+    // Save metadata
+    QJsonObject metadata;
+    metadata["modified"] = QDateTime::currentDateTime().toString(Qt::ISODate);
+    root["metadata"] = metadata;
+
+    // Write to file
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      QMessageBox::warning(q_ptr, QStringLiteral("Unable to save"),
+                          QStringLiteral("Could not open file for writing:\n%1").arg(path));
+      return;
+    }
+
+    QJsonDocument doc(root);
+    file.write(doc.toJson(QJsonDocument::Indented));
+    file.close();
+
+    currentProjectPath = path;
+    updateWindowTitle();
+    appendDiagnostic(QStringLiteral("Saved project to %1").arg(QFileInfo(path).fileName()));
+  }
+
+  void loadProject() {
+    const QString path = QFileDialog::getOpenFileName(
+        q_ptr, QStringLiteral("Open Project"),
+        currentProjectPath.isEmpty() ? QString() : QFileInfo(currentProjectPath).path(),
+        QStringLiteral("ClickSort Projects (*.clicksort)"));
+    if (path.isEmpty()) {
+      return;
+    }
+    doLoadProject(path);
+  }
+
+  void doLoadProject(const QString &path) {
+    QFile file(path);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      QMessageBox::warning(q_ptr, QStringLiteral("Unable to open"),
+                          QStringLiteral("Could not open project file:\n%1").arg(path));
+      return;
+    }
+
+    QByteArray data = file.readAll();
+    file.close();
+
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &parseError);
+    if (parseError.error != QJsonParseError::NoError) {
+      QMessageBox::warning(q_ptr, QStringLiteral("Invalid project file"),
+                          QStringLiteral("Failed to parse JSON:\n%1").arg(parseError.errorString()));
+      return;
+    }
+
+    QJsonObject root = doc.object();
+    QString version = root["version"].toString();
+    if (version != "1.0") {
+      QMessageBox::warning(q_ptr, QStringLiteral("Unsupported version"),
+                          QStringLiteral("This project file version (%1) is not supported.").arg(version));
+      return;
+    }
+
+    // Load settings
+    QJsonObject settings = root["settings"].toObject();
+    defaultCapacitySpin->setValue(settings["defaultCapacity"].toInt());
+    weightingEnabledCheck->setChecked(settings["weightingEnabled"].toBool());
+
+    QJsonObject weights = settings["weights"].toObject();
+    weightYesSpin->setValue(weights["yes"].toInt());
+    weightMaybeSpin->setValue(weights["maybe"].toInt());
+    weightNoSpin->setValue(weights["no"].toInt());
+
+    QString dayFilter = settings["dayFilter"].toString();
+    int dayIndex = dayFilterCombo->findData(dayFilter);
+    if (dayIndex >= 0) {
+      dayFilterCombo->setCurrentIndex(dayIndex);
+    }
+
+    // Load student data
+    QJsonArray students = root["students"].toArray();
+    std::vector<StudentPreferenceRow> rows;
+    for (const auto &studentValue : students) {
+      QJsonObject student = studentValue.toObject();
+      StudentPreferenceRow row;
+      row.studentId = student["studentId"].toString();
+      row.firstName = student["firstName"].toString();
+      row.lastName = student["lastName"].toString();
+      row.grade = student["grade"].toString();
+      row.day = student["day"].toString();
+      row.teacher = student["teacher"].toString();
+      row.pathway = student["pathway"].toString();
+      row.present = student["present"].toString();
+
+      QJsonArray choices = student["choices"].toArray();
+      for (const auto &choiceValue : choices) {
+        row.choices.push_back(choiceValue.toString());
+      }
+
+      rows.push_back(row);
+    }
+
+    diagnostics->clear();
+    model->setHeaders(defaultHeaders());
+    model->setRows(std::move(rows));
+
+    // Restore activity capacities after updating summary
+    QJsonObject activityCapacities = settings["activityCapacities"].toObject();
+    for (int row = 0; row < capacityTable->rowCount(); ++row) {
+      auto *activityItem = capacityTable->item(row, 0);
+      auto *spinBox = qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
+      if (activityItem && spinBox) {
+        QString activity = activityItem->text();
+        if (activityCapacities.contains(activity)) {
+          spinBox->setValue(activityCapacities[activity].toInt());
+        }
+      }
+    }
+
+    // Load solution if available
+    if (root.contains("solution")) {
+      QJsonObject solution = root["solution"].toObject();
+      SolverResult result;
+      result.totalStudents = solution["totalStudents"].toInt();
+      result.satisfiedStudents = solution["satisfiedStudents"].toInt();
+      result.runtimeMs = solution["runtimeMs"].toInteger();
+
+      QJsonArray assignments = solution["assignments"].toArray();
+      for (const auto &assgnValue : assignments) {
+        QJsonObject assgn = assgnValue.toObject();
+        StudentAssignment assignment;
+        assignment.studentId = assgn["studentId"].toString().toStdString();
+        assignment.firstName = assgn["firstName"].toString().toStdString();
+        assignment.lastName = assgn["lastName"].toString().toStdString();
+        assignment.grade = assgn["grade"].toString().toStdString();
+        assignment.day = assgn["day"].toString().toStdString();
+        assignment.teacher = assgn["teacher"].toString().toStdString();
+        assignment.pathway = assgn["pathway"].toString().toStdString();
+        assignment.present = assgn["present"].toString().toStdString();
+        assignment.activity = assgn["activity"].toString().toStdString();
+        assignment.choiceRank = assgn["choiceRank"].toInt();
+        assignment.score = assgn["score"].toDouble();
+        result.assignments.push_back(assignment);
+      }
+
+      // Load activity summary
+      QJsonArray activitySummaries = solution["activitySummary"].toArray();
+      for (const auto &summValue : activitySummaries) {
+        QJsonObject summ = summValue.toObject();
+        ActivitySummaryRow summary;
+        summary.activity = summ["activity"].toString().toStdString();
+        summary.assigned = summ["assigned"].toInt();
+        summary.capacity = summ["capacity"].toInt();
+        summary.presentYes = summ["presentYes"].toInt();
+        summary.presentMaybe = summ["presentMaybe"].toInt();
+        summary.presentNo = summ["presentNo"].toInt();
+        result.activitySummary.push_back(summary);
+      }
+
+      lastResult = result;
+      hasResult = true;
+      populateResults(result);
+      refreshResultExports();
+    }
+
+    currentProjectPath = path;
+    updateWindowTitle();
+    appendDiagnostic(QStringLiteral("Loaded project from %1").arg(QFileInfo(path).fileName()));
+  }
+
+  void updateWindowTitle() {
+    QString title = QStringLiteral("ClickSort");
+    if (!currentProjectPath.isEmpty()) {
+      title += QStringLiteral(" - ") + QFileInfo(currentProjectPath).fileName();
+    }
+    q_ptr->setWindowTitle(title);
+  }
+
   void onRunClicked() {
     if (solverWatcher->isRunning()) {
       return;
@@ -1195,36 +1517,44 @@ public:
                                .arg(result.runtimeMs));
 
 #if HAVE_QT_CHARTS
-    if (activityChart) {
-      auto *chart = new QChart();
-      chart->setTitle(QStringLiteral("Activity utilization"));
-      auto *assignedSet = new QBarSet(QStringLiteral("Assigned"));
-      auto *capacitySet = new QBarSet(QStringLiteral("Capacity"));
-      QStringList categories;
+    // Create pie charts for choice satisfaction breakdown by attendance group
+    auto createPieChart = [](const QString &title, int choice1, int choice2, int choice3, int other) -> QChart* {
+      auto *series = new QPieSeries();
 
-      for (const auto &summary : result.activitySummary) {
-        categories.append(toQString(summary.activity));
-        assignedSet->append(summary.assigned);
-        capacitySet->append(summary.capacity);
+      if (choice1 > 0) {
+        auto *slice1 = series->append(QStringLiteral("1st Choice"), choice1);
+        slice1->setBrush(QColor(76, 175, 80));  // Green
+        slice1->setLabelVisible(false);
+      }
+      if (choice2 > 0) {
+        auto *slice2 = series->append(QStringLiteral("2nd Choice"), choice2);
+        slice2->setBrush(QColor(255, 193, 7));  // Amber
+        slice2->setLabelVisible(false);
+      }
+      if (choice3 > 0) {
+        auto *slice3 = series->append(QStringLiteral("3rd Choice"), choice3);
+        slice3->setBrush(QColor(255, 152, 0));  // Orange
+        slice3->setLabelVisible(false);
+      }
+      if (other > 0) {
+        auto *sliceOther = series->append(QStringLiteral("Other"), other);
+        sliceOther->setBrush(QColor(158, 158, 158));  // Grey
+        sliceOther->setLabelVisible(false);
       }
 
-      auto *series = new QBarSeries();
-      series->append(assignedSet);
-      series->append(capacitySet);
+      auto *chart = new QChart();
       chart->addSeries(series);
+      chart->setTitle(title);
+      chart->legend()->setVisible(true);
+      chart->legend()->setAlignment(Qt::AlignRight);
 
-      auto *axisX = new QBarCategoryAxis();
-      axisX->append(categories);
-      chart->addAxis(axisX, Qt::AlignBottom);
-      series->attachAxis(axisX);
+      return chart;
+    };
 
-      auto *axisY = new QValueAxis();
-      axisY->setTitleText(QStringLiteral("Students"));
-      chart->addAxis(axisY, Qt::AlignLeft);
-      series->attachAxis(axisY);
-
-      activityChart->setChart(chart);
-    }
+    overallChart->setChart(createPieChart(QStringLiteral("Overall"), counts.choice1Total, counts.choice2Total, counts.choice3Total, counts.notSatisfiedTotal));
+    yesChart->setChart(createPieChart(QStringLiteral("'Yes' Attendees"), counts.choice1Yes, counts.choice2Yes, counts.choice3Yes, counts.notSatisfiedYes));
+    maybeChart->setChart(createPieChart(QStringLiteral("'Maybe' Attendees"), counts.choice1Maybe, counts.choice2Maybe, counts.choice3Maybe, counts.notSatisfiedMaybe));
+    noChart->setChart(createPieChart(QStringLiteral("'No' Attendees"), counts.choice1No, counts.choice2No, counts.choice3No, counts.notSatisfiedNo));
 #endif
   }
 
@@ -1608,11 +1938,15 @@ public:
   QPushButton *exportResultsCsvButton;
   QPushButton *exportResultsXlsxButton;
 #if HAVE_QT_CHARTS
-  QChartView *activityChart;
+  QChartView *overallChart;
+  QChartView *yesChart;
+  QChartView *maybeChart;
+  QChartView *noChart;
 #endif
   QFutureWatcher<SolverResult> *solverWatcher;
   QProgressDialog *progressDialog;
   QString lastDataPath;
+  QString currentProjectPath;
   std::optional<SolverResult> lastResult;
   std::optional<SolverOptions> lastOptions;
   QString lastDayFilter;
