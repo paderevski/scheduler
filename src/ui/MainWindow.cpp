@@ -235,6 +235,59 @@ SpreadsheetTable resultsToTable(const SolverResult &result) {
   return table;
 }
 
+// Shared struct for student roster information
+struct StudentInfo {
+  QString lastName;
+  QString firstName;
+  QString studentId;
+  QString pathway;
+  QString grade;
+  QString present;
+};
+
+// Struct to hold choice satisfaction counts
+struct ChoiceSatisfactionCounts {
+  int choice1Total = 0, choice1Yes = 0, choice1Maybe = 0, choice1No = 0;
+  int choice2Total = 0, choice2Yes = 0, choice2Maybe = 0, choice2No = 0;
+  int choice3Total = 0, choice3Yes = 0, choice3Maybe = 0, choice3No = 0;
+  int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0, notSatisfiedNo = 0;
+};
+
+ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
+  ChoiceSatisfactionCounts counts;
+
+  for (const auto &assignment : result.assignments) {
+    QString present = toQString(assignment.present).trimmed().toLower();
+    bool isYes = (present == "yes" || present == "y");
+    bool isMaybe = (present == "maybe" || present == "m");
+    bool isNo = (present == "no" || present == "n");
+
+    if (assignment.choiceRank == 0) {
+      counts.choice1Total++;
+      if (isYes) counts.choice1Yes++;
+      else if (isMaybe) counts.choice1Maybe++;
+      else if (isNo) counts.choice1No++;
+    } else if (assignment.choiceRank == 1) {
+      counts.choice2Total++;
+      if (isYes) counts.choice2Yes++;
+      else if (isMaybe) counts.choice2Maybe++;
+      else if (isNo) counts.choice2No++;
+    } else if (assignment.choiceRank == 2) {
+      counts.choice3Total++;
+      if (isYes) counts.choice3Yes++;
+      else if (isMaybe) counts.choice3Maybe++;
+      else if (isNo) counts.choice3No++;
+    } else {
+      counts.notSatisfiedTotal++;
+      if (isYes) counts.notSatisfiedYes++;
+      else if (isMaybe) counts.notSatisfiedMaybe++;
+      else if (isNo) counts.notSatisfiedNo++;
+    }
+  }
+
+  return counts;
+}
+
 } // namespace
 
 class MainWindow::Impl {
@@ -521,9 +574,6 @@ public:
     QObject::connect(solverWatcher, &QFutureWatcher<SolverResult>::finished,
                      q_ptr, [this]() { handleSolverFinished(); });
 
-    QObject::connect(setAllCapacitiesButton, &QPushButton::clicked, q_ptr,
-                     [this]() { setAllCapacities(); });
-
     QObject::connect(dayFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
                      q_ptr, [this]() { updateSummary(); });
 
@@ -571,6 +621,17 @@ public:
     weightYesNormLabel->setText(QStringLiteral("(×%1)").arg(normYes, 0, 'f', 2));
     weightMaybeNormLabel->setText(QStringLiteral("(×%1)").arg(normMaybe, 0, 'f', 2));
     weightNoNormLabel->setText(QStringLiteral("(×%1)").arg(normNo, 0, 'f', 2));
+  }
+
+  int countFilteredStudents() const {
+    const QString dayFilter = dayFilterCombo->currentData().toString();
+    int count = 0;
+    for (const auto &row : model->rows()) {
+      if (dayFilter.isEmpty() || row.day == dayFilter) {
+        count++;
+      }
+    }
+    return count;
   }
 
   void updateSummary() {
@@ -729,15 +790,7 @@ public:
       }
     }
 
-    // Count filtered students
-    const QString dayFilter = dayFilterCombo->currentData().toString();
-    int studentCount = 0;
-    for (const auto &row : model->rows()) {
-      if (dayFilter.isEmpty() || row.day == dayFilter) {
-        studentCount++;
-      }
-    }
-
+    const int studentCount = countFilteredStudents();
     bool sufficient = totalCapacity >= studentCount;
 
     QString labelText =
@@ -768,16 +821,8 @@ public:
   }
 
   void autoSetCapacity() {
-    // Count filtered students
-    const QString dayFilter = dayFilterCombo->currentData().toString();
-    int filteredStudentCount = 0;
-    for (const auto &row : model->rows()) {
-      if (dayFilter.isEmpty() || row.day == dayFilter) {
-        filteredStudentCount++;
-      }
-    }
-
-    int activityCount = capacityTable->rowCount();
+    const int filteredStudentCount = countFilteredStudents();
+    const int activityCount = capacityTable->rowCount();
     if (activityCount > 0 && filteredStudentCount > 0) {
       // Calculate: students / activities, rounded up
       int autoCapacity = (filteredStudentCount + activityCount - 1) / activityCount;
@@ -1073,43 +1118,9 @@ public:
       ++rowIndex;
     }
 
-    // Populate satisfaction summary
-    // Count assignments by choice rank and attendance status
-    int choice1Total = 0, choice1Yes = 0, choice1Maybe = 0, choice1No = 0;
-    int choice2Total = 0, choice2Yes = 0, choice2Maybe = 0, choice2No = 0;
-    int choice3Total = 0, choice3Yes = 0, choice3Maybe = 0, choice3No = 0;
-    int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0, notSatisfiedNo = 0;
-
-    for (const auto &assignment : result.assignments) {
-      QString present = toQString(assignment.present).trimmed().toLower();
-      bool isYes = (present == "yes" || present == "y");
-      bool isMaybe = (present == "maybe" || present == "m");
-      bool isNo = (present == "no" || present == "n");
-
-      if (assignment.choiceRank == 0) {
-        choice1Total++;
-        if (isYes) choice1Yes++;
-        else if (isMaybe) choice1Maybe++;
-        else if (isNo) choice1No++;
-      } else if (assignment.choiceRank == 1) {
-        choice2Total++;
-        if (isYes) choice2Yes++;
-        else if (isMaybe) choice2Maybe++;
-        else if (isNo) choice2No++;
-      } else if (assignment.choiceRank == 2) {
-        choice3Total++;
-        if (isYes) choice3Yes++;
-        else if (isMaybe) choice3Maybe++;
-        else if (isNo) choice3No++;
-      } else {
-        notSatisfiedTotal++;
-        if (isYes) notSatisfiedYes++;
-        else if (isMaybe) notSatisfiedMaybe++;
-        else if (isNo) notSatisfiedNo++;
-      }
-    }
-
-    int totalStudents = result.assignments.size();
+    // Populate satisfaction summary using helper function
+    const auto counts = countChoiceSatisfaction(result);
+    const int totalStudents = result.assignments.size();
 
     auto makeSatisfactionItem = [](const QString &text, bool center = false) {
       auto *item = new QTableWidgetItem(text);
@@ -1124,39 +1135,39 @@ public:
 
     // Row 0: 1st Choice
     satisfactionSummary->setItem(0, 0, makeSatisfactionItem(QStringLiteral("1st Choice")));
-    satisfactionSummary->setItem(0, 1, makeSatisfactionItem(QString::number(choice1Total), true));
+    satisfactionSummary->setItem(0, 1, makeSatisfactionItem(QString::number(counts.choice1Total), true));
     satisfactionSummary->setItem(0, 2, makeSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(choice1Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
-    satisfactionSummary->setItem(0, 3, makeSatisfactionItem(QString::number(choice1Yes), true));
-    satisfactionSummary->setItem(0, 4, makeSatisfactionItem(QString::number(choice1Maybe), true));
-    satisfactionSummary->setItem(0, 5, makeSatisfactionItem(QString::number(choice1No), true));
+        totalStudents > 0 ? QStringLiteral("%1%").arg(counts.choice1Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
+    satisfactionSummary->setItem(0, 3, makeSatisfactionItem(QString::number(counts.choice1Yes), true));
+    satisfactionSummary->setItem(0, 4, makeSatisfactionItem(QString::number(counts.choice1Maybe), true));
+    satisfactionSummary->setItem(0, 5, makeSatisfactionItem(QString::number(counts.choice1No), true));
 
     // Row 1: 2nd Choice
     satisfactionSummary->setItem(1, 0, makeSatisfactionItem(QStringLiteral("2nd Choice")));
-    satisfactionSummary->setItem(1, 1, makeSatisfactionItem(QString::number(choice2Total), true));
+    satisfactionSummary->setItem(1, 1, makeSatisfactionItem(QString::number(counts.choice2Total), true));
     satisfactionSummary->setItem(1, 2, makeSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(choice2Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
-    satisfactionSummary->setItem(1, 3, makeSatisfactionItem(QString::number(choice2Yes), true));
-    satisfactionSummary->setItem(1, 4, makeSatisfactionItem(QString::number(choice2Maybe), true));
-    satisfactionSummary->setItem(1, 5, makeSatisfactionItem(QString::number(choice2No), true));
+        totalStudents > 0 ? QStringLiteral("%1%").arg(counts.choice2Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
+    satisfactionSummary->setItem(1, 3, makeSatisfactionItem(QString::number(counts.choice2Yes), true));
+    satisfactionSummary->setItem(1, 4, makeSatisfactionItem(QString::number(counts.choice2Maybe), true));
+    satisfactionSummary->setItem(1, 5, makeSatisfactionItem(QString::number(counts.choice2No), true));
 
     // Row 2: 3rd Choice
     satisfactionSummary->setItem(2, 0, makeSatisfactionItem(QStringLiteral("3rd Choice")));
-    satisfactionSummary->setItem(2, 1, makeSatisfactionItem(QString::number(choice3Total), true));
+    satisfactionSummary->setItem(2, 1, makeSatisfactionItem(QString::number(counts.choice3Total), true));
     satisfactionSummary->setItem(2, 2, makeSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(choice3Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
-    satisfactionSummary->setItem(2, 3, makeSatisfactionItem(QString::number(choice3Yes), true));
-    satisfactionSummary->setItem(2, 4, makeSatisfactionItem(QString::number(choice3Maybe), true));
-    satisfactionSummary->setItem(2, 5, makeSatisfactionItem(QString::number(choice3No), true));
+        totalStudents > 0 ? QStringLiteral("%1%").arg(counts.choice3Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
+    satisfactionSummary->setItem(2, 3, makeSatisfactionItem(QString::number(counts.choice3Yes), true));
+    satisfactionSummary->setItem(2, 4, makeSatisfactionItem(QString::number(counts.choice3Maybe), true));
+    satisfactionSummary->setItem(2, 5, makeSatisfactionItem(QString::number(counts.choice3No), true));
 
     // Row 3: Not Satisfied (fallback)
     satisfactionSummary->setItem(3, 0, makeSatisfactionItem(QStringLiteral("Not Satisfied")));
-    satisfactionSummary->setItem(3, 1, makeSatisfactionItem(QString::number(notSatisfiedTotal), true));
+    satisfactionSummary->setItem(3, 1, makeSatisfactionItem(QString::number(counts.notSatisfiedTotal), true));
     satisfactionSummary->setItem(3, 2, makeSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(notSatisfiedTotal * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
-    satisfactionSummary->setItem(3, 3, makeSatisfactionItem(QString::number(notSatisfiedYes), true));
-    satisfactionSummary->setItem(3, 4, makeSatisfactionItem(QString::number(notSatisfiedMaybe), true));
-    satisfactionSummary->setItem(3, 5, makeSatisfactionItem(QString::number(notSatisfiedNo), true));
+        totalStudents > 0 ? QStringLiteral("%1%").arg(counts.notSatisfiedTotal * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
+    satisfactionSummary->setItem(3, 3, makeSatisfactionItem(QString::number(counts.notSatisfiedYes), true));
+    satisfactionSummary->setItem(3, 4, makeSatisfactionItem(QString::number(counts.notSatisfiedMaybe), true));
+    satisfactionSummary->setItem(3, 5, makeSatisfactionItem(QString::number(counts.notSatisfiedNo), true));
 
     activitySummary->clear();
     for (const auto &summary : result.activitySummary) {
@@ -1276,40 +1287,8 @@ public:
     out << "CHOICE SATISFACTION SUMMARY\n";
     out << "---------------------------\n";
 
-    // Count assignments by choice rank and attendance status
-    int choice1Total = 0, choice1Yes = 0, choice1Maybe = 0, choice1No = 0;
-    int choice2Total = 0, choice2Yes = 0, choice2Maybe = 0, choice2No = 0;
-    int choice3Total = 0, choice3Yes = 0, choice3Maybe = 0, choice3No = 0;
-    int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0, notSatisfiedNo = 0;
-
-    for (const auto &assignment : lastResult->assignments) {
-      QString present = toQString(assignment.present).trimmed().toLower();
-      bool isYes = (present == "yes" || present == "y");
-      bool isMaybe = (present == "maybe" || present == "m");
-      bool isNo = (present == "no" || present == "n");
-
-      if (assignment.choiceRank == 0) {
-        choice1Total++;
-        if (isYes) choice1Yes++;
-        else if (isMaybe) choice1Maybe++;
-        else if (isNo) choice1No++;
-      } else if (assignment.choiceRank == 1) {
-        choice2Total++;
-        if (isYes) choice2Yes++;
-        else if (isMaybe) choice2Maybe++;
-        else if (isNo) choice2No++;
-      } else if (assignment.choiceRank == 2) {
-        choice3Total++;
-        if (isYes) choice3Yes++;
-        else if (isMaybe) choice3Maybe++;
-        else if (isNo) choice3No++;
-      } else {
-        notSatisfiedTotal++;
-        if (isYes) notSatisfiedYes++;
-        else if (isMaybe) notSatisfiedMaybe++;
-        else if (isNo) notSatisfiedNo++;
-      }
-    }
+    // Use helper function to count choice satisfaction
+    const auto counts = countChoiceSatisfaction(*lastResult);
 
     const int totalStudents = lastResult->totalStudents;
     auto formatRow = [&out, totalStudents](const QString &rank, int total, int yes, int maybe, int no) {
@@ -1332,10 +1311,10 @@ public:
         << qSetFieldWidth(0) << "\n";
     out << QString(63, '-') << "\n";
 
-    formatRow("1st Choice", choice1Total, choice1Yes, choice1Maybe, choice1No);
-    formatRow("2nd Choice", choice2Total, choice2Yes, choice2Maybe, choice2No);
-    formatRow("3rd Choice", choice3Total, choice3Yes, choice3Maybe, choice3No);
-    formatRow("Not Satisfied", notSatisfiedTotal, notSatisfiedYes, notSatisfiedMaybe, notSatisfiedNo);
+    formatRow("1st Choice", counts.choice1Total, counts.choice1Yes, counts.choice1Maybe, counts.choice1No);
+    formatRow("2nd Choice", counts.choice2Total, counts.choice2Yes, counts.choice2Maybe, counts.choice2No);
+    formatRow("3rd Choice", counts.choice3Total, counts.choice3Yes, counts.choice3Maybe, counts.choice3No);
+    formatRow("Not Satisfied", counts.notSatisfiedTotal, counts.notSatisfiedYes, counts.notSatisfiedMaybe, counts.notSatisfiedNo);
     out << "\n";
 
     // Activity Summary
@@ -1369,52 +1348,17 @@ public:
     file.close();
   }
 
-  void exportResultsCsv() {
-    if (!hasResult) {
-      return;
-    }
-    const QString folderPath = QFileDialog::getExistingDirectory(
-        q_ptr, QStringLiteral("Select folder for results export"), {},
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    if (folderPath.isEmpty()) {
-      return;
+  int generateActivityRosterPdfs(const QDir &dir) {
+    if (!lastResult) {
+      return 0;
     }
 
-    QDir dir(folderPath);
-    if (!dir.exists()) {
-      QMessageBox::warning(
-          q_ptr, QStringLiteral("Invalid folder"),
-          QStringLiteral("The selected folder does not exist."));
-      return;
-    }
-
-    // Export main CSV
-    const QString csvPath = dir.filePath(QStringLiteral("results.csv"));
-    auto table = resultsToTable(*lastResult);
-    std::string error;
-    if (!SpreadsheetBridge::WriteCsv(csvPath.toStdString(), table, &error)) {
-      QMessageBox::warning(
-          q_ptr, QStringLiteral("Unable to export CSV"),
-          QStringLiteral("%1\n%2").arg(csvPath, QString::fromStdString(error)));
-      return;
-    }
-
-    // Export individual activity rosters as HTML
     int filesCreated = 0;
     for (const auto &activitySum : lastResult->activitySummary) {
       const QString activity = toQString(activitySum.activity);
 
       // Collect students for this activity
-      struct StudentInfo {
-        QString lastName;
-        QString firstName;
-        QString studentId;
-        QString pathway;
-        QString grade;
-        QString present;
-      };
       std::vector<StudentInfo> students;
-
       for (const auto &assignment : lastResult->assignments) {
         if (assignment.activity == activitySum.activity) {
           StudentInfo info;
@@ -1480,6 +1424,7 @@ public:
       const int col4Width = pageWidth / 5;  // Pathway
       const int col5Width = pageWidth / 10; // Grade
       const int col6Width = pageWidth / 10; // Present
+      Q_UNUSED(col6Width);
 
       // Draw table header
       painter.setFont(headerFont);
@@ -1538,6 +1483,42 @@ public:
       painter.end();
       filesCreated++;
     }
+
+    return filesCreated;
+  }
+
+  void exportResultsCsv() {
+    if (!hasResult) {
+      return;
+    }
+    const QString folderPath = QFileDialog::getExistingDirectory(
+        q_ptr, QStringLiteral("Select folder for results export"), {},
+        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if (folderPath.isEmpty()) {
+      return;
+    }
+
+    QDir dir(folderPath);
+    if (!dir.exists()) {
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("Invalid folder"),
+          QStringLiteral("The selected folder does not exist."));
+      return;
+    }
+
+    // Export main CSV
+    const QString csvPath = dir.filePath(QStringLiteral("results.csv"));
+    auto table = resultsToTable(*lastResult);
+    std::string error;
+    if (!SpreadsheetBridge::WriteCsv(csvPath.toStdString(), table, &error)) {
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("Unable to export CSV"),
+          QStringLiteral("%1\n%2").arg(csvPath, QString::fromStdString(error)));
+      return;
+    }
+
+    // Export activity roster PDFs
+    const int filesCreated = generateActivityRosterPdfs(dir);
 
     // Export summary report
     const QString summaryPath = dir.filePath(QStringLiteral("summary.txt"));
@@ -1584,145 +1565,8 @@ public:
       return;
     }
 
-    // Export individual activity rosters as HTML
-    int filesCreated = 0;
-    for (const auto &activitySum : lastResult->activitySummary) {
-      const QString activity = toQString(activitySum.activity);
-
-      // Collect students for this activity
-      struct StudentInfo {
-        QString lastName;
-        QString firstName;
-        QString studentId;
-        QString pathway;
-        QString grade;
-        QString present;
-      };
-      std::vector<StudentInfo> students;
-
-      for (const auto &assignment : lastResult->assignments) {
-        if (assignment.activity == activitySum.activity) {
-          StudentInfo info;
-          info.lastName = toQString(assignment.lastName);
-          info.firstName = toQString(assignment.firstName);
-          info.studentId = toQString(assignment.studentId);
-          info.pathway = toQString(assignment.pathway);
-          info.grade = toQString(assignment.grade);
-          info.present = toQString(assignment.present);
-          students.push_back(info);
-        }
-      }
-
-      // Sort by last name, then first name
-      std::sort(students.begin(), students.end(), [](const StudentInfo &a, const StudentInfo &b) {
-        if (a.lastName != b.lastName) {
-          return a.lastName.compare(b.lastName, Qt::CaseInsensitive) < 0;
-        }
-        return a.firstName.compare(b.firstName, Qt::CaseInsensitive) < 0;
-      });
-
-      // Create sanitized filename
-      QString filename = activity;
-      filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")), QStringLiteral("_"));
-      filename = dir.filePath(filename + QStringLiteral(".pdf"));
-
-      QPdfWriter pdfWriter(filename);
-      pdfWriter.setPageSize(QPageSize::Letter);
-      pdfWriter.setPageMargins(QMarginsF(15, 15, 15, 15));
-
-      QPainter painter(&pdfWriter);
-      if (!painter.isActive()) {
-        appendDiagnostic(QStringLiteral("Warning: Could not create %1").arg(filename));
-        continue;
-      }
-
-      // Set up fonts
-      QFont titleFont("Arial", 16, QFont::Bold);
-      QFont headerFont("Arial", 10, QFont::Bold);
-      QFont normalFont("Arial", 9);
-
-      int y = 0;
-      const int pageWidth = painter.device()->width();
-      const int lineHeight = 300;
-      const int headerHeight = 300;
-
-      // Draw title
-      painter.setFont(titleFont);
-      painter.drawText(0, y, activity);
-      y += headerHeight * 2;
-
-      // Draw enrollment info
-      painter.setFont(normalFont);
-      painter.drawText(0, y, QString("Enrollment: %1    Capacity: %2")
-                              .arg(activitySum.assigned)
-                              .arg(activitySum.capacity));
-      y += headerHeight;
-
-      // Table setup
-      const int col1Width = pageWidth / 6;  // Last Name
-      const int col2Width = pageWidth / 6;  // First Name
-      const int col3Width = pageWidth / 5;  // Student ID
-      const int col4Width = pageWidth / 5;  // Pathway
-      const int col5Width = pageWidth / 10; // Grade
-      const int col6Width = pageWidth / 10; // Present
-
-      // Draw table header
-      painter.setFont(headerFont);
-      painter.fillRect(0, y, pageWidth, headerHeight, QColor(76, 175, 80));
-      painter.setPen(Qt::white);
-
-      int x = 50;
-      painter.drawText(x, y + 225, "Last Name");
-      x += col1Width;
-      painter.drawText(x, y + 225, "First Name");
-      x += col2Width;
-      painter.drawText(x, y + 225, "Student ID");
-      x += col3Width;
-      painter.drawText(x, y + 225, "Pathway");
-      x += col4Width;
-      painter.drawText(x, y + 225, "Grade");
-      x += col5Width;
-      painter.drawText(x, y + 225, "Present");
-
-      y += headerHeight;
-      painter.setPen(Qt::black);
-      painter.setFont(normalFont);
-
-      // Draw table rows
-      bool alternateRow = false;
-      for (const auto &student : students) {
-        // Check if we need a new page
-        if (y + lineHeight > painter.device()->height() - 1000) {
-          pdfWriter.newPage();
-          y = 0;
-        }
-
-        // Alternate row background
-        if (alternateRow) {
-          painter.fillRect(0, y, pageWidth, lineHeight, QColor(242, 242, 242));
-        }
-        alternateRow = !alternateRow;
-
-        // Draw cell borders and text
-        x = 50;
-        painter.drawText(x, y + 225, student.lastName);
-        x += col1Width;
-        painter.drawText(x, y + 225, student.firstName);
-        x += col2Width;
-        painter.drawText(x, y + 225, student.studentId);
-        x += col3Width;
-        painter.drawText(x, y + 225, student.pathway);
-        x += col4Width;
-        painter.drawText(x, y + 225, student.grade);
-        x += col5Width;
-        painter.drawText(x, y + 225, student.present);
-
-        y += lineHeight;
-      }
-
-      painter.end();
-      filesCreated++;
-    }
+    // Export activity roster PDFs
+    const int filesCreated = generateActivityRosterPdfs(dir);
 
     appendDiagnostic(QStringLiteral("Exported results.xlsx and %1 activity roster PDF files to %2")
                          .arg(filesCreated)
