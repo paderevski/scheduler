@@ -442,6 +442,10 @@ public:
     resultsLayout->addWidget(resultsTable);
     resultsLayout->addWidget(new QLabel(QStringLiteral("<b>Activity Utilization</b>"), q_ptr));
     resultsLayout->addWidget(activitySummary);
+#if HAVE_QT_CHARTS
+    activityChart->setMinimumHeight(250);
+    resultsLayout->addWidget(activityChart);
+#endif
     auto *resultsButtonLayout = new QHBoxLayout();
     resultsButtonLayout->addStretch();
     resultsButtonLayout->addWidget(exportResultsCsvButton);
