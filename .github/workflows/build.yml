@@ -10,9 +10,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to release (must start with v). Example: v1.2.3'
+        description: "Tag to release (must start with v). Example: v1.2.3"
         required: false
-        default: ''
+        default: ""
 
 jobs:
   build:
@@ -113,25 +113,25 @@ jobs:
 
           # Create AppDir structure
           mkdir -p AppDir/usr/bin AppDir/usr/lib AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/256x256/apps
-          cp build/src/EngineeringWeekScheduler AppDir/usr/bin/
+          cp build/src/ClickSort AppDir/usr/bin/
 
           # Copy OR-Tools libraries
           cp ${ORTOOLS_ROOT}/lib/libortools.so* AppDir/usr/lib/
           cp ${ORTOOLS_ROOT}/lib/libortools_flatzinc.so* AppDir/usr/lib/ || true
 
           # Create desktop file
-          cat > AppDir/usr/share/applications/EngineeringWeekScheduler.desktop << EOF
+          cat > AppDir/usr/share/applications/ClickSort.desktop << EOF
           [Desktop Entry]
           Type=Application
-          Name=Engineering Week Scheduler
-          Exec=EngineeringWeekScheduler
-          Icon=EngineeringWeekScheduler
+          Name=ClickSort
+          Exec=ClickSort
+          Icon=ClickSort
           Categories=Office;
           EOF
 
           # Create a simple icon (or copy yours if you have one)
-          convert -size 256x256 xc:steelblue -fill white -gravity center -pointsize 48 -annotate 0 "EWS" AppDir/usr/share/icons/hicolor/256x256/apps/EngineeringWeekScheduler.png || \
-            wget -q -O AppDir/usr/share/icons/hicolor/256x256/apps/EngineeringWeekScheduler.png "https://via.placeholder.com/256/4682B4/FFFFFF?text=EWS"
+          convert -size 256x256 xc:steelblue -fill white -gravity center -pointsize 48 -annotate 0 "CS" AppDir/usr/share/icons/hicolor/256x256/apps/ClickSort.png || \
+            wget -q -O AppDir/usr/share/icons/hicolor/256x256/apps/ClickSort.png "https://via.placeholder.com/256/4682B4/FFFFFF?text=CS"
 
           # Build AppImage
           export QMAKE=$(find $QT_ROOT_DIR -name "qmake" -type f 2>/dev/null | head -1)
@@ -140,14 +140,14 @@ jobs:
           ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage
 
           mkdir -p dist
-          mv Engineering*.AppImage dist/EngineeringWeekScheduler-x86_64.AppImage
+          mv Click*.AppImage dist/ClickSort-x86_64.AppImage
 
       - name: Upload artifacts (Linux)
         if: runner.os == 'Linux'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-linux
-          path: dist/EngineeringWeekScheduler-x86_64.AppImage
+          path: dist/ClickSort-x86_64.AppImage
 
       - name: Create macOS App Bundle
         if: runner.os == 'macOS'
@@ -155,12 +155,12 @@ jobs:
           mkdir -p dist
 
           # Create app bundle structure
-          APP_DIR="dist/EngineeringWeekScheduler.app"
+          APP_DIR="dist/ClickSort.app"
           mkdir -p "${APP_DIR}/Contents/MacOS"
           mkdir -p "${APP_DIR}/Contents/Frameworks"
           mkdir -p "${APP_DIR}/Contents/Resources"
 
-          cp build/src/EngineeringWeekScheduler "${APP_DIR}/Contents/MacOS/"
+          cp build/src/ClickSort "${APP_DIR}/Contents/MacOS/"
 
           # Create Info.plist
           cat > "${APP_DIR}/Contents/Info.plist" << EOF
@@ -169,11 +169,11 @@ jobs:
           <plist version="1.0">
           <dict>
               <key>CFBundleExecutable</key>
-              <string>EngineeringWeekScheduler</string>
+              <string>ClickSort</string>
               <key>CFBundleIdentifier</key>
-              <string>com.scheduler.engineeringweek</string>
+              <string>com.clicksort.app</string>
               <key>CFBundleName</key>
-              <string>Engineering Week Scheduler</string>
+              <string>ClickSort</string>
               <key>CFBundleVersion</key>
               <string>1.0</string>
               <key>CFBundleShortVersionString</key>
@@ -202,28 +202,28 @@ jobs:
           # Fix OR-Tools library paths
           for lib in "${APP_DIR}/Contents/Frameworks"/libortools*.dylib; do
             if [ -f "$lib" ]; then
-              install_name_tool -add_rpath @executable_path/../Frameworks "${APP_DIR}/Contents/MacOS/EngineeringWeekScheduler" 2>/dev/null || true
+              install_name_tool -add_rpath @executable_path/../Frameworks "${APP_DIR}/Contents/MacOS/ClickSort" 2>/dev/null || true
               # Update library ID
               install_name_tool -id "@rpath/$(basename $lib)" "$lib" 2>/dev/null || true
             fi
           done
 
           # Create DMG
-          hdiutil create -volname "EngineeringWeekScheduler" -srcfolder dist/EngineeringWeekScheduler.app -ov -format UDZO dist/EngineeringWeekScheduler.dmg
+          hdiutil create -volname "ClickSort" -srcfolder dist/ClickSort.app -ov -format UDZO dist/ClickSort.dmg
 
       - name: Upload artifacts (macOS)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: scheduler-macos
-          path: dist/EngineeringWeekScheduler.dmg
+          path: dist/ClickSort.dmg
 
       - name: Create Windows Distribution
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist
-          Copy-Item build/src/Release/EngineeringWeekScheduler.exe dist/
+          Copy-Item build/src/Release/ClickSort.exe dist/
 
           # Find windeployqt
           $windeployqt = Get-ChildItem -Path $env:QT_ROOT_DIR -Recurse -Filter "windeployqt.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -233,7 +233,7 @@ jobs:
           Write-Host "Using windeployqt: $($windeployqt.FullName)"
 
           # Use windeployqt to bundle Qt DLLs
-          & $windeployqt.FullName --release --no-translations dist/EngineeringWeekScheduler.exe
+          & $windeployqt.FullName --release --no-translations dist/ClickSort.exe
 
           # Bundle OR-Tools DLLs
           Copy-Item "$env:ORTOOLS_ROOT/bin/*.dll" dist/ -ErrorAction SilentlyContinue
@@ -252,13 +252,13 @@ jobs:
 
           $innoScript = @"
           [Setup]
-          AppName=Engineering Week Scheduler
+          AppName=ClickSort
           AppVersion=$version
           AppPublisher=Your Name
-          DefaultDirName={autopf}\EngineeringWeekScheduler
-          DefaultGroupName=Engineering Week Scheduler
+          DefaultDirName={autopf}\ClickSort
+          DefaultGroupName=ClickSort
           OutputDir=installer
-          OutputBaseFilename=EngineeringWeekScheduler-$version-setup
+          OutputBaseFilename=ClickSort-$version-setup
           Compression=lzma2
           SolidCompression=yes
           ArchitecturesInstallIn64BitMode=x64compatible
@@ -268,15 +268,15 @@ jobs:
           Source: "dist\*"; DestDir: "{app}"; Flags: recursesubdirs
 
           [Icons]
-          Name: "{group}\Engineering Week Scheduler"; Filename: "{app}\EngineeringWeekScheduler.exe"
-          Name: "{group}\Uninstall Engineering Week Scheduler"; Filename: "{uninstallexe}"
-          Name: "{autodesktop}\Engineering Week Scheduler"; Filename: "{app}\EngineeringWeekScheduler.exe"; Tasks: desktopicon
+          Name: "{group}\ClickSort"; Filename: "{app}\ClickSort.exe"
+          Name: "{group}\Uninstall ClickSort"; Filename: "{uninstallexe}"
+          Name: "{autodesktop}\ClickSort"; Filename: "{app}\ClickSort.exe"; Tasks: desktopicon
 
           [Tasks]
           Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional icons:"
 
           [Run]
-          Filename: "{app}\EngineeringWeekScheduler.exe"; Description: "Launch Engineering Week Scheduler"; Flags: nowait postinstall skipifsilent
+          Filename: "{app}\ClickSort.exe"; Description: "Launch ClickSort"; Flags: nowait postinstall skipifsilent
           "@
 
           $innoScript | Out-File -FilePath "installer.iss" -Encoding UTF8
