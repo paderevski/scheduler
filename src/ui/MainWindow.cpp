@@ -27,11 +27,13 @@
 #include <QMessageBox>
 #include <QPainter>
 #include <QPdfWriter>
+#include <QPixmap>
 #include <QProgressDialog>
 #include <QPushButton>
 #include <QRegularExpression>
 #include <QSet>
 #include <QSpinBox>
+#include <QStackedWidget>
 #include <QString>
 #include <QStringList>
 #include <QTabWidget>
@@ -296,7 +298,9 @@ ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
 class MainWindow::Impl {
 public:
   explicit Impl(MainWindow *q)
-      : q_ptr(q), tabWidget(new QTabWidget(q)), tableView(new QTableView(q)),
+      : q_ptr(q), tabWidget(new QTabWidget(q)),
+        welcomeWidget(new QWidget(q)),
+        tableView(new QTableView(q)),
         model(new PreferenceModel(q)), diagnostics(new QListWidget(q)),
         studentCountLabel(new QLabel(q)), choiceCountLabel(new QLabel(q)),
         activityCountLabel(new QLabel(q)), capacityTable(new QTableWidget(q)),
@@ -370,10 +374,21 @@ public:
     autoCapacityButton->setToolTip(
         QStringLiteral("Calculate: (filtered students) / (# activities), rounded up"));
 
+    // Create welcome screen
+    setupWelcomeScreen();
+
+    // Create data view with stacked widget to toggle between welcome and table
+    auto *dataStackedWidget = new QStackedWidget(q_ptr);
+    dataStackedWidget->addWidget(welcomeWidget);  // Index 0
+    dataStackedWidget->addWidget(tableView);      // Index 1
+
     auto *dataLayout = new QVBoxLayout();
-    dataLayout->addWidget(tableView);
+    dataLayout->addWidget(dataStackedWidget);
     auto *dataWidget = new QWidget(q_ptr);
     dataWidget->setLayout(dataLayout);
+
+    // Store stacked widget for later switching
+    dataStack = dataStackedWidget;
 
     // Left side: Diagnostics
     auto *leftLayout = new QVBoxLayout();
@@ -557,6 +572,75 @@ public:
                      [this]() { exportResultsCsv(); });
     QObject::connect(exportResultsXlsxButton, &QPushButton::clicked, q_ptr,
                      [this]() { exportResultsXlsx(); });
+  }
+
+  void setupWelcomeScreen() {
+    auto *layout = new QVBoxLayout(welcomeWidget);
+    layout->setContentsMargins(40, 40, 40, 40);
+    layout->setSpacing(20);
+
+    // Add logo
+    QString logoPath = QStringLiteral("/Users/pewhite/github/scheduler/include/logo.jpeg");
+    QPixmap logoPixmap(logoPath);
+    if (!logoPixmap.isNull()) {
+      // Scale logo to reasonable size
+      logoPixmap = logoPixmap.scaledToWidth(300, Qt::SmoothTransformation);
+      auto *logoLabel = new QLabel(welcomeWidget);
+      logoLabel->setPixmap(logoPixmap);
+      logoLabel->setAlignment(Qt::AlignCenter);
+      layout->addWidget(logoLabel);
+    }
+
+    layout->addSpacing(20);
+
+    // Welcome text
+    auto *welcomeLabel = new QLabel(QStringLiteral("<h2>Welcome to ClickSort</h2>"), welcomeWidget);
+    welcomeLabel->setAlignment(Qt::AlignCenter);
+    layout->addWidget(welcomeLabel);
+
+    layout->addSpacing(10);
+
+    // Action buttons
+    auto *buttonLayout = new QVBoxLayout();
+    buttonLayout->setSpacing(15);
+
+    auto *openProjectButton = new QPushButton(QStringLiteral("Open Project"), welcomeWidget);
+    openProjectButton->setMinimumHeight(50);
+    openProjectButton->setStyleSheet(QStringLiteral("font-size: 14pt; font-weight: bold;"));
+    QObject::connect(openProjectButton, &QPushButton::clicked, q_ptr,
+                     [this]() { loadProject(); });
+    buttonLayout->addWidget(openProjectButton);
+
+    auto *importDataButton = new QPushButton(QStringLiteral("Import Data"), welcomeWidget);
+    importDataButton->setMinimumHeight(50);
+    importDataButton->setStyleSheet(QStringLiteral("font-size: 14pt; font-weight: bold;"));
+    QObject::connect(importDataButton, &QPushButton::clicked, q_ptr,
+                     [this]() { openDataFile(); });
+    buttonLayout->addWidget(importDataButton);
+
+    auto *newProjectButton = new QPushButton(QStringLiteral("New Project"), welcomeWidget);
+    newProjectButton->setMinimumHeight(50);
+    newProjectButton->setStyleSheet(QStringLiteral("font-size: 14pt; font-weight: bold;"));
+    QObject::connect(newProjectButton, &QPushButton::clicked, q_ptr, [this]() {
+      model->setRows({});  // Clear all data
+      currentProjectPath.clear();
+      updateWindowTitle();
+      dataStack->setCurrentIndex(0); // Stay on welcome screen
+    });
+    buttonLayout->addWidget(newProjectButton);
+
+    // Center the buttons
+    auto *buttonWidget = new QWidget(welcomeWidget);
+    buttonWidget->setLayout(buttonLayout);
+    buttonWidget->setMaximumWidth(400);
+
+    auto *centerLayout = new QHBoxLayout();
+    centerLayout->addStretch();
+    centerLayout->addWidget(buttonWidget);
+    centerLayout->addStretch();
+
+    layout->addLayout(centerLayout);
+    layout->addStretch();
   }
 
   void setupMenu() {
@@ -942,6 +1026,12 @@ public:
     appendDiagnostic(QStringLiteral("Loaded %1 students from %2.")
                          .arg(model->rowCount())
                          .arg(QFileInfo(path).fileName()));
+
+    // Switch to table view when data is loaded
+    if (dataStack && model->rowCount() > 0) {
+      dataStack->setCurrentIndex(1);
+    }
+
     return true;
   }
 
@@ -1260,6 +1350,11 @@ public:
     currentProjectPath = path;
     updateWindowTitle();
     appendDiagnostic(QStringLiteral("Loaded project from %1").arg(QFileInfo(path).fileName()));
+
+    // Switch to table view when project is loaded
+    if (dataStack && model->rowCount() > 0) {
+      dataStack->setCurrentIndex(1);
+    }
   }
 
   void updateWindowTitle() {
@@ -1947,6 +2042,8 @@ public:
   QProgressDialog *progressDialog;
   QString lastDataPath;
   QString currentProjectPath;
+  QWidget *welcomeWidget;
+  QStackedWidget *dataStack;
   std::optional<SolverResult> lastResult;
   std::optional<SolverOptions> lastOptions;
   QString lastDayFilter;
