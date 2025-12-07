@@ -1,4 +1,4 @@
-# Engineering Week Scheduler (C++/Qt Prototype)
+# ClickSort (C++/Qt Application)
 
 This repository is the starting point for a Qt-based desktop application that ingests student preference data (CSV/Excel), runs an OR-Tools optimization model, and produces session assignments for Engineering Week.
 
@@ -34,7 +34,7 @@ cmake --build build
 To run the prototype after a successful build:
 
 ```bash
-./build/EngineeringWeekScheduler
+./build/ClickSort
 ```
 
 ## Feature highlights

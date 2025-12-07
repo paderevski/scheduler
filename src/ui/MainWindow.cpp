@@ -1246,7 +1246,7 @@ public:
     }
 
     QTextStream out(&file);
-    out << "ENGINEERING WEEK SCHEDULER - SUMMARY REPORT\n";
+    out << "CLICKSORT - SUMMARY REPORT\n";
     out << "==========================================\n\n";
 
     // Solver Options
@@ -1621,7 +1621,7 @@ public:
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), m_impl(std::make_unique<Impl>(this)) {
-  setWindowTitle(QStringLiteral("Engineering Week Scheduler"));
+  setWindowTitle(QStringLiteral("ClickSort"));
   resize(1100, 760);
 }
 

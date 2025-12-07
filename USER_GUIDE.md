@@ -1,8 +1,8 @@
-# Engineering Week Scheduler - User Guide
+# ClickSort - User Guide
 
 ## Overview
 
-The Engineering Week Scheduler is a desktop application that optimally assigns students to activities based on their preferences, while respecting capacity constraints and attendance patterns. The application uses constraint optimization to maximize student satisfaction.
+ClickSort is a desktop application that optimally assigns students to activities based on their preferences, while respecting capacity constraints and attendance patterns. The application uses constraint optimization to maximize student satisfaction.
 
 ## Table of Contents
 
