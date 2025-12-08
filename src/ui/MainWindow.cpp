@@ -577,86 +577,90 @@ public:
   }
 
   void setupWelcomeScreen() {
+    // === LAYOUT BASICS ===
+    // QVBoxLayout arranges widgets vertically (top to bottom)
+    // QHBoxLayout arranges widgets horizontally (left to right)
+    // The welcomeWidget is the parent container for this entire screen
+
     auto *layout = new QVBoxLayout(welcomeWidget);
-    layout->setContentsMargins(40, 40, 40, 40);
-    layout->setSpacing(20);
+    layout->setContentsMargins(40, 40, 40, 40);  // Padding: left, top, right, bottom (in pixels)
+    layout->setSpacing(20);                       // Space between widgets (in pixels)
 
-    // Add logo: prefer embedded resource, fall back to repo-relative file for dev
-    QPixmap logoPixmap;
-    // Try resource first
-    logoPixmap.load(QStringLiteral(":/images/logo.jpeg"));
-    if (logoPixmap.isNull()) {
-      // Fallback: relative to source tree (useful during development)
-      const QString devPath = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(QStringLiteral("../../include/logo.jpeg"));
-      if (QFile::exists(devPath)) {
-        logoPixmap.load(devPath);
-      }
-    }
-
+    // === LOGO IMAGE ===
+    QString logoPath = QStringLiteral("/Users/pewhite/github/scheduler/include/logo.jpeg");
+    QPixmap logoPixmap(logoPath);  // QPixmap loads image files (jpg, png, etc.)
     if (!logoPixmap.isNull()) {
-      // Scale logo to reasonable size
-      logoPixmap = logoPixmap.scaledToWidth(300, Qt::SmoothTransformation);
-      auto *logoLabel = new QLabel(welcomeWidget);
-      logoLabel->setPixmap(logoPixmap);
-      logoLabel->setAlignment(Qt::AlignCenter);
-      layout->addWidget(logoLabel);
+      logoPixmap = logoPixmap.scaledToWidth(300, Qt::SmoothTransformation);  // Resize to 300px wide
+      auto *logoLabel = new QLabel(welcomeWidget);  // QLabel can display text OR images
+      logoLabel->setPixmap(logoPixmap);             // Put the image into the label
+      logoLabel->setAlignment(Qt::AlignCenter);     // Center horizontally
+      layout->addWidget(logoLabel);                 // Add to the vertical layout
     }
 
-    layout->addSpacing(20);
+    layout->addSpacing(20);  // Add 20px of empty vertical space
 
-    // Welcome text
+    // === WELCOME TEXT ===
+    // QLabel supports basic HTML tags like <h2>, <b>, <i>, <font color="red">, etc.
     auto *welcomeLabel = new QLabel(QStringLiteral("<h2>Welcome to ClickSort</h2>"), welcomeWidget);
-    welcomeLabel->setAlignment(Qt::AlignCenter);
+    welcomeLabel->setAlignment(Qt::AlignCenter);  // Center the text
     layout->addWidget(welcomeLabel);
 
-    layout->addSpacing(30);
+    layout->addSpacing(30);  // More vertical space before columns
 
-    // Two-column layout: Recent Projects (left) and Action Buttons (right)
+    // === TWO-COLUMN LAYOUT ===
+    // HBoxLayout will place Recent Projects (left) and Action Buttons (right) side-by-side
     auto *columnsLayout = new QHBoxLayout();
-    columnsLayout->setSpacing(40);
+    columnsLayout->setSpacing(40);  // 40px gap between the two columns
 
-    // Left column: Recent Projects
-    auto *recentLayout = new QVBoxLayout();
+    // --- LEFT COLUMN: Recent Projects ---
+    auto *recentLayout = new QVBoxLayout();  // Vertical layout for this column
     auto *recentLabel = new QLabel(QStringLiteral("<b>Recent Projects</b>"), welcomeWidget);
     recentLayout->addWidget(recentLabel);
 
-    recentProjectsList->setSelectionMode(QAbstractItemView::SingleSelection);
-    recentProjectsList->setMaximumHeight(300);
+    // QListWidget displays a list of items (like a file browser)
+    recentProjectsList->setSelectionMode(QAbstractItemView::SingleSelection);  // Only one item selectable
+    recentProjectsList->setMaximumHeight(300);  // Limit height to 300px
+
+    // CSS-like styling: border, rounded corners, padding, hover effects
     recentProjectsList->setStyleSheet(QStringLiteral(
       "QListWidget { border: 1px solid #ccc; border-radius: 4px; padding: 5px; }"
       "QListWidget::item { padding: 8px; }"
       "QListWidget::item:hover { background-color: #e8e8e8; }"
     ));
+
+    // QObject::connect hooks up events: when user double-clicks item, run this code
     QObject::connect(recentProjectsList, &QListWidget::itemDoubleClicked, q_ptr,
                      [this](QListWidgetItem *item) {
-                       QString path = item->data(Qt::UserRole).toString();
+                       QString path = item->data(Qt::UserRole).toString();  // Get stored file path
                        if (!path.isEmpty() && QFile::exists(path)) {
-                         doLoadProject(path);
+                         doLoadProject(path);  // Open the project
                        }
                      });
     recentLayout->addWidget(recentProjectsList);
 
+    // Small button below the list
     auto *clearRecentButton = new QPushButton(QStringLiteral("Clear Recent"), welcomeWidget);
-    clearRecentButton->setMaximumWidth(120);
+    clearRecentButton->setMaximumWidth(120);  // Limit width so it doesn't stretch
     QObject::connect(clearRecentButton, &QPushButton::clicked, q_ptr, [this]() {
-      QSettings settings;
-      settings.remove(QStringLiteral("recentProjects"));
-      updateRecentProjects();
+      QSettings settings;  // QSettings stores app preferences/data between sessions
+      settings.remove(QStringLiteral("recentProjects"));  // Delete the saved list
+      updateRecentProjects();  // Refresh the display
     });
     recentLayout->addWidget(clearRecentButton);
-    recentLayout->addStretch();
+    recentLayout->addStretch();  // Push everything up (fills remaining space at bottom)
 
-    // Right column: Action buttons
-    auto *buttonLayout = new QVBoxLayout();
+    // --- RIGHT COLUMN: Action Buttons ---
+    auto *buttonLayout = new QVBoxLayout();  // Vertical layout for this column
     auto *actionsLabel = new QLabel(QStringLiteral("<b>Actions</b>"), welcomeWidget);
     buttonLayout->addWidget(actionsLabel);
-    buttonLayout->addSpacing(5);
+    buttonLayout->addSpacing(5);  // Small space below label
 
+    // Three large buttons with consistent styling
     auto *openProjectButton = new QPushButton(QStringLiteral("Open Project"), welcomeWidget);
-    openProjectButton->setMinimumHeight(50);
+    openProjectButton->setMinimumHeight(50);  // Make button 50px tall
     openProjectButton->setStyleSheet(QStringLiteral("font-size: 14pt; font-weight: bold;"));
     QObject::connect(openProjectButton, &QPushButton::clicked, q_ptr,
-                     [this]() { loadProject(); });
+                     [this]() { loadProject(); });  // What happens when clicked
     buttonLayout->addWidget(openProjectButton);
 
     auto *importDataButton = new QPushButton(QStringLiteral("Import Data"), welcomeWidget);
@@ -670,62 +674,74 @@ public:
     newProjectButton->setMinimumHeight(50);
     newProjectButton->setStyleSheet(QStringLiteral("font-size: 14pt; font-weight: bold;"));
     QObject::connect(newProjectButton, &QPushButton::clicked, q_ptr, [this]() {
-      model->setRows({});  // Clear all data
-      currentProjectPath.clear();
-      updateWindowTitle();
-      dataStack->setCurrentIndex(0); // Stay on welcome screen
+      model->setRows({});           // Clear all data
+      currentProjectPath.clear();   // Forget current project path
+      updateWindowTitle();          // Update window title bar
+      dataStack->setCurrentIndex(0); // Switch to welcome screen (index 0)
     });
     buttonLayout->addWidget(newProjectButton);
-    buttonLayout->addStretch();
+    buttonLayout->addStretch();  // Push buttons to top of column
 
-    // Add columns to main layout
-    columnsLayout->addLayout(recentLayout, 1);
-    columnsLayout->addLayout(buttonLayout, 1);
-    layout->addLayout(columnsLayout);
-    layout->addStretch();
+    // === ASSEMBLE THE COLUMNS ===
+    // The number "1" means both columns get equal width (1:1 ratio)
+    // Use "2" for one column to make it twice as wide as the other
+    columnsLayout->addLayout(recentLayout, 1);   // Add left column (ratio: 1)
+    columnsLayout->addLayout(buttonLayout, 1);   // Add right column (ratio: 1)
+    layout->addLayout(columnsLayout);            // Add the two-column layout to main vertical layout
+    layout->addStretch();                        // Push everything to top of screen
 
-    // Load recent projects
-    updateRecentProjects();
+    // === POPULATE DATA ===
+    updateRecentProjects();  // Load and display recent projects from QSettings
   }
 
   void updateRecentProjects() {
-    recentProjectsList->clear();
+    // Refresh the list widget with current recent projects from storage
+    recentProjectsList->clear();  // Remove all items from the list
+
+    // QSettings persists data between app sessions (like Windows Registry or macOS preferences)
     QSettings settings;
     QStringList recent = settings.value(QStringLiteral("recentProjects")).toStringList();
 
+    // Loop through each saved project path
     for (const QString &path : recent) {
-      if (QFile::exists(path)) {
-        auto *item = new QListWidgetItem(QFileInfo(path).fileName());
-        item->setData(Qt::UserRole, path);
-        item->setToolTip(path);
-        recentProjectsList->addItem(item);
+      if (QFile::exists(path)) {  // Only show if file still exists on disk
+        // QListWidgetItem represents one row in the list
+        auto *item = new QListWidgetItem(QFileInfo(path).fileName());  // Display just filename
+        item->setData(Qt::UserRole, path);  // Store full path invisibly (UserRole = custom data)
+        item->setToolTip(path);             // Show full path on hover
+        recentProjectsList->addItem(item);  // Add to list widget
       }
     }
 
+    // If no projects, show a placeholder message
     if (recentProjectsList->count() == 0) {
       auto *item = new QListWidgetItem(QStringLiteral("No recent projects"));
-      item->setFlags(Qt::NoItemFlags);
-      item->setForeground(QColor(Qt::gray));
+      item->setFlags(Qt::NoItemFlags);     // Make it non-selectable and non-clickable
+      item->setForeground(QColor(Qt::gray)); // Gray text color
       recentProjectsList->addItem(item);
     }
   }
 
   void addToRecentProjects(const QString &path) {
+    // Add a project to the recent list (called when saving or loading)
     QSettings settings;
     QStringList recent = settings.value(QStringLiteral("recentProjects")).toStringList();
 
-    // Remove if already exists
+    // Remove if already exists (prevents duplicates)
     recent.removeAll(path);
 
-    // Add to front
+    // Add to front of list (most recent first)
     recent.prepend(path);
 
-    // Keep only 5 most recent
+    // Keep only 5 most recent projects
     while (recent.size() > 5) {
-      recent.removeLast();
+      recent.removeLast();  // Remove oldest
     }
 
+    // Save back to persistent storage
     settings.setValue(QStringLiteral("recentProjects"), recent);
+
+    // Update the UI to show new list
     updateRecentProjects();
   }
 
