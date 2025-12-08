@@ -60,7 +60,7 @@ auto *filterLayout = new QHBoxLayout();
 filterLayout->addWidget(new QLabel(QStringLiteral("Grade:"), q_ptr));
 filterLayout->addWidget(gradeFilterCombo);
 
-// Day filter  
+// Day filter
 filterLayout->addWidget(new QLabel(QStringLiteral("Day:"), q_ptr));
 filterLayout->addWidget(dayFilterCombo);
 
@@ -99,13 +99,13 @@ dataStack = dataStackedWidget;
 void updateFilterCombos() {
   // Extract unique values from loaded data for each filter column
   const auto &rows = model->rows();
-  
+
   // Helper to populate a combo with unique values from a column
   auto populateCombo = [](QComboBox *combo, const QSet<QString> &values) {
     QString currentValue = combo->currentData().toString();
     combo->clear();
     combo->addItem(QStringLiteral("All"), QString());  // Empty = no filter
-    
+
     QStringList sortedValues = values.values();
     sortedValues.sort();
     for (const QString &value : sortedValues) {
@@ -113,14 +113,14 @@ void updateFilterCombos() {
         combo->addItem(value, value);
       }
     }
-    
+
     // Restore previous selection if it still exists
     int index = combo->findData(currentValue);
     if (index >= 0) {
       combo->setCurrentIndex(index);
     }
   };
-  
+
   // Collect unique values for each column
   QSet<QString> grades, days, teachers, pathways;
   for (const auto &row : rows) {
@@ -129,7 +129,7 @@ void updateFilterCombos() {
     teachers.insert(row.teacher);
     pathways.insert(row.pathway);
   }
-  
+
   // Populate combos
   populateCombo(gradeFilterCombo, grades);
   populateCombo(dayFilterCombo, days);
@@ -146,15 +146,15 @@ void applyFilters() {
   // Custom filter function that checks all four filter combos
   proxyModel->setFilterRole(Qt::DisplayRole);
   proxyModel->setFilterKeyColumn(-1);  // Filter across all columns initially
-  
+
   // Qt's built-in filtering only handles single column, so we need custom logic
   // We'll use a lambda-based filter
   proxyModel->setFilterFixedString("");  // Clear simple filter
-  
+
   // Instead, we need to subclass QSortFilterProxyModel or use setFilterRegularExpression
   // For now, we'll create a simple approach using invalidateFilter
   proxyModel->invalidate();  // Force re-filter
-  
+
   // Update diagnostics to show filtered count
   updateSummary();
 }
@@ -173,12 +173,12 @@ class MultiColumnFilterProxyModel : public QSortFilterProxyModel {
 public:
   explicit MultiColumnFilterProxyModel(QObject *parent = nullptr)
       : QSortFilterProxyModel(parent) {}
-  
+
   void setColumnFilter(int column, const QString &filter) {
     columnFilters[column] = filter;
     invalidateFilter();
   }
-  
+
   void clearColumnFilter(int column) {
     columnFilters.remove(column);
     invalidateFilter();
@@ -190,12 +190,12 @@ protected:
     for (auto it = columnFilters.constBegin(); it != columnFilters.constEnd(); ++it) {
       int column = it.key();
       QString filterValue = it.value();
-      
+
       if (filterValue.isEmpty()) continue;  // Skip empty filters
-      
+
       QModelIndex index = sourceModel()->index(sourceRow, column, sourceParent);
       QString cellValue = sourceModel()->data(index, Qt::DisplayRole).toString();
-      
+
       if (cellValue != filterValue) {
         return false;  // Row doesn't match this filter
       }
@@ -289,7 +289,7 @@ updateFilterCombos();
 **Remove these sections:**
 - Day filter combo in left layout (around line 410-420)
 - Day filter member variable (around line 2130: `QComboBox *dayFilterCombo;`)
-- Day filter connections in `connectSignals()` 
+- Day filter connections in `connectSignals()`
 - `lastDayFilter` member variable (around line 2160)
 - Day filter usage in `onRunClicked()` (around line 870)
 
@@ -339,20 +339,20 @@ if (visibleCount < totalCount) {
 ```
 
 ### 13. Clear Results When Filter Changes
-**File:** `src/ui/MainWindow.cpp` 
+**File:** `src/ui/MainWindow.cpp`
 
 **In filter combo connections (step 7), add:**
 ```cpp
 QObject::connect(gradeFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), q_ptr,
                  [this](int) {
                    proxyModel->setColumnFilter(3, gradeFilterCombo->currentData().toString());
-                   
+
                    // Clear/invalidate results if filter changes after solver run
                    if (hasResult) {
                      resultsStatus->setText(QStringLiteral("Filter changed - results outdated"));
                      resultsStatus->setStyleSheet(QStringLiteral("color: orange;"));
                    }
-                   
+
                    updateSummary();
                  });
 ```
