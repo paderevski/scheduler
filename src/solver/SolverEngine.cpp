@@ -92,6 +92,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
     int activityIndex;
     int choiceRank;
     MPVariable *var;
+    double objectiveCoefficient; // ADD THIS LINE
   };
 
   std::vector<std::vector<VarInfo>> varMatrix(rows.size());
@@ -146,6 +147,8 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       // Determine weight/penalty
       int weight;
       int choiceRank = -1;
+      // Check if grade is 12 (double weight)
+      bool isGrade12 = (row.grade.trimmed() == "12");
 
       // Check if this activity is in the student's preferences
       const QString &activityName = activities[activityIdx];
@@ -173,22 +176,33 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         attendanceMultiplier = 1.0;
       } else if (present == "maybe" || present == "m") {
         // Scale by ratio to "yes" weight
-        attendanceMultiplier = options.weightYes > 0
-            ? static_cast<double>(options.weightMaybe) / options.weightYes
-            : 0.5;
+        attendanceMultiplier =
+            options.weightYes > 0
+                ? static_cast<double>(options.weightMaybe) / options.weightYes
+                : 0.5;
       } else if (present == "no" || present == "n") {
         // Scale by ratio to "yes" weight
-        attendanceMultiplier = options.weightYes > 0
-            ? static_cast<double>(options.weightNo) / options.weightYes
-            : 0.1;
+        attendanceMultiplier =
+            options.weightYes > 0
+                ? static_cast<double>(options.weightNo) / options.weightYes
+                : 0.1;
       } else {
-        attendanceMultiplier = 0;       // If present field is empty or unrecognized, use 0.0
+        attendanceMultiplier =
+            0; // If present field is empty or unrecognized, use 0.0
+      }
+
+      // After calculating the final weight (after line 142), store it:
+      weight = weight * attendanceMultiplier;
+
+      if (isGrade12 && weight == weightForRank(0) && present == "yes") {
+        weight *= 200.0;
       }
 
       varMatrix[studentIdx].push_back(
-          VarInfo{studentIdx, activityIdx, choiceRank, var});
-      solver.MutableObjective()->SetCoefficient(
-          var, static_cast<double>(weight) * attendanceMultiplier);
+          VarInfo{studentIdx, activityIdx, choiceRank, var,
+                  static_cast<double>(weight)}); // PASS THE WEIGHT HERE
+      solver.MutableObjective()->SetCoefficient(var,
+                                                static_cast<double>(weight));
     }
   }
 
@@ -226,15 +240,13 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         assignment.activity = toStdString(activities[varInfo.activityIndex]);
         assignment.choiceRank = varInfo.choiceRank;
 
-        // Calculate score based on whether it was a preferred choice
+        // Use the actual objective function coefficient
+        assignment.score = varInfo.objectiveCoefficient;
+
         if (varInfo.choiceRank >= 0) {
-          // Preferred activity
-          assignment.score =
-              varInfo.var->solution_value() * weightForRank(varInfo.choiceRank);
           ++result.satisfiedStudents;
         } else {
           // Non-preferred fallback activity
-          assignment.score = varInfo.var->solution_value() * 1.0;
           QString displayName = row.fullName();
           if (displayName.isEmpty()) {
             displayName = row.studentId;
@@ -292,14 +304,15 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
     // Find which activity index this assignment belongs to
     for (int idx = 0; idx < static_cast<int>(activities.size()); ++idx) {
       if (assignment.activity == toStdString(activities[idx])) {
-        QString present = QString::fromStdString(assignment.present).trimmed().toLower();
+        QString present =
+            QString::fromStdString(assignment.present).trimmed().toLower();
         if (present == "yes" || present == "y") {
           ++activityYes[idx];
         } else if (present == "no" || present == "n") {
           ++activityNo[idx];
         } else if (present == "maybe" || present == "m") {
           ++activityMaybe[idx];
-        } else /* unknown status */{
+        } else /* unknown status */ {
           ++activityUnknown[idx];
         }
         break;
@@ -372,13 +385,15 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         if (present == "yes" || present == "y") {
           attendanceMultiplier = 1.0;
         } else if (present == "maybe" || present == "m") {
-          attendanceMultiplier = options.weightYes > 0
-              ? static_cast<double>(options.weightMaybe) / options.weightYes
-              : 0.5;
+          attendanceMultiplier =
+              options.weightYes > 0
+                  ? static_cast<double>(options.weightMaybe) / options.weightYes
+                  : 0.5;
         } else if (present == "no" || present == "n") {
-          attendanceMultiplier = options.weightYes > 0
-              ? static_cast<double>(options.weightNo) / options.weightYes
-              : 0.1;
+          attendanceMultiplier =
+              options.weightYes > 0
+                  ? static_cast<double>(options.weightNo) / options.weightYes
+                  : 0.1;
         }
 
         StudentAssignment assignment;
@@ -392,7 +407,11 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.present = toStdString(row.present);
         assignment.activity = toStdString(activityName);
         assignment.choiceRank = choiceIdx;
-        assignment.score = weightForRank(choiceIdx) * attendanceMultiplier;
+        int baseWeight = weightForRank(choiceIdx);
+        if (row.grade.trimmed() == "12" && baseWeight == 1.0) {
+          baseWeight *= 2;
+        }
+        assignment.score = baseWeight * attendanceMultiplier;
         result.assignments.push_back(std::move(assignment));
         ++result.satisfiedStudents;
         assigned = true;
@@ -432,7 +451,8 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
 
   for (const auto &assignment : result.assignments) {
     QString activityName = QString::fromStdString(assignment.activity);
-    QString present = QString::fromStdString(assignment.present).trimmed().toLower();
+    QString present =
+        QString::fromStdString(assignment.present).trimmed().toLower();
 
     if (present == "yes" || present == "y") {
       activityYes[activityName]++;
