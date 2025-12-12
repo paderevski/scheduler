@@ -46,11 +46,11 @@
 #include <QtConcurrent>
 
 #if HAVE_QT_CHARTS
-#include <QtCharts/QChartView>
 #include <QtCharts/QChart>
+#include <QtCharts/QChartView>
+#include <QtCharts/QLegend>
 #include <QtCharts/QPieSeries>
 #include <QtCharts/QPieSlice>
-#include <QtCharts/QLegend>
 #endif
 
 #include <algorithm>
@@ -62,10 +62,10 @@
 namespace {
 QStringList defaultHeaders() {
   return {QStringLiteral("Student ID"), QStringLiteral("First Name"),
-          QStringLiteral("Last Name"), QStringLiteral("Grade"),
-          QStringLiteral("Day"), QStringLiteral("Teacher"),
-          QStringLiteral("Pathway"), QStringLiteral("Present"),
-          QStringLiteral("Choice 1"), QStringLiteral("Choice 2"),
+          QStringLiteral("Last Name"),  QStringLiteral("Grade"),
+          QStringLiteral("Day"),        QStringLiteral("Teacher"),
+          QStringLiteral("Pathway"),    QStringLiteral("Present"),
+          QStringLiteral("Choice 1"),   QStringLiteral("Choice 2"),
           QStringLiteral("Choice 3")};
 }
 
@@ -125,8 +125,8 @@ SpreadsheetTable modelToTable(const PreferenceModel &model) {
 
 std::optional<std::vector<StudentPreferenceRow>>
 rowsFromTableWithMapping(const SpreadsheetTable &table,
-                        const ColumnMapping &mapping,
-                        QStringList &headersOut) {
+                         const ColumnMapping &mapping,
+                         QStringList &headersOut) {
   headersOut = defaultHeaders();
 
   std::vector<StudentPreferenceRow> rows;
@@ -142,17 +142,20 @@ rowsFromTableWithMapping(const SpreadsheetTable &table,
     // Extract required fields
     if (mapping.studentIdColumn >= 0 &&
         mapping.studentIdColumn < static_cast<int>(line.size())) {
-      row.studentId = QString::fromStdString(line[mapping.studentIdColumn]).trimmed();
+      row.studentId =
+          QString::fromStdString(line[mapping.studentIdColumn]).trimmed();
     }
 
     if (mapping.firstNameColumn >= 0 &&
         mapping.firstNameColumn < static_cast<int>(line.size())) {
-      row.firstName = QString::fromStdString(line[mapping.firstNameColumn]).trimmed();
+      row.firstName =
+          QString::fromStdString(line[mapping.firstNameColumn]).trimmed();
     }
 
     if (mapping.lastNameColumn >= 0 &&
         mapping.lastNameColumn < static_cast<int>(line.size())) {
-      row.lastName = QString::fromStdString(line[mapping.lastNameColumn]).trimmed();
+      row.lastName =
+          QString::fromStdString(line[mapping.lastNameColumn]).trimmed();
     }
 
     // Extract optional fields
@@ -168,37 +171,43 @@ rowsFromTableWithMapping(const SpreadsheetTable &table,
 
     if (mapping.teacherColumn >= 0 &&
         mapping.teacherColumn < static_cast<int>(line.size())) {
-      row.teacher = QString::fromStdString(line[mapping.teacherColumn]).trimmed();
+      row.teacher =
+          QString::fromStdString(line[mapping.teacherColumn]).trimmed();
     }
 
     if (mapping.pathwayColumn >= 0 &&
         mapping.pathwayColumn < static_cast<int>(line.size())) {
-      row.pathway = QString::fromStdString(line[mapping.pathwayColumn]).trimmed();
+      row.pathway =
+          QString::fromStdString(line[mapping.pathwayColumn]).trimmed();
     }
 
     if (mapping.presentColumn >= 0 &&
         mapping.presentColumn < static_cast<int>(line.size())) {
-      row.present = QString::fromStdString(line[mapping.presentColumn]).trimmed();
+      row.present =
+          QString::fromStdString(line[mapping.presentColumn]).trimmed();
     }
 
     // Extract choices
     if (mapping.choice1Column >= 0 &&
         mapping.choice1Column < static_cast<int>(line.size())) {
-      row.choices.append(QString::fromStdString(line[mapping.choice1Column]).trimmed());
+      row.choices.append(
+          QString::fromStdString(line[mapping.choice1Column]).trimmed());
     } else {
       row.choices.append(QString());
     }
 
     if (mapping.choice2Column >= 0 &&
         mapping.choice2Column < static_cast<int>(line.size())) {
-      row.choices.append(QString::fromStdString(line[mapping.choice2Column]).trimmed());
+      row.choices.append(
+          QString::fromStdString(line[mapping.choice2Column]).trimmed());
     } else {
       row.choices.append(QString());
     }
 
     if (mapping.choice3Column >= 0 &&
         mapping.choice3Column < static_cast<int>(line.size())) {
-      row.choices.append(QString::fromStdString(line[mapping.choice3Column]).trimmed());
+      row.choices.append(
+          QString::fromStdString(line[mapping.choice3Column]).trimmed());
     } else {
       row.choices.append(QString());
     }
@@ -211,9 +220,10 @@ rowsFromTableWithMapping(const SpreadsheetTable &table,
 
 SpreadsheetTable resultsToTable(const SolverResult &result) {
   SpreadsheetTable table;
-  table.headers = {"Student ID", "First Name", "Last Name", "Grade", "Day",
-                   "Teacher", "Pathway", "Present",
-                   "Assigned Activity", "Choice Rank", "Score"};
+  table.headers = {"Student ID",  "First Name", "Last Name",
+                   "Grade",       "Day",        "Teacher",
+                   "Pathway",     "Present",    "Assigned Activity",
+                   "Choice Rank", "Score"};
   for (const auto &assignment : result.assignments) {
     std::vector<std::string> row;
     row.reserve(11);
@@ -256,7 +266,8 @@ struct ChoiceSatisfactionCounts {
   int choice1Total = 0, choice1Yes = 0, choice1Maybe = 0, choice1No = 0;
   int choice2Total = 0, choice2Yes = 0, choice2Maybe = 0, choice2No = 0;
   int choice3Total = 0, choice3Yes = 0, choice3Maybe = 0, choice3No = 0;
-  int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0, notSatisfiedNo = 0;
+  int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0,
+      notSatisfiedNo = 0;
 };
 
 ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
@@ -270,24 +281,36 @@ ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
 
     if (assignment.choiceRank == 0) {
       counts.choice1Total++;
-      if (isYes) counts.choice1Yes++;
-      else if (isMaybe) counts.choice1Maybe++;
-      else if (isNo) counts.choice1No++;
+      if (isYes)
+        counts.choice1Yes++;
+      else if (isMaybe)
+        counts.choice1Maybe++;
+      else if (isNo)
+        counts.choice1No++;
     } else if (assignment.choiceRank == 1) {
       counts.choice2Total++;
-      if (isYes) counts.choice2Yes++;
-      else if (isMaybe) counts.choice2Maybe++;
-      else if (isNo) counts.choice2No++;
+      if (isYes)
+        counts.choice2Yes++;
+      else if (isMaybe)
+        counts.choice2Maybe++;
+      else if (isNo)
+        counts.choice2No++;
     } else if (assignment.choiceRank == 2) {
       counts.choice3Total++;
-      if (isYes) counts.choice3Yes++;
-      else if (isMaybe) counts.choice3Maybe++;
-      else if (isNo) counts.choice3No++;
+      if (isYes)
+        counts.choice3Yes++;
+      else if (isMaybe)
+        counts.choice3Maybe++;
+      else if (isNo)
+        counts.choice3No++;
     } else {
       counts.notSatisfiedTotal++;
-      if (isYes) counts.notSatisfiedYes++;
-      else if (isMaybe) counts.notSatisfiedMaybe++;
-      else if (isNo) counts.notSatisfiedNo++;
+      if (isYes)
+        counts.notSatisfiedYes++;
+      else if (isMaybe)
+        counts.notSatisfiedMaybe++;
+      else if (isNo)
+        counts.notSatisfiedNo++;
     }
   }
 
@@ -299,23 +322,19 @@ ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
 class MainWindow::Impl {
 public:
   explicit Impl(MainWindow *q)
-      : q_ptr(q), tabWidget(new QTabWidget(q)),
-        welcomeWidget(new QWidget(q)),
-        tableView(new QTableView(q)),
-        model(new PreferenceModel(q)), diagnostics(new QListWidget(q)),
-        recentProjectsList(new QListWidget(q)),
+      : q_ptr(q), tabWidget(new QTabWidget(q)), welcomeWidget(new QWidget(q)),
+        tableView(new QTableView(q)), model(new PreferenceModel(q)),
+        diagnostics(new QListWidget(q)), recentProjectsList(new QListWidget(q)),
         studentCountLabel(new QLabel(q)), choiceCountLabel(new QLabel(q)),
         activityCountLabel(new QLabel(q)), capacityTable(new QTableWidget(q)),
         totalCapacityLabel(new QLabel(q)), defaultCapacitySpin(new QSpinBox(q)),
         setAllCapacitiesButton(new QPushButton(QStringLiteral("Set All"), q)),
         autoCapacityButton(new QPushButton(QStringLiteral("Auto"), q)),
-        weightingEnabledCheck(new QCheckBox(QStringLiteral("Enable Attendance Weighting"), q)),
-        weightYesSpin(new QSpinBox(q)),
-        weightMaybeSpin(new QSpinBox(q)),
-        weightNoSpin(new QSpinBox(q)),
-        weightYesNormLabel(new QLabel(q)),
-        weightMaybeNormLabel(new QLabel(q)),
-        weightNoNormLabel(new QLabel(q)),
+        weightingEnabledCheck(
+            new QCheckBox(QStringLiteral("Enable Attendance Weighting"), q)),
+        weightYesSpin(new QSpinBox(q)), weightMaybeSpin(new QSpinBox(q)),
+        weightNoSpin(new QSpinBox(q)), weightYesNormLabel(new QLabel(q)),
+        weightMaybeNormLabel(new QLabel(q)), weightNoNormLabel(new QLabel(q)),
         dayFilterCombo(new QComboBox(q)),
         runButton(new QPushButton(QStringLiteral("Calculate"), q)),
         resultsStatus(new QLabel(QStringLiteral("No solver run yet."), q)),
@@ -330,11 +349,11 @@ public:
         progressDialog(new QProgressDialog(QStringLiteral("Running solver..."),
                                            QString(), 0, 0, q))
 #if HAVE_QT_CHARTS
-  ,
-  overallChart(new QChartView(new QChart(), q)),
-  yesChart(new QChartView(new QChart(), q)),
-  maybeChart(new QChartView(new QChart(), q)),
-  noChart(new QChartView(new QChart(), q))
+        ,
+        overallChart(new QChartView(new QChart(), q)),
+        yesChart(new QChartView(new QChart(), q)),
+        maybeChart(new QChartView(new QChart(), q)),
+        noChart(new QChartView(new QChart(), q))
 #endif
   {
     setupUi();
@@ -373,16 +392,16 @@ public:
     defaultCapacitySpin->setToolTip(
         QStringLiteral("Default capacity for all activities"));
 
-    autoCapacityButton->setToolTip(
-        QStringLiteral("Calculate: (filtered students) / (# activities), rounded up"));
+    autoCapacityButton->setToolTip(QStringLiteral(
+        "Calculate: (filtered students) / (# activities), rounded up"));
 
     // Create welcome screen
     setupWelcomeScreen();
 
     // Create data view with stacked widget to toggle between welcome and table
     auto *dataStackedWidget = new QStackedWidget(q_ptr);
-    dataStackedWidget->addWidget(welcomeWidget);  // Index 0
-    dataStackedWidget->addWidget(tableView);      // Index 1
+    dataStackedWidget->addWidget(welcomeWidget); // Index 0
+    dataStackedWidget->addWidget(tableView);     // Index 1
 
     auto *dataLayout = new QVBoxLayout();
     dataLayout->addWidget(dataStackedWidget);
@@ -403,7 +422,8 @@ public:
 
     // Day filter
     auto *dayFilterLayout = new QHBoxLayout();
-    dayFilterLayout->addWidget(new QLabel(QStringLiteral("Filter by Day:"), q_ptr));
+    dayFilterLayout->addWidget(
+        new QLabel(QStringLiteral("Filter by Day:"), q_ptr));
     dayFilterCombo->addItem(QStringLiteral("All Days"), QString());
     dayFilterCombo->addItem(QStringLiteral("Day A"), QStringLiteral("A Day"));
     dayFilterCombo->addItem(QStringLiteral("Day B"), QStringLiteral("B Day"));
@@ -412,7 +432,8 @@ public:
     leftLayout->addLayout(dayFilterLayout);
 
     // Attendance weighting
-    leftLayout->addWidget(new QLabel(QStringLiteral("<b>Attendance Weighting</b>"), q_ptr));
+    leftLayout->addWidget(
+        new QLabel(QStringLiteral("<b>Attendance Weighting</b>"), q_ptr));
     leftLayout->addWidget(weightingEnabledCheck);
     weightingEnabledCheck->setChecked(true);
 
@@ -427,11 +448,13 @@ public:
     weightNoSpin->setMinimumWidth(80);
 
     auto *weightGridLayout = new QGridLayout();
-    weightGridLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr), 0, 0);
+    weightGridLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr), 0,
+                                0);
     weightGridLayout->addWidget(weightYesSpin, 0, 1);
     weightGridLayout->addWidget(weightYesNormLabel, 0, 2);
 
-    weightGridLayout->addWidget(new QLabel(QStringLiteral("Maybe:"), q_ptr), 1, 0);
+    weightGridLayout->addWidget(new QLabel(QStringLiteral("Maybe:"), q_ptr), 1,
+                                0);
     weightGridLayout->addWidget(weightMaybeSpin, 1, 1);
     weightGridLayout->addWidget(weightMaybeNormLabel, 1, 2);
 
@@ -506,17 +529,21 @@ public:
         {QStringLiteral("Choice Rank"), QStringLiteral("Total"),
          QStringLiteral("Total %"), QStringLiteral("Yes"),
          QStringLiteral("Maybe"), QStringLiteral("No")});
-    satisfactionSummary->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+    satisfactionSummary->horizontalHeader()->setSectionResizeMode(
+        QHeaderView::Stretch);
     satisfactionSummary->setEditTriggers(QAbstractItemView::NoEditTriggers);
     satisfactionSummary->verticalHeader()->setVisible(false);
 
     auto *resultsLayout = new QVBoxLayout();
     resultsLayout->addWidget(resultsStatus);
-    resultsLayout->addWidget(new QLabel(QStringLiteral("<b>Choice Satisfaction</b>"), q_ptr));
+    resultsLayout->addWidget(
+        new QLabel(QStringLiteral("<b>Choice Satisfaction</b>"), q_ptr));
     resultsLayout->addWidget(satisfactionSummary);
-    resultsLayout->addWidget(new QLabel(QStringLiteral("<b>Activity Assignments</b>"), q_ptr));
+    resultsLayout->addWidget(
+        new QLabel(QStringLiteral("<b>Activity Assignments</b>"), q_ptr));
     resultsLayout->addWidget(resultsTable);
-    resultsLayout->addWidget(new QLabel(QStringLiteral("<b>Activity Utilization</b>"), q_ptr));
+    resultsLayout->addWidget(
+        new QLabel(QStringLiteral("<b>Activity Utilization</b>"), q_ptr));
     resultsLayout->addWidget(activitySummary);
 #if HAVE_QT_CHARTS
     overallChart->setMinimumHeight(200);
@@ -524,14 +551,15 @@ public:
     maybeChart->setMinimumHeight(200);
     noChart->setMinimumHeight(200);
 
-    auto *chartsLabel = new QLabel(QStringLiteral("<b>Choice Satisfaction by Attendance</b>"), q_ptr);
+    auto *chartsLabel = new QLabel(
+        QStringLiteral("<b>Choice Satisfaction by Attendance</b>"), q_ptr);
     resultsLayout->addWidget(chartsLabel);
 
     auto *chartsGrid = new QGridLayout();
     chartsGrid->addWidget(overallChart, 0, 0);
     chartsGrid->addWidget(yesChart, 0, 1);
-    chartsGrid->addWidget(maybeChart, 0,2);
-    chartsGrid->addWidget(noChart, 0,3);
+    chartsGrid->addWidget(maybeChart, 0, 2);
+    chartsGrid->addWidget(noChart, 0, 3);
     resultsLayout->addLayout(chartsGrid);
 #endif
     auto *resultsButtonLayout = new QHBoxLayout();
@@ -583,151 +611,185 @@ public:
     // The welcomeWidget is the parent container for this entire screen
 
     auto *layout = new QVBoxLayout(welcomeWidget);
-    layout->setContentsMargins(40, 40, 40, 40);  // Padding: left, top, right, bottom (in pixels)
-    layout->setSpacing(20);                       // Space between widgets (in pixels)
+    layout->setContentsMargins(
+        0, 0, 0, 0);        // Padding: left, top, right, bottom (in pixels)
+    layout->setSpacing(10); // Space between widgets (in pixels)
 
     // === LOGO IMAGE ===
-    // Add logo: prefer embedded resource, fall back to repo-relative file for dev
+    // Add logo: prefer embedded resource, fall back to repo-relative file for
+    // dev
     QPixmap logoPixmap;
     // Try resource first
     logoPixmap.load(QStringLiteral(":/images/logo.jpeg"));
     if (logoPixmap.isNull()) {
       // Fallback: relative to source tree (useful during development)
-      const QString devPath = QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(QStringLiteral("../../include/logo.jpeg"));
+      const QString devPath =
+          QDir(QCoreApplication::applicationDirPath())
+              .absoluteFilePath(QStringLiteral("../../include/logo.jpeg"));
       if (QFile::exists(devPath)) {
         logoPixmap.load(devPath);
       }
     }
 
-
     if (!logoPixmap.isNull()) {
-      logoPixmap = logoPixmap.scaledToWidth(300, Qt::SmoothTransformation);  // Resize to 300px wide
-      auto *logoLabel = new QLabel(welcomeWidget);  // QLabel can display text OR images
-      logoLabel->setPixmap(logoPixmap);             // Put the image into the label
-      logoLabel->setAlignment(Qt::AlignCenter);     // Center horizontally
-      layout->addWidget(logoLabel);                 // Add to the vertical layout
+      logoPixmap = logoPixmap.scaledToWidth(
+          300, Qt::SmoothTransformation); // Resize to 300px wide
+      auto *logoLabel =
+          new QLabel(welcomeWidget);    // QLabel can display text OR images
+      logoLabel->setPixmap(logoPixmap); // Put the image into the label
+      logoLabel->setAlignment(Qt::AlignCenter); // Center horizontally
+      layout->addWidget(logoLabel);             // Add to the vertical layout
     }
 
-    layout->addSpacing(20);  // Add 20px of empty vertical space
+    layout->addSpacing(0); // Add 20px of empty vertical space
 
     // === WELCOME TEXT ===
-    // QLabel supports basic HTML tags like <h2>, <b>, <i>, <font color="red">, etc.
-    auto *welcomeLabel = new QLabel(QStringLiteral("<h2>Welcome to ClickSort</h2>"), welcomeWidget);
-    welcomeLabel->setAlignment(Qt::AlignCenter);  // Center the text
+    // QLabel supports basic HTML tags like <h2>, <b>, <i>, <font color="red">,
+    // etc.
+    auto *welcomeLabel = new QLabel(
+        QStringLiteral("<h2>Welcome to ClickSort</h2>"), welcomeWidget);
+    welcomeLabel->setAlignment(Qt::AlignCenter); // Center the text
     layout->addWidget(welcomeLabel);
 
-    layout->addSpacing(30);  // More vertical space before columns
+    layout->addSpacing(0); // More vertical space before columns
 
     // === TWO-COLUMN LAYOUT ===
-    // HBoxLayout will place Recent Projects (left) and Action Buttons (right) side-by-side
+    // HBoxLayout will place Recent Projects (left) and Action Buttons (right)
+    // side-by-side
     auto *columnsLayout = new QHBoxLayout();
-    columnsLayout->setSpacing(40);  // 40px gap between the two columns
+    columnsLayout->setSpacing(20); // 40px gap between the two columns
 
     // --- LEFT COLUMN: Recent Projects ---
-    auto *recentLayout = new QVBoxLayout();  // Vertical layout for this column
-    auto *recentLabel = new QLabel(QStringLiteral("<b>Recent Projects</b>"), welcomeWidget);
+    auto *recentLayout = new QVBoxLayout(); // Vertical layout for this column
+    auto *recentLabel =
+        new QLabel(QStringLiteral("<b>Recent Projects</b>"), welcomeWidget);
+    recentLabel->setStyleSheet(
+        QStringLiteral("font-size: 16pt; font-weight: bold;"));
+
     recentLayout->addWidget(recentLabel);
 
     // QListWidget displays a list of items (like a file browser)
-    recentProjectsList->setSelectionMode(QAbstractItemView::SingleSelection);  // Only one item selectable
-    recentProjectsList->setMaximumHeight(300);  // Limit height to 300px
+    recentProjectsList->setSelectionMode(
+        QAbstractItemView::SingleSelection);   // Only one item selectable
+    recentProjectsList->setMaximumHeight(200); // Limit height to 300px
 
     // CSS-like styling: border, rounded corners, padding, hover effects
     recentProjectsList->setStyleSheet(QStringLiteral(
-      "QListWidget { border: 1px solid #ccc; border-radius: 4px; padding: 5px; }"
-      "QListWidget::item { padding: 8px; }"
-      "QListWidget::item:hover { background-color: #e8e8e8; }"
-    ));
+        "QListWidget { border: 1px solid #ccc; border-radius: 4px; padding: "
+        "5px; font-size: 14pt; }"
+        "QListWidget::item { padding: 2px; }"
+        "QListWidget::item:hover { background-color: #e8e8e8; }"));
 
-    // QObject::connect hooks up events: when user double-clicks item, run this code
-    QObject::connect(recentProjectsList, &QListWidget::itemDoubleClicked, q_ptr,
-                     [this](QListWidgetItem *item) {
-                       QString path = item->data(Qt::UserRole).toString();  // Get stored file path
-                       if (!path.isEmpty() && QFile::exists(path)) {
-                         doLoadProject(path);  // Open the project
-                       }
-                     });
+    // QObject::connect hooks up events: when user double-clicks item, run this
+    // code
+    QObject::connect(
+        recentProjectsList, &QListWidget::itemDoubleClicked, q_ptr,
+        [this](QListWidgetItem *item) {
+          QString path =
+              item->data(Qt::UserRole).toString(); // Get stored file path
+          if (!path.isEmpty() && QFile::exists(path)) {
+            doLoadProject(path); // Open the project
+          }
+        });
     recentLayout->addWidget(recentProjectsList);
 
     // Small button below the list
-    auto *clearRecentButton = new QPushButton(QStringLiteral("Clear Recent"), welcomeWidget);
-    clearRecentButton->setMaximumWidth(120);  // Limit width so it doesn't stretch
+    auto *clearRecentButton =
+        new QPushButton(QStringLiteral("Clear Recent"), welcomeWidget);
+    clearRecentButton->setMaximumWidth(
+        120); // Limit width so it doesn't stretch
     QObject::connect(clearRecentButton, &QPushButton::clicked, q_ptr, [this]() {
-      QSettings settings;  // QSettings stores app preferences/data between sessions
-      settings.remove(QStringLiteral("recentProjects"));  // Delete the saved list
-      updateRecentProjects();  // Refresh the display
+      QSettings
+          settings; // QSettings stores app preferences/data between sessions
+      settings.remove(
+          QStringLiteral("recentProjects")); // Delete the saved list
+      updateRecentProjects();                // Refresh the display
     });
     recentLayout->addWidget(clearRecentButton);
-    recentLayout->addStretch();  // Push everything up (fills remaining space at bottom)
+    recentLayout
+        ->addStretch(); // Push everything up (fills remaining space at bottom)
 
     // --- RIGHT COLUMN: Action Buttons ---
-    auto *buttonLayout = new QVBoxLayout();  // Vertical layout for this column
-    auto *actionsLabel = new QLabel(QStringLiteral("<b>Actions</b>"), welcomeWidget);
+    auto *buttonLayout = new QVBoxLayout(); // Vertical layout for this column
+    auto *actionsLabel = new QLabel(QStringLiteral("Actions"), welcomeWidget);
+    actionsLabel->setStyleSheet(
+        QStringLiteral("font-size: 16pt; font-weight: bold;"));
     buttonLayout->addWidget(actionsLabel);
-    buttonLayout->addSpacing(5);  // Small space below label
+    buttonLayout->addSpacing(5); // Small space below label
 
     // Three large buttons with consistent styling
-    auto *openProjectButton = new QPushButton(QStringLiteral("Open Project"), welcomeWidget);
-    openProjectButton->setMinimumHeight(50);  // Make button 50px tall
-    openProjectButton->setStyleSheet(QStringLiteral("font-size: 14pt; font-weight: bold;"));
+    auto *openProjectButton =
+        new QPushButton(QStringLiteral("Open Project"), welcomeWidget);
+    openProjectButton->setMinimumHeight(50); // Make button 50px tall
+    openProjectButton->setStyleSheet(QStringLiteral("font-size: 14pt;"));
     QObject::connect(openProjectButton, &QPushButton::clicked, q_ptr,
-                     [this]() { loadProject(); });  // What happens when clicked
+                     [this]() { loadProject(); }); // What happens when clicked
     buttonLayout->addWidget(openProjectButton);
 
-    auto *importDataButton = new QPushButton(QStringLiteral("Import Data"), welcomeWidget);
+    auto *importDataButton =
+        new QPushButton(QStringLiteral("Import Data"), welcomeWidget);
     importDataButton->setMinimumHeight(50);
-    importDataButton->setStyleSheet(QStringLiteral("font-size: 14pt; font-weight: bold;"));
+    importDataButton->setStyleSheet(QStringLiteral("font-size: 14pt;"));
     QObject::connect(importDataButton, &QPushButton::clicked, q_ptr,
                      [this]() { openDataFile(); });
     buttonLayout->addWidget(importDataButton);
 
-    auto *newProjectButton = new QPushButton(QStringLiteral("New Project"), welcomeWidget);
+    auto *newProjectButton =
+        new QPushButton(QStringLiteral("New Project"), welcomeWidget);
     newProjectButton->setMinimumHeight(50);
-    newProjectButton->setStyleSheet(QStringLiteral("font-size: 14pt; font-weight: bold;"));
+    newProjectButton->setStyleSheet(QStringLiteral("font-size: 14pt;"));
     QObject::connect(newProjectButton, &QPushButton::clicked, q_ptr, [this]() {
-      model->setRows({});           // Clear all data
-      currentProjectPath.clear();   // Forget current project path
-      updateWindowTitle();          // Update window title bar
+      model->setRows({});            // Clear all data
+      currentProjectPath.clear();    // Forget current project path
+      updateWindowTitle();           // Update window title bar
       dataStack->setCurrentIndex(0); // Switch to welcome screen (index 0)
     });
     buttonLayout->addWidget(newProjectButton);
-    buttonLayout->addStretch();  // Push buttons to top of column
+    buttonLayout->addStretch(); // Push buttons to top of column
 
     // === ASSEMBLE THE COLUMNS ===
     // The number "1" means both columns get equal width (1:1 ratio)
     // Use "2" for one column to make it twice as wide as the other
-    columnsLayout->addLayout(recentLayout, 1);   // Add left column (ratio: 1)
-    columnsLayout->addLayout(buttonLayout, 1);   // Add right column (ratio: 1)
-    layout->addLayout(columnsLayout);            // Add the two-column layout to main vertical layout
-    layout->addStretch();                        // Push everything to top of screen
+    columnsLayout->addLayout(recentLayout, 1); // Add left column (ratio: 1)
+    columnsLayout->addLayout(buttonLayout, 1); // Add right column (ratio: 1)
+    layout->addLayout(
+        columnsLayout); // Add the two-column layout to main vertical layout
+    // layout->addStretch();                        // Push everything to top of
+    // screen
 
     // === POPULATE DATA ===
-    updateRecentProjects();  // Load and display recent projects from QSettings
+    updateRecentProjects(); // Load and display recent projects from QSettings
   }
 
   void updateRecentProjects() {
     // Refresh the list widget with current recent projects from storage
-    recentProjectsList->clear();  // Remove all items from the list
+    recentProjectsList->clear(); // Remove all items from the list
 
-    // QSettings persists data between app sessions (like Windows Registry or macOS preferences)
+    // QSettings persists data between app sessions (like Windows Registry or
+    // macOS preferences)
     QSettings settings;
-    QStringList recent = settings.value(QStringLiteral("recentProjects")).toStringList();
+    QStringList recent =
+        settings.value(QStringLiteral("recentProjects")).toStringList();
 
     // Loop through each saved project path
     for (const QString &path : recent) {
-      if (QFile::exists(path)) {  // Only show if file still exists on disk
+      if (QFile::exists(path)) { // Only show if file still exists on disk
         // QListWidgetItem represents one row in the list
-        auto *item = new QListWidgetItem(QFileInfo(path).fileName());  // Display just filename
-        item->setData(Qt::UserRole, path);  // Store full path invisibly (UserRole = custom data)
-        item->setToolTip(path);             // Show full path on hover
-        recentProjectsList->addItem(item);  // Add to list widget
+        auto *item = new QListWidgetItem(
+            QFileInfo(path).fileName()); // Display just filename
+        item->setData(
+            Qt::UserRole,
+            path); // Store full path invisibly (UserRole = custom data)
+        item->setToolTip(path);            // Show full path on hover
+        recentProjectsList->addItem(item); // Add to list widget
       }
     }
 
     // If no projects, show a placeholder message
     if (recentProjectsList->count() == 0) {
       auto *item = new QListWidgetItem(QStringLiteral("No recent projects"));
-      item->setFlags(Qt::NoItemFlags);     // Make it non-selectable and non-clickable
+      item->setFlags(
+          Qt::NoItemFlags); // Make it non-selectable and non-clickable
       item->setForeground(QColor(Qt::gray)); // Gray text color
       recentProjectsList->addItem(item);
     }
@@ -736,7 +798,8 @@ public:
   void addToRecentProjects(const QString &path) {
     // Add a project to the recent list (called when saving or loading)
     QSettings settings;
-    QStringList recent = settings.value(QStringLiteral("recentProjects")).toStringList();
+    QStringList recent =
+        settings.value(QStringLiteral("recentProjects")).toStringList();
 
     // Remove if already exists (prevents duplicates)
     recent.removeAll(path);
@@ -746,7 +809,7 @@ public:
 
     // Keep only 5 most recent projects
     while (recent.size() > 5) {
-      recent.removeLast();  // Remove oldest
+      recent.removeLast(); // Remove oldest
     }
 
     // Save back to persistent storage
@@ -759,24 +822,28 @@ public:
   void setupMenu() {
     auto *fileMenu = q_ptr->menuBar()->addMenu(QStringLiteral("File"));
 
-    auto *openProjectAction = fileMenu->addAction(QStringLiteral("Open Project..."));
+    auto *openProjectAction =
+        fileMenu->addAction(QStringLiteral("Open Project..."));
     openProjectAction->setShortcut(QKeySequence::Open);
     QObject::connect(openProjectAction, &QAction::triggered, q_ptr,
                      [this]() { loadProject(); });
 
-    auto *saveProjectAction = fileMenu->addAction(QStringLiteral("Save Project"));
+    auto *saveProjectAction =
+        fileMenu->addAction(QStringLiteral("Save Project"));
     saveProjectAction->setShortcut(QKeySequence::Save);
     QObject::connect(saveProjectAction, &QAction::triggered, q_ptr,
                      [this]() { saveProject(); });
 
-    auto *saveProjectAsAction = fileMenu->addAction(QStringLiteral("Save Project As..."));
+    auto *saveProjectAsAction =
+        fileMenu->addAction(QStringLiteral("Save Project As..."));
     saveProjectAsAction->setShortcut(QKeySequence::SaveAs);
     QObject::connect(saveProjectAsAction, &QAction::triggered, q_ptr,
                      [this]() { saveProjectAs(); });
 
     fileMenu->addSeparator();
 
-    auto *openDataAction = fileMenu->addAction(QStringLiteral("Import Data from CSV/XLSX..."));
+    auto *openDataAction =
+        fileMenu->addAction(QStringLiteral("Import Data from CSV/XLSX..."));
     QObject::connect(openDataAction, &QAction::triggered, q_ptr,
                      [this]() { openDataFile(); });
 
@@ -806,17 +873,19 @@ public:
     QObject::connect(solverWatcher, &QFutureWatcher<SolverResult>::finished,
                      q_ptr, [this]() { handleSolverFinished(); });
 
-    QObject::connect(dayFilterCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
-                     q_ptr, [this]() { updateSummary(); });
+    QObject::connect(dayFilterCombo,
+                     QOverload<int>::of(&QComboBox::currentIndexChanged), q_ptr,
+                     [this]() { updateSummary(); });
 
     QObject::connect(weightYesSpin, QOverload<int>::of(&QSpinBox::valueChanged),
                      q_ptr, [this]() { updateWeightLabels(); });
-    QObject::connect(weightMaybeSpin, QOverload<int>::of(&QSpinBox::valueChanged),
-                     q_ptr, [this]() { updateWeightLabels(); });
+    QObject::connect(weightMaybeSpin,
+                     QOverload<int>::of(&QSpinBox::valueChanged), q_ptr,
+                     [this]() { updateWeightLabels(); });
     QObject::connect(weightNoSpin, QOverload<int>::of(&QSpinBox::valueChanged),
                      q_ptr, [this]() { updateWeightLabels(); });
-    QObject::connect(weightingEnabledCheck, &QCheckBox::toggled,
-                     q_ptr, [this]() { updateWeightControls(); });
+    QObject::connect(weightingEnabledCheck, &QCheckBox::toggled, q_ptr,
+                     [this]() { updateWeightControls(); });
   }
 
   void appendDiagnostic(const QString &message) {
@@ -847,11 +916,14 @@ public:
 
     // Normalize so "yes" = 1.0
     double normYes = 1.0;
-    double normMaybe = yesVal > 0 ? static_cast<double>(maybeVal) / yesVal : 0.0;
+    double normMaybe =
+        yesVal > 0 ? static_cast<double>(maybeVal) / yesVal : 0.0;
     double normNo = yesVal > 0 ? static_cast<double>(noVal) / yesVal : 0.0;
 
-    weightYesNormLabel->setText(QStringLiteral("(×%1)").arg(normYes, 0, 'f', 2));
-    weightMaybeNormLabel->setText(QStringLiteral("(×%1)").arg(normMaybe, 0, 'f', 2));
+    weightYesNormLabel->setText(
+        QStringLiteral("(×%1)").arg(normYes, 0, 'f', 2));
+    weightMaybeNormLabel->setText(
+        QStringLiteral("(×%1)").arg(normMaybe, 0, 'f', 2));
     weightNoNormLabel->setText(QStringLiteral("(×%1)").arg(normNo, 0, 'f', 2));
   }
 
@@ -881,6 +953,12 @@ public:
         continue;
       }
 
+      // Skip students with invalid attendance values
+      QString attendance = row.present.trimmed().toLower();
+      if (attendance != "yes" && attendance != "no" && attendance != "maybe") {
+        continue;
+      }
+
       filteredStudentCount++;
 
       if (row.studentId.trimmed().isEmpty()) {
@@ -897,12 +975,14 @@ public:
       }
     }
 
-    QString dayFilterText = dayFilter.isEmpty() ? QStringLiteral("")
-                                                 : QStringLiteral(" (Day %1)").arg(dayFilter);
-    studentCountLabel->setText(QStringLiteral("Students: %1 (missing IDs: %2)%3")
-                                   .arg(filteredStudentCount)
-                                   .arg(missingIds)
-                                   .arg(dayFilterText));
+    QString dayFilterText = dayFilter.isEmpty()
+                                ? QStringLiteral("")
+                                : QStringLiteral(" (Day %1)").arg(dayFilter);
+    studentCountLabel->setText(
+        QStringLiteral("Students: %1 (missing IDs: %2)%3")
+            .arg(filteredStudentCount)
+            .arg(missingIds)
+            .arg(dayFilterText));
     choiceCountLabel->setText(
         QStringLiteral("Blank choices: %1").arg(blankChoices));
     activityCountLabel->setText(
@@ -936,6 +1016,12 @@ public:
     for (const auto &row : model->rows()) {
       // Apply day filter
       if (!dayFilter.isEmpty() && row.day != dayFilter) {
+        continue;
+      }
+
+      // Skip students with invalid attendance values
+      QString attendance = row.present.trimmed().toLower();
+      if (attendance != "yes" && attendance != "no" && attendance != "maybe") {
         continue;
       }
 
@@ -1057,7 +1143,8 @@ public:
     const int activityCount = capacityTable->rowCount();
     if (activityCount > 0 && filteredStudentCount > 0) {
       // Calculate: students / activities, rounded up
-      int autoCapacity = (filteredStudentCount + activityCount - 1) / activityCount;
+      int autoCapacity =
+          (filteredStudentCount + activityCount - 1) / activityCount;
       defaultCapacitySpin->setValue(autoCapacity);
     }
   }
@@ -1117,9 +1204,8 @@ public:
 
     ColumnMapping mapping = dialog.getMapping();
     if (!mapping.isValid()) {
-      QMessageBox::warning(
-          q_ptr, QStringLiteral("Invalid mapping"),
-          QStringLiteral("Please map all required fields."));
+      QMessageBox::warning(q_ptr, QStringLiteral("Invalid mapping"),
+                           QStringLiteral("Please map all required fields."));
       return false;
     }
 
@@ -1197,7 +1283,8 @@ public:
   void saveProjectAs() {
     const QString path = QFileDialog::getSaveFileName(
         q_ptr, QStringLiteral("Save Project As"),
-        currentProjectPath.isEmpty() ? QStringLiteral("untitled.clicksort") : currentProjectPath,
+        currentProjectPath.isEmpty() ? QStringLiteral("untitled.clicksort")
+                                     : currentProjectPath,
         QStringLiteral("ClickSort Projects (*.clicksort)"));
     if (path.isEmpty()) {
       return;
@@ -1226,7 +1313,8 @@ public:
     QJsonObject activityCapacities;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
-      auto *spinBox = qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
+      auto *spinBox =
+          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
       if (activityItem && spinBox) {
         activityCapacities[activityItem->text()] = spinBox->value();
       }
@@ -1306,8 +1394,9 @@ public:
     // Write to file
     QFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      QMessageBox::warning(q_ptr, QStringLiteral("Unable to save"),
-                          QStringLiteral("Could not open file for writing:\n%1").arg(path));
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("Unable to save"),
+          QStringLiteral("Could not open file for writing:\n%1").arg(path));
       return;
     }
 
@@ -1318,13 +1407,15 @@ public:
     currentProjectPath = path;
     addToRecentProjects(path);
     updateWindowTitle();
-    appendDiagnostic(QStringLiteral("Saved project to %1").arg(QFileInfo(path).fileName()));
+    appendDiagnostic(
+        QStringLiteral("Saved project to %1").arg(QFileInfo(path).fileName()));
   }
 
   void loadProject() {
     const QString path = QFileDialog::getOpenFileName(
         q_ptr, QStringLiteral("Open Project"),
-        currentProjectPath.isEmpty() ? QString() : QFileInfo(currentProjectPath).path(),
+        currentProjectPath.isEmpty() ? QString()
+                                     : QFileInfo(currentProjectPath).path(),
         QStringLiteral("ClickSort Projects (*.clicksort)"));
     if (path.isEmpty()) {
       return;
@@ -1335,8 +1426,9 @@ public:
   void doLoadProject(const QString &path) {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      QMessageBox::warning(q_ptr, QStringLiteral("Unable to open"),
-                          QStringLiteral("Could not open project file:\n%1").arg(path));
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("Unable to open"),
+          QStringLiteral("Could not open project file:\n%1").arg(path));
       return;
     }
 
@@ -1347,15 +1439,18 @@ public:
     QJsonDocument doc = QJsonDocument::fromJson(data, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
       QMessageBox::warning(q_ptr, QStringLiteral("Invalid project file"),
-                          QStringLiteral("Failed to parse JSON:\n%1").arg(parseError.errorString()));
+                           QStringLiteral("Failed to parse JSON:\n%1")
+                               .arg(parseError.errorString()));
       return;
     }
 
     QJsonObject root = doc.object();
     QString version = root["version"].toString();
     if (version != "1.0") {
-      QMessageBox::warning(q_ptr, QStringLiteral("Unsupported version"),
-                          QStringLiteral("This project file version (%1) is not supported.").arg(version));
+      QMessageBox::warning(
+          q_ptr, QStringLiteral("Unsupported version"),
+          QStringLiteral("This project file version (%1) is not supported.")
+              .arg(version));
       return;
     }
 
@@ -1406,7 +1501,8 @@ public:
     QJsonObject activityCapacities = settings["activityCapacities"].toObject();
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
-      auto *spinBox = qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
+      auto *spinBox =
+          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
       if (activityItem && spinBox) {
         QString activity = activityItem->text();
         if (activityCapacities.contains(activity)) {
@@ -1464,7 +1560,8 @@ public:
     currentProjectPath = path;
     addToRecentProjects(path);
     updateWindowTitle();
-    appendDiagnostic(QStringLiteral("Loaded project from %1").arg(QFileInfo(path).fileName()));
+    appendDiagnostic(QStringLiteral("Loaded project from %1")
+                         .arg(QFileInfo(path).fileName()));
 
     // Switch to table view when project is loaded
     if (dataStack && model->rowCount() > 0) {
@@ -1566,17 +1663,21 @@ public:
     lastOptions = options;
     lastDayFilter = dayFilter;
 
-    QString filterMsg = dayFilter.isEmpty() ? QStringLiteral("all students")
-                                             : QStringLiteral("Day %1 students").arg(dayFilter);
+    QString filterMsg = dayFilter.isEmpty()
+                            ? QStringLiteral("all students")
+                            : QStringLiteral("Day %1 students").arg(dayFilter);
     appendDiagnostic(
-        QStringLiteral("Launching solver for %1 with per-activity capacities...").arg(filterMsg));
+        QStringLiteral(
+            "Launching solver for %1 with per-activity capacities...")
+            .arg(filterMsg));
     progressDialog->setLabelText(QStringLiteral("Calculating assignments..."));
     progressDialog->show();
     runButton->setEnabled(false);
 
-    auto future = QtConcurrent::run([rows = std::move(filteredRows), options]() {
-      return runSolver(rows, options);
-    });
+    auto future =
+        QtConcurrent::run([rows = std::move(filteredRows), options]() {
+          return runSolver(rows, options);
+        });
     solverWatcher->setFuture(future);
   }
 
@@ -1666,40 +1767,88 @@ public:
     satisfactionSummary->setRowCount(4);
 
     // Row 0: 1st Choice
-    satisfactionSummary->setItem(0, 0, makeSatisfactionItem(QStringLiteral("1st Choice")));
-    satisfactionSummary->setItem(0, 1, makeSatisfactionItem(QString::number(counts.choice1Total), true));
-    satisfactionSummary->setItem(0, 2, makeSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(counts.choice1Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
-    satisfactionSummary->setItem(0, 3, makeSatisfactionItem(QString::number(counts.choice1Yes), true));
-    satisfactionSummary->setItem(0, 4, makeSatisfactionItem(QString::number(counts.choice1Maybe), true));
-    satisfactionSummary->setItem(0, 5, makeSatisfactionItem(QString::number(counts.choice1No), true));
+    satisfactionSummary->setItem(
+        0, 0, makeSatisfactionItem(QStringLiteral("1st Choice")));
+    satisfactionSummary->setItem(
+        0, 1, makeSatisfactionItem(QString::number(counts.choice1Total), true));
+    satisfactionSummary->setItem(
+        0, 2,
+        makeSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.choice1Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            true));
+    satisfactionSummary->setItem(
+        0, 3, makeSatisfactionItem(QString::number(counts.choice1Yes), true));
+    satisfactionSummary->setItem(
+        0, 4, makeSatisfactionItem(QString::number(counts.choice1Maybe), true));
+    satisfactionSummary->setItem(
+        0, 5, makeSatisfactionItem(QString::number(counts.choice1No), true));
 
     // Row 1: 2nd Choice
-    satisfactionSummary->setItem(1, 0, makeSatisfactionItem(QStringLiteral("2nd Choice")));
-    satisfactionSummary->setItem(1, 1, makeSatisfactionItem(QString::number(counts.choice2Total), true));
-    satisfactionSummary->setItem(1, 2, makeSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(counts.choice2Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
-    satisfactionSummary->setItem(1, 3, makeSatisfactionItem(QString::number(counts.choice2Yes), true));
-    satisfactionSummary->setItem(1, 4, makeSatisfactionItem(QString::number(counts.choice2Maybe), true));
-    satisfactionSummary->setItem(1, 5, makeSatisfactionItem(QString::number(counts.choice2No), true));
+    satisfactionSummary->setItem(
+        1, 0, makeSatisfactionItem(QStringLiteral("2nd Choice")));
+    satisfactionSummary->setItem(
+        1, 1, makeSatisfactionItem(QString::number(counts.choice2Total), true));
+    satisfactionSummary->setItem(
+        1, 2,
+        makeSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.choice2Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            true));
+    satisfactionSummary->setItem(
+        1, 3, makeSatisfactionItem(QString::number(counts.choice2Yes), true));
+    satisfactionSummary->setItem(
+        1, 4, makeSatisfactionItem(QString::number(counts.choice2Maybe), true));
+    satisfactionSummary->setItem(
+        1, 5, makeSatisfactionItem(QString::number(counts.choice2No), true));
 
     // Row 2: 3rd Choice
-    satisfactionSummary->setItem(2, 0, makeSatisfactionItem(QStringLiteral("3rd Choice")));
-    satisfactionSummary->setItem(2, 1, makeSatisfactionItem(QString::number(counts.choice3Total), true));
-    satisfactionSummary->setItem(2, 2, makeSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(counts.choice3Total * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
-    satisfactionSummary->setItem(2, 3, makeSatisfactionItem(QString::number(counts.choice3Yes), true));
-    satisfactionSummary->setItem(2, 4, makeSatisfactionItem(QString::number(counts.choice3Maybe), true));
-    satisfactionSummary->setItem(2, 5, makeSatisfactionItem(QString::number(counts.choice3No), true));
+    satisfactionSummary->setItem(
+        2, 0, makeSatisfactionItem(QStringLiteral("3rd Choice")));
+    satisfactionSummary->setItem(
+        2, 1, makeSatisfactionItem(QString::number(counts.choice3Total), true));
+    satisfactionSummary->setItem(
+        2, 2,
+        makeSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.choice3Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            true));
+    satisfactionSummary->setItem(
+        2, 3, makeSatisfactionItem(QString::number(counts.choice3Yes), true));
+    satisfactionSummary->setItem(
+        2, 4, makeSatisfactionItem(QString::number(counts.choice3Maybe), true));
+    satisfactionSummary->setItem(
+        2, 5, makeSatisfactionItem(QString::number(counts.choice3No), true));
 
     // Row 3: Not Satisfied (fallback)
-    satisfactionSummary->setItem(3, 0, makeSatisfactionItem(QStringLiteral("Not Satisfied")));
-    satisfactionSummary->setItem(3, 1, makeSatisfactionItem(QString::number(counts.notSatisfiedTotal), true));
-    satisfactionSummary->setItem(3, 2, makeSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(counts.notSatisfiedTotal * 100.0 / totalStudents, 0, 'f', 1) : QStringLiteral("0%"), true));
-    satisfactionSummary->setItem(3, 3, makeSatisfactionItem(QString::number(counts.notSatisfiedYes), true));
-    satisfactionSummary->setItem(3, 4, makeSatisfactionItem(QString::number(counts.notSatisfiedMaybe), true));
-    satisfactionSummary->setItem(3, 5, makeSatisfactionItem(QString::number(counts.notSatisfiedNo), true));
+    satisfactionSummary->setItem(
+        3, 0, makeSatisfactionItem(QStringLiteral("Not Satisfied")));
+    satisfactionSummary->setItem(
+        3, 1,
+        makeSatisfactionItem(QString::number(counts.notSatisfiedTotal), true));
+    satisfactionSummary->setItem(
+        3, 2,
+        makeSatisfactionItem(totalStudents > 0 ? QStringLiteral("%1%").arg(
+                                                     counts.notSatisfiedTotal *
+                                                         100.0 / totalStudents,
+                                                     0, 'f', 1)
+                                               : QStringLiteral("0%"),
+                             true));
+    satisfactionSummary->setItem(
+        3, 3,
+        makeSatisfactionItem(QString::number(counts.notSatisfiedYes), true));
+    satisfactionSummary->setItem(
+        3, 4,
+        makeSatisfactionItem(QString::number(counts.notSatisfiedMaybe), true));
+    satisfactionSummary->setItem(
+        3, 5,
+        makeSatisfactionItem(QString::number(counts.notSatisfiedNo), true));
 
     activitySummary->clear();
     for (const auto &summary : result.activitySummary) {
@@ -1712,10 +1861,12 @@ public:
       item->setText(5, QString::number(summary.presentNo));
 
       // Calculate expected utilization: yes=1.0, maybe=0.5, no=0.0
-      const double expectedAttendance = summary.presentYes + (summary.presentMaybe * 0.5);
+      const double expectedAttendance =
+          summary.presentYes + (summary.presentMaybe * 0.5);
       const double expectedUtil =
-          summary.capacity == 0 ? 0.0
-                                : expectedAttendance / static_cast<double>(summary.capacity);
+          summary.capacity == 0
+              ? 0.0
+              : expectedAttendance / static_cast<double>(summary.capacity);
       item->setText(6,
                     QStringLiteral("%1%").arg(expectedUtil * 100.0, 0, 'f', 1));
     }
@@ -1728,27 +1879,28 @@ public:
 
 #if HAVE_QT_CHARTS
     // Create pie charts for choice satisfaction breakdown by attendance group
-    auto createPieChart = [](const QString &title, int choice1, int choice2, int choice3, int other) -> QChart* {
+    auto createPieChart = [](const QString &title, int choice1, int choice2,
+                             int choice3, int other) -> QChart * {
       auto *series = new QPieSeries();
 
       if (choice1 > 0) {
         auto *slice1 = series->append(QStringLiteral("1st Choice"), choice1);
-        slice1->setBrush(QColor(76, 175, 80));  // Green
+        slice1->setBrush(QColor(76, 175, 80)); // Green
         slice1->setLabelVisible(false);
       }
       if (choice2 > 0) {
         auto *slice2 = series->append(QStringLiteral("2nd Choice"), choice2);
-        slice2->setBrush(QColor(255, 193, 7));  // Amber
+        slice2->setBrush(QColor(255, 193, 7)); // Amber
         slice2->setLabelVisible(false);
       }
       if (choice3 > 0) {
         auto *slice3 = series->append(QStringLiteral("3rd Choice"), choice3);
-        slice3->setBrush(QColor(255, 152, 0));  // Orange
+        slice3->setBrush(QColor(255, 152, 0)); // Orange
         slice3->setLabelVisible(false);
       }
       if (other > 0) {
         auto *sliceOther = series->append(QStringLiteral("Other"), other);
-        sliceOther->setBrush(QColor(158, 158, 158));  // Grey
+        sliceOther->setBrush(QColor(158, 158, 158)); // Grey
         sliceOther->setLabelVisible(false);
       }
 
@@ -1758,13 +1910,26 @@ public:
       chart->legend()->setVisible(true);
       chart->legend()->setAlignment(Qt::AlignRight);
 
+      // Reduce spacing between pie and legend
+      chart->legend()->setContentsMargins(-50, 0, 0,
+                                          0); // Remove internal layout margins
+      chart->setBackgroundRoundness(0);       // Optional: square corners
+
       return chart;
     };
 
-    overallChart->setChart(createPieChart(QStringLiteral("Overall"), counts.choice1Total, counts.choice2Total, counts.choice3Total, counts.notSatisfiedTotal));
-    yesChart->setChart(createPieChart(QStringLiteral("'Yes' Attendees"), counts.choice1Yes, counts.choice2Yes, counts.choice3Yes, counts.notSatisfiedYes));
-    maybeChart->setChart(createPieChart(QStringLiteral("'Maybe' Attendees"), counts.choice1Maybe, counts.choice2Maybe, counts.choice3Maybe, counts.notSatisfiedMaybe));
-    noChart->setChart(createPieChart(QStringLiteral("'No' Attendees"), counts.choice1No, counts.choice2No, counts.choice3No, counts.notSatisfiedNo));
+    overallChart->setChart(createPieChart(
+        QStringLiteral("Overall"), counts.choice1Total, counts.choice2Total,
+        counts.choice3Total, counts.notSatisfiedTotal));
+    yesChart->setChart(createPieChart(
+        QStringLiteral("'Yes' Attendees"), counts.choice1Yes, counts.choice2Yes,
+        counts.choice3Yes, counts.notSatisfiedYes));
+    maybeChart->setChart(createPieChart(
+        QStringLiteral("'Maybe' Attendees"), counts.choice1Maybe,
+        counts.choice2Maybe, counts.choice3Maybe, counts.notSatisfiedMaybe));
+    noChart->setChart(createPieChart(QStringLiteral("'No' Attendees"),
+                                     counts.choice1No, counts.choice2No,
+                                     counts.choice3No, counts.notSatisfiedNo));
 #endif
   }
 
@@ -1781,7 +1946,8 @@ public:
 
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-      appendDiagnostic(QStringLiteral("Warning: Could not create summary report"));
+      appendDiagnostic(
+          QStringLiteral("Warning: Could not create summary report"));
       return;
     }
 
@@ -1792,23 +1958,32 @@ public:
     // Solver Options
     out << "SOLVER OPTIONS\n";
     out << "--------------\n";
-    out << "Day Filter: " << (lastDayFilter.isEmpty() ? "All Days" : lastDayFilter) << "\n";
+    out << "Day Filter: "
+        << (lastDayFilter.isEmpty() ? "All Days" : lastDayFilter) << "\n";
     out << "Default Capacity: " << lastOptions->defaultCapacity << "\n";
 
-    bool weightingEnabled = (lastOptions->weightYes != 1 || lastOptions->weightMaybe != 1 || lastOptions->weightNo != 1) &&
-                           (lastOptions->weightYes != lastOptions->weightMaybe || lastOptions->weightYes != lastOptions->weightNo);
-    out << "Attendance Weighting: " << (weightingEnabled ? "Enabled" : "Disabled") << "\n";
+    bool weightingEnabled =
+        (lastOptions->weightYes != 1 || lastOptions->weightMaybe != 1 ||
+         lastOptions->weightNo != 1) &&
+        (lastOptions->weightYes != lastOptions->weightMaybe ||
+         lastOptions->weightYes != lastOptions->weightNo);
+    out << "Attendance Weighting: "
+        << (weightingEnabled ? "Enabled" : "Disabled") << "\n";
 
     if (weightingEnabled) {
       out << "  Yes Weight: " << lastOptions->weightYes << " (×1.00)\n";
-      double normMaybe = lastOptions->weightYes > 0 ?
-                         static_cast<double>(lastOptions->weightMaybe) / lastOptions->weightYes : 0.0;
-      double normNo = lastOptions->weightYes > 0 ?
-                      static_cast<double>(lastOptions->weightNo) / lastOptions->weightYes : 0.0;
-      out << "  Maybe Weight: " << lastOptions->weightMaybe
-          << " (×" << QString::number(normMaybe, 'f', 2) << ")\n";
-      out << "  No Weight: " << lastOptions->weightNo
-          << " (×" << QString::number(normNo, 'f', 2) << ")\n";
+      double normMaybe = lastOptions->weightYes > 0
+                             ? static_cast<double>(lastOptions->weightMaybe) /
+                                   lastOptions->weightYes
+                             : 0.0;
+      double normNo = lastOptions->weightYes > 0
+                          ? static_cast<double>(lastOptions->weightNo) /
+                                lastOptions->weightYes
+                          : 0.0;
+      out << "  Maybe Weight: " << lastOptions->weightMaybe << " (×"
+          << QString::number(normMaybe, 'f', 2) << ")\n";
+      out << "  No Weight: " << lastOptions->weightNo << " (×"
+          << QString::number(normNo, 'f', 2) << ")\n";
     }
     out << "\n";
 
@@ -1817,9 +1992,12 @@ public:
     out << "---------------\n";
     out << "Total Students: " << lastResult->totalStudents << "\n";
     out << "Satisfied Students: " << lastResult->satisfiedStudents << "\n";
-    double satisfactionRate = lastResult->totalStudents > 0 ?
-                              (lastResult->satisfiedStudents * 100.0 / lastResult->totalStudents) : 0.0;
-    out << "Satisfaction Rate: " << QString::number(satisfactionRate, 'f', 1) << "%\n";
+    double satisfactionRate = lastResult->totalStudents > 0
+                                  ? (lastResult->satisfiedStudents * 100.0 /
+                                     lastResult->totalStudents)
+                                  : 0.0;
+    out << "Satisfaction Rate: " << QString::number(satisfactionRate, 'f', 1)
+        << "%\n";
     out << "Runtime: " << lastResult->runtimeMs << " ms\n";
     out << "\n";
 
@@ -1831,49 +2009,51 @@ public:
     const auto counts = countChoiceSatisfaction(*lastResult);
 
     const int totalStudents = lastResult->totalStudents;
-    auto formatRow = [&out, totalStudents](const QString &rank, int total, int yes, int maybe, int no) {
+    auto formatRow = [&out, totalStudents](const QString &rank, int total,
+                                           int yes, int maybe, int no) {
       double pct = totalStudents > 0 ? (total * 100.0 / totalStudents) : 0.0;
-      out << qSetFieldWidth(15) << Qt::left << rank
-          << qSetFieldWidth(8) << Qt::right << total
-          << qSetFieldWidth(10) << Qt::right << QString::number(pct, 'f', 1) + "%"
-          << qSetFieldWidth(8) << Qt::right << yes
-          << qSetFieldWidth(8) << Qt::right << maybe
-          << qSetFieldWidth(8) << Qt::right << no
-          << qSetFieldWidth(0) << "\n";
+      out << qSetFieldWidth(15) << Qt::left << rank << qSetFieldWidth(8)
+          << Qt::right << total << qSetFieldWidth(10) << Qt::right
+          << QString::number(pct, 'f', 1) + "%" << qSetFieldWidth(8)
+          << Qt::right << yes << qSetFieldWidth(8) << Qt::right << maybe
+          << qSetFieldWidth(8) << Qt::right << no << qSetFieldWidth(0) << "\n";
     };
 
-    out << qSetFieldWidth(15) << Qt::left << "Rank"
-        << qSetFieldWidth(8) << Qt::right << "Total"
-        << qSetFieldWidth(10) << Qt::right << "Total %"
-        << qSetFieldWidth(8) << Qt::right << "Yes"
-        << qSetFieldWidth(8) << Qt::right << "Maybe"
-        << qSetFieldWidth(8) << Qt::right << "No"
+    out << qSetFieldWidth(15) << Qt::left << "Rank" << qSetFieldWidth(8)
+        << Qt::right << "Total" << qSetFieldWidth(10) << Qt::right << "Total %"
+        << qSetFieldWidth(8) << Qt::right << "Yes" << qSetFieldWidth(8)
+        << Qt::right << "Maybe" << qSetFieldWidth(8) << Qt::right << "No"
         << qSetFieldWidth(0) << "\n";
     out << QString(63, '-') << "\n";
 
-    formatRow("1st Choice", counts.choice1Total, counts.choice1Yes, counts.choice1Maybe, counts.choice1No);
-    formatRow("2nd Choice", counts.choice2Total, counts.choice2Yes, counts.choice2Maybe, counts.choice2No);
-    formatRow("3rd Choice", counts.choice3Total, counts.choice3Yes, counts.choice3Maybe, counts.choice3No);
-    formatRow("Not Satisfied", counts.notSatisfiedTotal, counts.notSatisfiedYes, counts.notSatisfiedMaybe, counts.notSatisfiedNo);
+    formatRow("1st Choice", counts.choice1Total, counts.choice1Yes,
+              counts.choice1Maybe, counts.choice1No);
+    formatRow("2nd Choice", counts.choice2Total, counts.choice2Yes,
+              counts.choice2Maybe, counts.choice2No);
+    formatRow("3rd Choice", counts.choice3Total, counts.choice3Yes,
+              counts.choice3Maybe, counts.choice3No);
+    formatRow("Not Satisfied", counts.notSatisfiedTotal, counts.notSatisfiedYes,
+              counts.notSatisfiedMaybe, counts.notSatisfiedNo);
     out << "\n";
 
     // Activity Summary
     out << "ACTIVITY SUMMARY\n";
     out << "----------------\n";
-    out << qSetFieldWidth(30) << Qt::left << "Activity"
-        << qSetFieldWidth(10) << Qt::right << "Assigned"
-        << qSetFieldWidth(10) << Qt::right << "Capacity"
-        << qSetFieldWidth(8) << Qt::right << "Yes"
-        << qSetFieldWidth(8) << Qt::right << "Maybe"
-        << qSetFieldWidth(8) << Qt::right << "No"
-        << qSetFieldWidth(12) << Qt::right << "Exp. Util."
+    out << qSetFieldWidth(30) << Qt::left << "Activity" << qSetFieldWidth(10)
+        << Qt::right << "Assigned" << qSetFieldWidth(10) << Qt::right
+        << "Capacity" << qSetFieldWidth(8) << Qt::right << "Yes"
+        << qSetFieldWidth(8) << Qt::right << "Maybe" << qSetFieldWidth(8)
+        << Qt::right << "No" << qSetFieldWidth(12) << Qt::right << "Exp. Util."
         << qSetFieldWidth(0) << "\n";
     out << QString(86, '-') << "\n";
 
     for (const auto &summary : lastResult->activitySummary) {
-      const double expectedAttendance = summary.presentYes + (summary.presentMaybe * 0.5);
-      const double expectedUtil = summary.capacity == 0 ? 0.0
-                                : expectedAttendance / static_cast<double>(summary.capacity);
+      const double expectedAttendance =
+          summary.presentYes + (summary.presentMaybe * 0.5);
+      const double expectedUtil =
+          summary.capacity == 0
+              ? 0.0
+              : expectedAttendance / static_cast<double>(summary.capacity);
 
       out << qSetFieldWidth(30) << Qt::left << toQString(summary.activity)
           << qSetFieldWidth(10) << Qt::right << summary.assigned
@@ -1881,7 +2061,8 @@ public:
           << qSetFieldWidth(8) << Qt::right << summary.presentYes
           << qSetFieldWidth(8) << Qt::right << summary.presentMaybe
           << qSetFieldWidth(8) << Qt::right << summary.presentNo
-          << qSetFieldWidth(12) << Qt::right << QString::number(expectedUtil * 100.0, 'f', 1) + "%"
+          << qSetFieldWidth(12) << Qt::right
+          << QString::number(expectedUtil * 100.0, 'f', 1) + "%"
           << qSetFieldWidth(0) << "\n";
     }
 
@@ -1913,16 +2094,19 @@ public:
       }
 
       // Sort by last name, then first name
-      std::sort(students.begin(), students.end(), [](const StudentInfo &a, const StudentInfo &b) {
-        if (a.lastName != b.lastName) {
-          return a.lastName.compare(b.lastName, Qt::CaseInsensitive) < 0;
-        }
-        return a.firstName.compare(b.firstName, Qt::CaseInsensitive) < 0;
-      });
+      std::sort(
+          students.begin(), students.end(),
+          [](const StudentInfo &a, const StudentInfo &b) {
+            if (a.lastName != b.lastName) {
+              return a.lastName.compare(b.lastName, Qt::CaseInsensitive) < 0;
+            }
+            return a.firstName.compare(b.firstName, Qt::CaseInsensitive) < 0;
+          });
 
       // Create sanitized filename
       QString filename = activity;
-      filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")), QStringLiteral("_"));
+      filename.replace(QRegularExpression(QStringLiteral("[/\\\\:*?\"<>|]")),
+                       QStringLiteral("_"));
       filename = dir.filePath(filename + QStringLiteral(".pdf"));
 
       QPdfWriter pdfWriter(filename);
@@ -1931,7 +2115,8 @@ public:
 
       QPainter painter(&pdfWriter);
       if (!painter.isActive()) {
-        appendDiagnostic(QStringLiteral("Warning: Could not create %1").arg(filename));
+        appendDiagnostic(
+            QStringLiteral("Warning: Could not create %1").arg(filename));
         continue;
       }
 
@@ -1952,9 +2137,10 @@ public:
 
       // Draw enrollment info
       painter.setFont(normalFont);
-      painter.drawText(0, y, QString("Enrollment: %1    Capacity: %2")
-                              .arg(activitySum.assigned)
-                              .arg(activitySum.capacity));
+      painter.drawText(0, y,
+                       QString("Enrollment: %1    Capacity: %2")
+                           .arg(activitySum.assigned)
+                           .arg(activitySum.capacity));
       y += headerHeight;
 
       // Table setup
@@ -2064,13 +2250,15 @@ public:
     const QString summaryPath = dir.filePath(QStringLiteral("summary.txt"));
     exportSummaryReport(summaryPath);
 
-    appendDiagnostic(QStringLiteral("Exported results.csv, summary.txt, and %1 activity roster PDF files to %2")
+    appendDiagnostic(QStringLiteral("Exported results.csv, summary.txt, and %1 "
+                                    "activity roster PDF files to %2")
                          .arg(filesCreated)
                          .arg(folderPath));
 
     QMessageBox::information(
         q_ptr, QStringLiteral("Export Successful"),
-        QStringLiteral("Successfully exported results.csv, summary.txt, and %1 activity roster PDF files to:\n%2")
+        QStringLiteral("Successfully exported results.csv, summary.txt, and %1 "
+                       "activity roster PDF files to:\n%2")
             .arg(filesCreated)
             .arg(folderPath));
   }
@@ -2099,22 +2287,25 @@ public:
     auto table = resultsToTable(*lastResult);
     std::string error;
     if (!SpreadsheetBridge::WriteXlsx(xlsxPath.toStdString(), table, &error)) {
-      QMessageBox::warning(
-          q_ptr, QStringLiteral("Unable to export XLSX"),
-          QStringLiteral("%1\n%2").arg(xlsxPath, QString::fromStdString(error)));
+      QMessageBox::warning(q_ptr, QStringLiteral("Unable to export XLSX"),
+                           QStringLiteral("%1\n%2").arg(
+                               xlsxPath, QString::fromStdString(error)));
       return;
     }
 
     // Export activity roster PDFs
     const int filesCreated = generateActivityRosterPdfs(dir);
 
-    appendDiagnostic(QStringLiteral("Exported results.xlsx and %1 activity roster PDF files to %2")
-                         .arg(filesCreated)
-                         .arg(folderPath));
+    appendDiagnostic(
+        QStringLiteral(
+            "Exported results.xlsx and %1 activity roster PDF files to %2")
+            .arg(filesCreated)
+            .arg(folderPath));
 
     QMessageBox::information(
         q_ptr, QStringLiteral("Export Successful"),
-        QStringLiteral("Successfully exported results.xlsx and %1 activity roster PDF files to:\n%2")
+        QStringLiteral("Successfully exported results.xlsx and %1 activity "
+                       "roster PDF files to:\n%2")
             .arg(filesCreated)
             .arg(folderPath));
   }

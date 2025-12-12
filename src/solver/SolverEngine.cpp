@@ -181,8 +181,9 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         attendanceMultiplier = options.weightYes > 0
             ? static_cast<double>(options.weightNo) / options.weightYes
             : 0.1;
+      } else {
+        attendanceMultiplier = 0;       // If present field is empty or unrecognized, use 0.0
       }
-      // If present field is empty or unrecognized, use 1.0 (treat as "yes")
 
       varMatrix[studentIdx].push_back(
           VarInfo{studentIdx, activityIdx, choiceRank, var});
@@ -285,6 +286,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   std::vector<int> activityYes(activities.size(), 0);
   std::vector<int> activityNo(activities.size(), 0);
   std::vector<int> activityMaybe(activities.size(), 0);
+  std::vector<int> activityUnknown(activities.size(), 0);
 
   for (const auto &assignment : result.assignments) {
     // Find which activity index this assignment belongs to
@@ -297,6 +299,8 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
           ++activityNo[idx];
         } else if (present == "maybe" || present == "m") {
           ++activityMaybe[idx];
+        } else /* unknown status */{
+          ++activityUnknown[idx];
         }
         break;
       }
