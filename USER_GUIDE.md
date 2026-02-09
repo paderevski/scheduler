@@ -26,7 +26,7 @@ Run the application executable. The main window has three tabs:
 
 ### Required Data Format
 
-Your input file (CSV or Excel) should contain the following columns:
+Your input file (CSV) should contain the following columns:
 
 - **Student ID**: Unique identifier for each student
 - **First Name**: Student's first name
@@ -45,7 +45,7 @@ Your input file (CSV or Excel) should contain the following columns:
 ### Importing Data
 
 1. Click **File → Open Data...** (or press **Cmd+O** on Mac / **Ctrl+O** on Windows)
-2. Select your CSV or Excel file
+2. Select your CSV file
 3. Map the columns from your file to the required fields
 4. Click **OK** to import
 
@@ -230,24 +230,15 @@ Each activity gets a PDF file with:
 
 - Activity name as heading
 - Enrollment and capacity information
-- Formatted table with columns: Last Name, First Name, Student ID, Pathway, Grade, Present
+- Formatted table with columns: Last Name, First Name, Student ID, Pathway, Grade, Period, Present
 - Students sorted alphabetically by last name
 - Professional formatting with alternating row colors
-
-### Export Results (XLSX)
-
-Similar to CSV export but creates:
-
-- **results.xlsx**: Excel workbook with assignment table
-- **summary.txt**: Same text report
-- **[Activity Name].pdf**: Same activity rosters (PDF format)
 
 ### Export Data
 
 **File menu** also provides:
 
 - **Export Data as CSV**: Export current student preference data
-- **Export Data as XLSX**: Export as Excel workbook
 
 Use these to save a modified dataset or share input data.
 

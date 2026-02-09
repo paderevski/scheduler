@@ -12,6 +12,11 @@ struct SolverOptions {
   std::map<std::string, int> activityCapacities;
   int defaultCapacity = 20; // Used when activityCapacities is empty
 
+  // Period-aware capacities (preferred when periodCount > 0)
+  int periodCount = 3;
+  std::vector<std::string> periodLabels;
+  std::map<std::string, std::vector<int>> activityPeriodCapacities;
+
   // Attendance weights (raw values, will be normalized so "yes" = 1.0)
   int weightYes = 100;
   int weightMaybe = 50;
@@ -28,6 +33,7 @@ struct StudentAssignment {
   std::string pathway;
   std::string present;
   std::string activity;
+  int period = -1;
   int choiceRank = -1; // 0-based index into the student's preference list
   double score = 0.0;
 
@@ -52,6 +58,8 @@ struct ActivitySummaryRow {
   int presentYes = 0;
   int presentNo = 0;
   int presentMaybe = 0;
+  std::vector<int> assignedPerPeriod;
+  std::vector<int> capacityPerPeriod;
 };
 
 struct SolverResult {

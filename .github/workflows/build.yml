@@ -80,11 +80,6 @@ jobs:
           Expand-Archive -Path "or-tools.zip" -DestinationPath "."
           echo "ORTOOLS_ROOT=${{ github.workspace }}\${{ matrix.ortools_dir }}" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Install Python (for XLSX support)
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
       - name: Configure CMake (Linux/macOS)
         if: runner.os != 'Windows'
         run: |

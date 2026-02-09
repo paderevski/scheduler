@@ -220,13 +220,13 @@ rowsFromTableWithMapping(const SpreadsheetTable &table,
 
 SpreadsheetTable resultsToTable(const SolverResult &result) {
   SpreadsheetTable table;
-  table.headers = {"Student ID",  "First Name", "Last Name",
-                   "Grade",       "Day",        "Teacher",
-                   "Pathway",     "Present",    "Assigned Activity",
-                   "Choice Rank", "Score"};
+  table.headers = {"Student ID", "First Name",  "Last Name",
+                   "Grade",      "Day",         "Teacher",
+                   "Pathway",    "Present",     "Assigned Activity",
+                   "Period",     "Choice Rank", "Score"};
   for (const auto &assignment : result.assignments) {
     std::vector<std::string> row;
-    row.reserve(11);
+    row.reserve(12);
     row.push_back(assignment.studentId);
     row.push_back(assignment.firstName);
     row.push_back(assignment.lastName);
@@ -236,6 +236,11 @@ SpreadsheetTable resultsToTable(const SolverResult &result) {
     row.push_back(assignment.pathway);
     row.push_back(assignment.present);
     row.push_back(assignment.activity);
+    if (assignment.period >= 0) {
+      row.push_back("P" + std::to_string(assignment.period + 1));
+    } else {
+      row.push_back(std::string());
+    }
     if (assignment.choiceRank >= 0) {
       row.push_back(std::to_string(assignment.choiceRank + 1));
     } else {
@@ -259,6 +264,7 @@ struct StudentInfo {
   QString pathway;
   QString grade;
   QString present;
+  QString period;
 };
 
 // Struct to hold choice satisfaction counts
@@ -328,6 +334,7 @@ public:
         studentCountLabel(new QLabel(q)), choiceCountLabel(new QLabel(q)),
         activityCountLabel(new QLabel(q)), capacityTable(new QTableWidget(q)),
         totalCapacityLabel(new QLabel(q)), defaultCapacitySpin(new QSpinBox(q)),
+        periodCountSpin(new QSpinBox(q)),
         setAllCapacitiesButton(new QPushButton(QStringLiteral("Set All"), q)),
         autoCapacityButton(new QPushButton(QStringLiteral("Auto"), q)),
         weightingEnabledCheck(
@@ -343,8 +350,6 @@ public:
         activitySummary(new QTreeWidget(q)),
         exportResultsCsvButton(
             new QPushButton(QStringLiteral("Export Results (CSV)"), q)),
-        exportResultsXlsxButton(
-            new QPushButton(QStringLiteral("Export Results (XLSX)"), q)),
         solverWatcher(new QFutureWatcher<SolverResult>(q)),
         progressDialog(new QProgressDialog(QStringLiteral("Running solver..."),
                                            QString(), 0, 0, q))
@@ -369,28 +374,18 @@ public:
 
     diagnostics->setSelectionMode(QAbstractItemView::NoSelection);
 
-    // Setup capacity table
-    capacityTable->setColumnCount(5);
-    capacityTable->setHorizontalHeaderLabels(
-        {QStringLiteral("Activity"), QStringLiteral("Choice 1"),
-         QStringLiteral("Choice 2"), QStringLiteral("Choice 3"),
-         QStringLiteral("Capacity")});
-    capacityTable->horizontalHeader()->setSectionResizeMode(
-        0, QHeaderView::Stretch);
-    capacityTable->horizontalHeader()->setSectionResizeMode(
-        1, QHeaderView::ResizeToContents);
-    capacityTable->horizontalHeader()->setSectionResizeMode(
-        2, QHeaderView::ResizeToContents);
-    capacityTable->horizontalHeader()->setSectionResizeMode(
-        3, QHeaderView::ResizeToContents);
-    capacityTable->horizontalHeader()->setSectionResizeMode(
-        4, QHeaderView::ResizeToContents);
+    // Setup capacity table (headers assigned in updateCapacityTable)
     capacityTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     defaultCapacitySpin->setRange(0, 500);
     defaultCapacitySpin->setValue(0);
     defaultCapacitySpin->setToolTip(
         QStringLiteral("Default capacity for all activities"));
+
+    periodCountSpin->setRange(1, 10);
+    periodCountSpin->setValue(3);
+    periodCountSpin->setToolTip(
+        QStringLiteral("Number of periods per activity"));
 
     autoCapacityButton->setToolTip(QStringLiteral(
         "Calculate: (filtered students) / (# activities), rounded up"));
@@ -479,6 +474,9 @@ public:
     setAllLayout->addWidget(
         new QLabel(QStringLiteral("Default capacity:"), q_ptr));
     setAllLayout->addWidget(defaultCapacitySpin);
+    setAllLayout->addSpacing(10);
+    setAllLayout->addWidget(new QLabel(QStringLiteral("Periods:"), q_ptr));
+    setAllLayout->addWidget(periodCountSpin);
     setAllLayout->addWidget(autoCapacityButton);
     setAllLayout->addWidget(setAllCapacitiesButton);
     setAllLayout->addStretch();
@@ -504,24 +502,35 @@ public:
     auto *optionsWidget = new QWidget(q_ptr);
     optionsWidget->setLayout(optionsMainLayout);
 
-    resultsTable->setColumnCount(11);
+    resultsTable->setColumnCount(12);
     resultsTable->setHorizontalHeaderLabels(
         {QStringLiteral("Student ID"), QStringLiteral("First Name"),
          QStringLiteral("Last Name"), QStringLiteral("Grade"),
          QStringLiteral("Day"), QStringLiteral("Teacher"),
          QStringLiteral("Pathway"), QStringLiteral("Present"),
-         QStringLiteral("Activity"), QStringLiteral("Choice"),
-         QStringLiteral("Score")});
+         QStringLiteral("Activity"), QStringLiteral("Period"),
+         QStringLiteral("Choice"), QStringLiteral("Score")});
     resultsTable->horizontalHeader()->setSectionResizeMode(
         QHeaderView::Stretch);
     resultsTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    activitySummary->setColumnCount(7);
-    activitySummary->setHeaderLabels(
-        {QStringLiteral("Activity"), QStringLiteral("Assigned"),
-         QStringLiteral("Capacity"), QStringLiteral("Yes"),
-         QStringLiteral("Maybe"), QStringLiteral("No"),
-         QStringLiteral("Expected Util.")});
+    {
+      const int periodCount = periodCountSpin->value();
+      QStringList activityHeaders = {QStringLiteral("Activity"),
+                                     QStringLiteral("Assigned"),
+                                     QStringLiteral("Capacity")};
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        activityHeaders.append(
+            QStringLiteral("P%1 Assigned").arg(periodIdx + 1));
+        activityHeaders.append(QStringLiteral("P%1 Cap").arg(periodIdx + 1));
+      }
+      activityHeaders.append(QStringLiteral("Yes"));
+      activityHeaders.append(QStringLiteral("Maybe"));
+      activityHeaders.append(QStringLiteral("No"));
+      activityHeaders.append(QStringLiteral("Expected Util."));
+      activitySummary->setColumnCount(activityHeaders.size());
+      activitySummary->setHeaderLabels(activityHeaders);
+    }
 
     // Setup satisfaction summary table
     satisfactionSummary->setColumnCount(6);
@@ -565,7 +574,6 @@ public:
     auto *resultsButtonLayout = new QHBoxLayout();
     resultsButtonLayout->addStretch();
     resultsButtonLayout->addWidget(exportResultsCsvButton);
-    resultsButtonLayout->addWidget(exportResultsXlsxButton);
     resultsLayout->addLayout(resultsButtonLayout);
 
     auto *resultsWidget = new QWidget(q_ptr);
@@ -582,7 +590,6 @@ public:
     q_ptr->setCentralWidget(centralWidget);
 
     exportResultsCsvButton->setEnabled(false);
-    exportResultsXlsxButton->setEnabled(false);
 
     progressDialog->setCancelButton(nullptr);
     progressDialog->setWindowModality(Qt::WindowModal);
@@ -600,8 +607,6 @@ public:
                      [this]() { autoSetCapacity(); });
     QObject::connect(exportResultsCsvButton, &QPushButton::clicked, q_ptr,
                      [this]() { exportResultsCsv(); });
-    QObject::connect(exportResultsXlsxButton, &QPushButton::clicked, q_ptr,
-                     [this]() { exportResultsXlsx(); });
   }
 
   void setupWelcomeScreen() {
@@ -843,7 +848,7 @@ public:
     fileMenu->addSeparator();
 
     auto *openDataAction =
-        fileMenu->addAction(QStringLiteral("Import Data from CSV/XLSX..."));
+        fileMenu->addAction(QStringLiteral("Import Data from CSV..."));
     QObject::connect(openDataAction, &QAction::triggered, q_ptr,
                      [this]() { openDataFile(); });
 
@@ -851,11 +856,6 @@ public:
         fileMenu->addAction(QStringLiteral("Export Data as CSV..."));
     QObject::connect(exportCsvAction, &QAction::triggered, q_ptr,
                      [this]() { exportDataCsv(); });
-
-    auto *exportXlsxAction =
-        fileMenu->addAction(QStringLiteral("Export Data as XLSX..."));
-    QObject::connect(exportXlsxAction, &QAction::triggered, q_ptr,
-                     [this]() { exportDataXlsx(); });
 
     fileMenu->addSeparator();
     auto *quitAction = fileMenu->addAction(QStringLiteral("Quit"));
@@ -886,6 +886,9 @@ public:
                      q_ptr, [this]() { updateWeightLabels(); });
     QObject::connect(weightingEnabledCheck, &QCheckBox::toggled, q_ptr,
                      [this]() { updateWeightControls(); });
+    QObject::connect(periodCountSpin,
+                     QOverload<int>::of(&QSpinBox::valueChanged), q_ptr,
+                     [this]() { updateSummary(); });
   }
 
   void appendDiagnostic(const QString &message) {
@@ -996,15 +999,25 @@ public:
   }
 
   void updateCapacityTable(const QSet<QString> &activities) {
+    const int periodCount = periodCountSpin->value();
+
     // Store current capacities before clearing
-    QMap<QString, int> currentCapacities;
+    QMap<QString, QVector<int>> currentCapacities;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
-      auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
-      if (activityItem && spinBox) {
-        currentCapacities[activityItem->text()] = spinBox->value();
+      if (!activityItem) {
+        continue;
       }
+      QVector<int> capacities(periodCount, defaultCapacitySpin->value());
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        const int col = 4 + periodIdx;
+        auto *spinBox =
+            qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
+        if (spinBox) {
+          capacities[periodIdx] = spinBox->value();
+        }
+      }
+      currentCapacities[activityItem->text()] = capacities;
     }
 
     // Count how many students picked each activity as choice 1, 2, 3
@@ -1047,6 +1060,20 @@ public:
 
     // Rebuild table
     capacityTable->setRowCount(0);
+    capacityTable->setColumnCount(4 + periodCount);
+    QStringList headers = {
+        QStringLiteral("Activity"), QStringLiteral("Choice 1"),
+        QStringLiteral("Choice 2"), QStringLiteral("Choice 3")};
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      headers.append(QStringLiteral("P%1").arg(periodIdx + 1));
+    }
+    capacityTable->setHorizontalHeaderLabels(headers);
+    capacityTable->horizontalHeader()->setSectionResizeMode(
+        0, QHeaderView::Stretch);
+    for (int col = 1; col < capacityTable->columnCount(); ++col) {
+      capacityTable->horizontalHeader()->setSectionResizeMode(
+          col, QHeaderView::ResizeToContents);
+    }
     QStringList sortedActivities = activities.values();
     sortedActivities.sort(Qt::CaseInsensitive);
 
@@ -1080,19 +1107,21 @@ public:
       choice3Item->setTextAlignment(Qt::AlignCenter);
       capacityTable->setItem(row, 3, choice3Item);
 
-      // Column 4: Capacity spinbox
-      auto *spinBox = new QSpinBox(q_ptr);
-      spinBox->setRange(0, 500);
-      // Use stored capacity if available, otherwise use default
-      int capacity =
-          currentCapacities.value(activity, defaultCapacitySpin->value());
-      spinBox->setValue(capacity);
+      // Period capacity spinboxes
+      const QVector<int> storedCaps = currentCapacities.value(
+          activity, QVector<int>(periodCount, defaultCapacitySpin->value()));
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        auto *spinBox = new QSpinBox(q_ptr);
+        spinBox->setRange(0, 500);
+        spinBox->setValue(
+            storedCaps.value(periodIdx, defaultCapacitySpin->value()));
 
-      // Connect spinbox to update total capacity when changed
-      QObject::connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged),
-                       q_ptr, [this]() { updateTotalCapacity(); });
+        // Connect spinbox to update total capacity when changed
+        QObject::connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged),
+                         q_ptr, [this]() { updateTotalCapacity(); });
 
-      capacityTable->setCellWidget(row, 4, spinBox);
+        capacityTable->setCellWidget(row, 4 + periodIdx, spinBox);
+      }
     }
 
     updateTotalCapacity();
@@ -1101,10 +1130,12 @@ public:
   void updateTotalCapacity() {
     int totalCapacity = 0;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
-      if (spinBox) {
-        totalCapacity += spinBox->value();
+      for (int col = 4; col < capacityTable->columnCount(); ++col) {
+        auto *spinBox =
+            qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
+        if (spinBox) {
+          totalCapacity += spinBox->value();
+        }
       }
     }
 
@@ -1141,10 +1172,11 @@ public:
   void autoSetCapacity() {
     const int filteredStudentCount = countFilteredStudents();
     const int activityCount = capacityTable->rowCount();
-    if (activityCount > 0 && filteredStudentCount > 0) {
-      // Calculate: students / activities, rounded up
-      int autoCapacity =
-          (filteredStudentCount + activityCount - 1) / activityCount;
+    const int periodCount = periodCountSpin->value();
+    if (activityCount > 0 && filteredStudentCount > 0 && periodCount > 0) {
+      // Calculate: students / (activities * periods), rounded up
+      const int divisor = activityCount * periodCount;
+      int autoCapacity = (filteredStudentCount + divisor - 1) / divisor;
       defaultCapacitySpin->setValue(autoCapacity);
     }
   }
@@ -1152,10 +1184,12 @@ public:
   void setAllCapacities() {
     int defaultValue = defaultCapacitySpin->value();
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
-      if (spinBox) {
-        spinBox->setValue(defaultValue);
+      for (int col = 4; col < capacityTable->columnCount(); ++col) {
+        auto *spinBox =
+            qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
+        if (spinBox) {
+          spinBox->setValue(defaultValue);
+        }
       }
     }
     // updateTotalCapacity() will be called automatically via valueChanged
@@ -1165,8 +1199,7 @@ public:
   void openDataFile() {
     const QString path = QFileDialog::getOpenFileName(
         q_ptr, QStringLiteral("Open student preferences"), {},
-        QStringLiteral("Data Files (*.csv *.xlsx);;CSV Files (*.csv);;Excel "
-                       "Files (*.xlsx)"));
+        QStringLiteral("CSV Files (*.csv)"));
     if (path.isEmpty()) {
       return;
     }
@@ -1253,25 +1286,6 @@ public:
     appendDiagnostic(QStringLiteral("Exported data to %1").arg(path));
   }
 
-  void exportDataXlsx() {
-    const QString path = QFileDialog::getSaveFileName(
-        q_ptr, QStringLiteral("Export data as XLSX"),
-        lastDataPath.isEmpty() ? QString() : lastDataPath,
-        QStringLiteral("Excel Files (*.xlsx)"));
-    if (path.isEmpty()) {
-      return;
-    }
-    auto table = modelToTable(*model);
-    std::string error;
-    if (!SpreadsheetBridge::WriteXlsx(path.toStdString(), table, &error)) {
-      QMessageBox::warning(
-          q_ptr, QStringLiteral("Unable to export"),
-          QStringLiteral("%1\n%2").arg(path, QString::fromStdString(error)));
-      return;
-    }
-    appendDiagnostic(QStringLiteral("Exported data to %1").arg(path));
-  }
-
   void saveProject() {
     if (currentProjectPath.isEmpty()) {
       saveProjectAs();
@@ -1299,6 +1313,7 @@ public:
     // Save settings
     QJsonObject settings;
     settings["defaultCapacity"] = defaultCapacitySpin->value();
+    settings["periodCount"] = periodCountSpin->value();
     settings["weightingEnabled"] = weightingEnabledCheck->isChecked();
 
     QJsonObject weights;
@@ -1309,17 +1324,24 @@ public:
 
     settings["dayFilter"] = dayFilterCombo->currentData().toString();
 
-    // Save activity capacities
-    QJsonObject activityCapacities;
+    // Save activity capacities per period
+    QJsonObject activityPeriodCapacities;
+    const int periodCount = periodCountSpin->value();
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
-      auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
-      if (activityItem && spinBox) {
-        activityCapacities[activityItem->text()] = spinBox->value();
+      if (!activityItem) {
+        continue;
       }
+      QJsonArray caps;
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        const int col = 4 + periodIdx;
+        auto *spinBox =
+            qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
+        caps.append(spinBox ? spinBox->value() : defaultCapacitySpin->value());
+      }
+      activityPeriodCapacities[activityItem->text()] = caps;
     }
-    settings["activityCapacities"] = activityCapacities;
+    settings["activityPeriodCapacities"] = activityPeriodCapacities;
     root["settings"] = settings;
 
     // Save student data
@@ -1364,6 +1386,7 @@ public:
         assgn["pathway"] = QString::fromStdString(assignment.pathway);
         assgn["present"] = QString::fromStdString(assignment.present);
         assgn["activity"] = QString::fromStdString(assignment.activity);
+        assgn["period"] = assignment.period;
         assgn["choiceRank"] = assignment.choiceRank;
         assgn["score"] = assignment.score;
         assignments.append(assgn);
@@ -1379,6 +1402,20 @@ public:
         summ["presentYes"] = summary.presentYes;
         summ["presentMaybe"] = summary.presentMaybe;
         summ["presentNo"] = summary.presentNo;
+        if (!summary.assignedPerPeriod.empty()) {
+          QJsonArray assignedPerPeriod;
+          for (int value : summary.assignedPerPeriod) {
+            assignedPerPeriod.append(value);
+          }
+          summ["assignedPerPeriod"] = assignedPerPeriod;
+        }
+        if (!summary.capacityPerPeriod.empty()) {
+          QJsonArray capacityPerPeriod;
+          for (int value : summary.capacityPerPeriod) {
+            capacityPerPeriod.append(value);
+          }
+          summ["capacityPerPeriod"] = capacityPerPeriod;
+        }
         activitySummaries.append(summ);
       }
       solution["activitySummary"] = activitySummaries;
@@ -1457,6 +1494,7 @@ public:
     // Load settings
     QJsonObject settings = root["settings"].toObject();
     defaultCapacitySpin->setValue(settings["defaultCapacity"].toInt());
+    periodCountSpin->setValue(settings["periodCount"].toInt(3));
     weightingEnabledCheck->setChecked(settings["weightingEnabled"].toBool());
 
     QJsonObject weights = settings["weights"].toObject();
@@ -1498,15 +1536,37 @@ public:
     model->setRows(std::move(rows));
 
     // Restore activity capacities after updating summary
-    QJsonObject activityCapacities = settings["activityCapacities"].toObject();
+    QJsonObject activityPeriodCapacities =
+        settings["activityPeriodCapacities"].toObject();
+    if (activityPeriodCapacities.isEmpty() &&
+        settings.contains("activityCapacities")) {
+      QJsonObject legacyCaps = settings["activityCapacities"].toObject();
+      const int periodCount = periodCountSpin->value();
+      for (auto it = legacyCaps.begin(); it != legacyCaps.end(); ++it) {
+        QJsonArray caps;
+        for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+          caps.append(it.value().toInt());
+        }
+        activityPeriodCapacities[it.key()] = caps;
+      }
+    }
+    const int periodCount = periodCountSpin->value();
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
-      auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
-      if (activityItem && spinBox) {
-        QString activity = activityItem->text();
-        if (activityCapacities.contains(activity)) {
-          spinBox->setValue(activityCapacities[activity].toInt());
+      if (!activityItem) {
+        continue;
+      }
+      QString activity = activityItem->text();
+      if (!activityPeriodCapacities.contains(activity)) {
+        continue;
+      }
+      QJsonArray caps = activityPeriodCapacities[activity].toArray();
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        const int col = 4 + periodIdx;
+        auto *spinBox =
+            qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
+        if (spinBox && periodIdx < caps.size()) {
+          spinBox->setValue(caps[periodIdx].toInt());
         }
       }
     }
@@ -1532,6 +1592,7 @@ public:
         assignment.pathway = assgn["pathway"].toString().toStdString();
         assignment.present = assgn["present"].toString().toStdString();
         assignment.activity = assgn["activity"].toString().toStdString();
+        assignment.period = assgn["period"].toInt(-1);
         assignment.choiceRank = assgn["choiceRank"].toInt();
         assignment.score = assgn["score"].toDouble();
         result.assignments.push_back(assignment);
@@ -1548,6 +1609,20 @@ public:
         summary.presentYes = summ["presentYes"].toInt();
         summary.presentMaybe = summ["presentMaybe"].toInt();
         summary.presentNo = summ["presentNo"].toInt();
+        if (summ.contains("assignedPerPeriod")) {
+          QJsonArray assignedPerPeriod = summ["assignedPerPeriod"].toArray();
+          summary.assignedPerPeriod.reserve(assignedPerPeriod.size());
+          for (const auto &value : assignedPerPeriod) {
+            summary.assignedPerPeriod.push_back(value.toInt());
+          }
+        }
+        if (summ.contains("capacityPerPeriod")) {
+          QJsonArray capacityPerPeriod = summ["capacityPerPeriod"].toArray();
+          summary.capacityPerPeriod.reserve(capacityPerPeriod.size());
+          for (const auto &value : capacityPerPeriod) {
+            summary.capacityPerPeriod.push_back(value.toInt());
+          }
+        }
         result.activitySummary.push_back(summary);
       }
 
@@ -1610,10 +1685,12 @@ public:
     // Check total capacity against filtered students
     int totalCapacity = 0;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
-      if (spinBox) {
-        totalCapacity += spinBox->value();
+      for (int col = 4; col < capacityTable->columnCount(); ++col) {
+        auto *spinBox =
+            qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
+        if (spinBox) {
+          totalCapacity += spinBox->value();
+        }
       }
     }
 
@@ -1636,6 +1713,7 @@ public:
 
     SolverOptions options;
     options.defaultCapacity = defaultCapacitySpin->value();
+    options.periodCount = periodCountSpin->value();
 
     // If weighting is disabled, set all weights to 1
     if (!weightingEnabledCheck->isChecked()) {
@@ -1651,12 +1729,20 @@ public:
     // Collect per-activity capacities from table
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
-      auto *spinBox =
-          qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, 4));
-      if (activityItem && spinBox) {
-        std::string activityName = activityItem->text().toStdString();
-        options.activityCapacities[activityName] = spinBox->value();
+      if (!activityItem) {
+        continue;
       }
+      std::string activityName = activityItem->text().toStdString();
+      std::vector<int> capacities;
+      capacities.reserve(options.periodCount);
+      for (int periodIdx = 0; periodIdx < options.periodCount; ++periodIdx) {
+        const int col = 4 + periodIdx;
+        auto *spinBox =
+            qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
+        capacities.push_back(spinBox ? spinBox->value()
+                                     : options.defaultCapacity);
+      }
+      options.activityPeriodCapacities[activityName] = std::move(capacities);
     }
 
     // Store options and day filter for report generation
@@ -1726,6 +1812,10 @@ public:
       const auto pathway = toQString(assignment.pathway);
       const auto present = toQString(assignment.present);
       const auto activity = toQString(assignment.activity);
+      const QString period =
+          assignment.period >= 0
+              ? QStringLiteral("P%1").arg(assignment.period + 1)
+              : QStringLiteral("-");
       const QString rank = assignment.choiceRank >= 0
                                ? QString::number(assignment.choiceRank + 1)
                                : QStringLiteral("-");
@@ -1746,8 +1836,9 @@ public:
       resultsTable->setItem(rowIndex, 6, makeItem(pathway));
       resultsTable->setItem(rowIndex, 7, makeItem(present));
       resultsTable->setItem(rowIndex, 8, makeItem(activity));
-      resultsTable->setItem(rowIndex, 9, makeItem(rank));
-      resultsTable->setItem(rowIndex, 10, makeItem(score));
+      resultsTable->setItem(rowIndex, 9, makeItem(period));
+      resultsTable->setItem(rowIndex, 10, makeItem(rank));
+      resultsTable->setItem(rowIndex, 11, makeItem(score));
       ++rowIndex;
     }
 
@@ -1851,14 +1942,41 @@ public:
         makeSatisfactionItem(QString::number(counts.notSatisfiedNo), true));
 
     activitySummary->clear();
+    int periodCount = 0;
+    if (!result.activitySummary.empty()) {
+      periodCount = static_cast<int>(
+          result.activitySummary.front().capacityPerPeriod.size());
+    }
+    QStringList activityHeaders = {QStringLiteral("Activity"),
+                                   QStringLiteral("Assigned"),
+                                   QStringLiteral("Capacity")};
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      activityHeaders.append(QStringLiteral("P%1 Assigned").arg(periodIdx + 1));
+      activityHeaders.append(QStringLiteral("P%1 Cap").arg(periodIdx + 1));
+    }
+    activityHeaders.append(QStringLiteral("Yes"));
+    activityHeaders.append(QStringLiteral("Maybe"));
+    activityHeaders.append(QStringLiteral("No"));
+    activityHeaders.append(QStringLiteral("Expected Util."));
+    activitySummary->setColumnCount(activityHeaders.size());
+    activitySummary->setHeaderLabels(activityHeaders);
     for (const auto &summary : result.activitySummary) {
       auto *item = new QTreeWidgetItem(activitySummary);
       item->setText(0, toQString(summary.activity));
       item->setText(1, QString::number(summary.assigned));
       item->setText(2, QString::number(summary.capacity));
-      item->setText(3, QString::number(summary.presentYes));
-      item->setText(4, QString::number(summary.presentMaybe));
-      item->setText(5, QString::number(summary.presentNo));
+      int col = 3;
+      for (int periodIdx = 0;
+           periodIdx < static_cast<int>(summary.assignedPerPeriod.size());
+           ++periodIdx) {
+        item->setText(col++,
+                      QString::number(summary.assignedPerPeriod[periodIdx]));
+        item->setText(col++,
+                      QString::number(summary.capacityPerPeriod[periodIdx]));
+      }
+      item->setText(col++, QString::number(summary.presentYes));
+      item->setText(col++, QString::number(summary.presentMaybe));
+      item->setText(col++, QString::number(summary.presentNo));
 
       // Calculate expected utilization: yes=1.0, maybe=0.5, no=0.0
       const double expectedAttendance =
@@ -1867,7 +1985,7 @@ public:
           summary.capacity == 0
               ? 0.0
               : expectedAttendance / static_cast<double>(summary.capacity);
-      item->setText(6,
+      item->setText(col,
                     QStringLiteral("%1%").arg(expectedUtil * 100.0, 0, 'f', 1));
     }
     activitySummary->resizeColumnToContents(0);
@@ -1936,7 +2054,6 @@ public:
   void refreshResultExports() {
     const bool enabled = hasResult;
     exportResultsCsvButton->setEnabled(enabled);
-    exportResultsXlsxButton->setEnabled(enabled);
   }
 
   void exportSummaryReport(const QString &filePath) {
@@ -1961,6 +2078,7 @@ public:
     out << "Day Filter: "
         << (lastDayFilter.isEmpty() ? "All Days" : lastDayFilter) << "\n";
     out << "Default Capacity: " << lastOptions->defaultCapacity << "\n";
+    out << "Periods: " << lastOptions->periodCount << "\n";
 
     bool weightingEnabled =
         (lastOptions->weightYes != 1 || lastOptions->weightMaybe != 1 ||
@@ -2089,6 +2207,9 @@ public:
           info.pathway = toQString(assignment.pathway);
           info.grade = toQString(assignment.grade);
           info.present = toQString(assignment.present);
+          info.period = assignment.period >= 0
+                            ? QStringLiteral("P%1").arg(assignment.period + 1)
+                            : QStringLiteral("-");
           students.push_back(info);
         }
       }
@@ -2144,13 +2265,14 @@ public:
       y += headerHeight;
 
       // Table setup
-      const int col1Width = pageWidth / 6;  // Last Name
-      const int col2Width = pageWidth / 6;  // First Name
+      const int col1Width = pageWidth / 7;  // Last Name
+      const int col2Width = pageWidth / 7;  // First Name
       const int col3Width = pageWidth / 5;  // Student ID
       const int col4Width = pageWidth / 5;  // Pathway
       const int col5Width = pageWidth / 10; // Grade
-      const int col6Width = pageWidth / 10; // Present
-      Q_UNUSED(col6Width);
+      const int col6Width = pageWidth / 10; // Period
+      const int col7Width = pageWidth / 10; // Present
+      Q_UNUSED(col7Width);
 
       // Draw table header
       painter.setFont(headerFont);
@@ -2168,6 +2290,8 @@ public:
       x += col4Width;
       painter.drawText(x, y + 225, "Grade");
       x += col5Width;
+      painter.drawText(x, y + 225, "Period");
+      x += col6Width;
       painter.drawText(x, y + 225, "Present");
 
       y += headerHeight;
@@ -2201,6 +2325,8 @@ public:
         x += col4Width;
         painter.drawText(x, y + 225, student.grade);
         x += col5Width;
+        painter.drawText(x, y + 225, student.period);
+        x += col6Width;
         painter.drawText(x, y + 225, student.present);
 
         y += lineHeight;
@@ -2263,53 +2389,6 @@ public:
             .arg(folderPath));
   }
 
-  void exportResultsXlsx() {
-    if (!hasResult) {
-      return;
-    }
-    const QString folderPath = QFileDialog::getExistingDirectory(
-        q_ptr, QStringLiteral("Select folder for results export"), {},
-        QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    if (folderPath.isEmpty()) {
-      return;
-    }
-
-    QDir dir(folderPath);
-    if (!dir.exists()) {
-      QMessageBox::warning(
-          q_ptr, QStringLiteral("Invalid folder"),
-          QStringLiteral("The selected folder does not exist."));
-      return;
-    }
-
-    // Export main XLSX
-    const QString xlsxPath = dir.filePath(QStringLiteral("results.xlsx"));
-    auto table = resultsToTable(*lastResult);
-    std::string error;
-    if (!SpreadsheetBridge::WriteXlsx(xlsxPath.toStdString(), table, &error)) {
-      QMessageBox::warning(q_ptr, QStringLiteral("Unable to export XLSX"),
-                           QStringLiteral("%1\n%2").arg(
-                               xlsxPath, QString::fromStdString(error)));
-      return;
-    }
-
-    // Export activity roster PDFs
-    const int filesCreated = generateActivityRosterPdfs(dir);
-
-    appendDiagnostic(
-        QStringLiteral(
-            "Exported results.xlsx and %1 activity roster PDF files to %2")
-            .arg(filesCreated)
-            .arg(folderPath));
-
-    QMessageBox::information(
-        q_ptr, QStringLiteral("Export Successful"),
-        QStringLiteral("Successfully exported results.xlsx and %1 activity "
-                       "roster PDF files to:\n%2")
-            .arg(filesCreated)
-            .arg(folderPath));
-  }
-
   MainWindow *q_ptr;
   QTabWidget *tabWidget;
   QTableView *tableView;
@@ -2321,6 +2400,7 @@ public:
   QTableWidget *capacityTable;
   QLabel *totalCapacityLabel;
   QSpinBox *defaultCapacitySpin;
+  QSpinBox *periodCountSpin;
   QPushButton *setAllCapacitiesButton;
   QPushButton *autoCapacityButton;
   QCheckBox *weightingEnabledCheck;
@@ -2337,7 +2417,6 @@ public:
   QTableWidget *satisfactionSummary;
   QTreeWidget *activitySummary;
   QPushButton *exportResultsCsvButton;
-  QPushButton *exportResultsXlsxButton;
 #if HAVE_QT_CHARTS
   QChartView *overallChart;
   QChartView *yesChart;

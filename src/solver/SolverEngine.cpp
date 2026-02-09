@@ -44,7 +44,6 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
 
   // Build activity list and determine capacities
   QMap<QString, int> activityIndex;
-  QMap<QString, int> activityCapacityMap;
   std::vector<QString> activities;
   activities.reserve(32);
 
@@ -57,28 +56,40 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       const int nextIndex = static_cast<int>(activities.size());
       activityIndex.insert(normalized, nextIndex);
       activities.push_back(normalized);
-
-      // Look up capacity for this activity
-      const std::string activityStdStr = toStdString(normalized);
-      int capacity = options.defaultCapacity;
-      auto it = options.activityCapacities.find(activityStdStr);
-      if (it != options.activityCapacities.end()) {
-        capacity = it->second;
-      }
-
-      if (capacity <= 0) {
-        result.message =
-            "Activity capacity must be greater than zero for " + activityStdStr;
-        return result;
-      }
-
-      activityCapacityMap.insert(normalized, capacity);
     }
   }
 
   if (activities.empty()) {
     result.message = "No activities detected in the preference data.";
     return result;
+  }
+
+  const int periodCount = std::max(1, options.periodCount);
+  QMap<QString, std::vector<int>> activityPeriodCapacityMap;
+  for (const auto &activity : activities) {
+    const std::string activityStdStr = toStdString(activity);
+    std::vector<int> capacities(periodCount, options.defaultCapacity);
+    auto it = options.activityPeriodCapacities.find(activityStdStr);
+    if (it != options.activityPeriodCapacities.end() &&
+        static_cast<int>(it->second.size()) == periodCount) {
+      capacities = it->second;
+    } else {
+      auto legacyIt = options.activityCapacities.find(activityStdStr);
+      if (legacyIt != options.activityCapacities.end()) {
+        capacities.assign(periodCount, legacyIt->second);
+      }
+    }
+
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      if (capacities[periodIdx] <= 0) {
+        result.message = "Activity capacity must be greater than zero for " +
+                         activityStdStr + " period " +
+                         std::to_string(periodIdx + 1);
+        return result;
+      }
+    }
+
+    activityPeriodCapacityMap.insert(activity, capacities);
   }
 
   QElapsedTimer timer;
@@ -90,6 +101,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   struct VarInfo {
     int studentIndex;
     int activityIndex;
+    int periodIndex;
     int choiceRank;
     MPVariable *var;
     double objectiveCoefficient; // ADD THIS LINE
@@ -98,15 +110,23 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   std::vector<std::vector<VarInfo>> varMatrix(rows.size());
   varMatrix.reserve(rows.size());
 
-  std::vector<operations_research::MPConstraint *> activityConstraints(
-      activities.size(), nullptr);
-  for (int i = 0; i < static_cast<int>(activities.size()); ++i) {
-    const QString &activityName = activities[i];
-    const int capacity =
-        activityCapacityMap.value(activityName, options.defaultCapacity);
-    activityConstraints[i] = solver.MakeRowConstraint(
-        0.0, static_cast<double>(capacity),
-        QStringLiteral("activity_%1").arg(i).toStdString());
+  std::vector<std::vector<operations_research::MPConstraint *>>
+      activityPeriodConstraints(
+          activities.size(), std::vector<operations_research::MPConstraint *>(
+                                 periodCount, nullptr));
+  for (int activityIdx = 0; activityIdx < static_cast<int>(activities.size());
+       ++activityIdx) {
+    const QString &activityName = activities[activityIdx];
+    const auto capacities = activityPeriodCapacityMap.value(activityName);
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      const int capacity = capacities[periodIdx];
+      activityPeriodConstraints[activityIdx][periodIdx] =
+          solver.MakeRowConstraint(0.0, static_cast<double>(capacity),
+                                   QStringLiteral("activity_%1_period_%2")
+                                       .arg(activityIdx)
+                                       .arg(periodIdx)
+                                       .toStdString());
+    }
   }
 
   std::vector<operations_research::MPConstraint *> studentConstraints(
@@ -133,76 +153,78 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       }
     }
 
-    // Create variables for ALL activities
+    // Create variables for ALL activities and periods
     for (int activityIdx = 0; activityIdx < static_cast<int>(activities.size());
          ++activityIdx) {
-      auto *var = solver.MakeIntVar(0.0, 1.0,
-                                    QStringLiteral("x_%1_%2")
-                                        .arg(studentIdx)
-                                        .arg(activityIdx)
-                                        .toStdString());
-      constraint->SetCoefficient(var, 1.0);
-      activityConstraints[activityIdx]->SetCoefficient(var, 1.0);
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        auto *var = solver.MakeIntVar(0.0, 1.0,
+                                      QStringLiteral("x_%1_%2_%3")
+                                          .arg(studentIdx)
+                                          .arg(activityIdx)
+                                          .arg(periodIdx)
+                                          .toStdString());
+        constraint->SetCoefficient(var, 1.0);
+        activityPeriodConstraints[activityIdx][periodIdx]->SetCoefficient(var,
+                                                                          1.0);
 
-      // Determine weight/penalty
-      int weight;
-      int choiceRank = -1;
-      // Check if grade is 12 (double weight)
-      bool isGrade12 = (row.grade.trimmed() == "12");
+        // Determine weight/penalty
+        int weight = 1;
+        int choiceRank = -1;
+        // Check if grade is 12 (double weight)
+        const bool isGrade12 = (row.grade.trimmed() == "12");
 
-      // Check if this activity is in the student's preferences
-      const QString &activityName = activities[activityIdx];
-      for (int choiceIdx = 0; choiceIdx < choices.size(); ++choiceIdx) {
-        if (choices[choiceIdx].trimmed() == activityName) {
-          // Preferred activity - high weight
-          weight = weightForRank(choiceIdx);
-          choiceRank = choiceIdx;
-          break;
+        // Check if this activity is in the student's preferences
+        const QString &activityName = activities[activityIdx];
+        for (int choiceIdx = 0; choiceIdx < choices.size(); ++choiceIdx) {
+          if (choices[choiceIdx].trimmed() == activityName) {
+            // Preferred activity - high weight
+            weight = weightForRank(choiceIdx);
+            choiceRank = choiceIdx;
+            break;
+          }
         }
+
+        if (choiceRank < 0) {
+          // Non-preferred activity - low weight (penalty)
+          // Use weight of 1 so it's only chosen as last resort
+          weight = 1;
+          choiceRank = -1; // Mark as non-preferred
+        }
+
+        if (isGrade12) {
+          weight *= 2;
+        }
+
+        // Apply attendance weighting
+        double attendanceMultiplier = 1.0;
+        QString present = row.present.trimmed().toLower();
+        if (present == "yes" || present == "y") {
+          // Normalize so "yes" = 1.0
+          attendanceMultiplier = 1.0;
+        } else if (present == "maybe" || present == "m") {
+          // Scale by ratio to "yes" weight
+          attendanceMultiplier =
+              options.weightYes > 0
+                  ? static_cast<double>(options.weightMaybe) / options.weightYes
+                  : 0.5;
+        } else if (present == "no" || present == "n") {
+          // Scale by ratio to "yes" weight
+          attendanceMultiplier =
+              options.weightYes > 0
+                  ? static_cast<double>(options.weightNo) / options.weightYes
+                  : 0.1;
+        } else {
+          attendanceMultiplier =
+              0; // If present field is empty or unrecognized, use 0.0
+        }
+
+        const double finalWeight =
+            static_cast<double>(weight) * attendanceMultiplier;
+
+        varMatrix[studentIdx].push_back(VarInfo{
+            studentIdx, activityIdx, periodIdx, choiceRank, var, finalWeight});
+        solver.MutableObjective()->SetCoefficient(var, finalWeight);
       }
-
-      if (choiceRank < 0) {
-        // Non-preferred activity - low weight (penalty)
-        // Use weight of 1 so it's only chosen as last resort
-        weight = 1;
-        choiceRank = -1; // Mark as non-preferred
-      }
-
-      // Apply attendance weighting
-      double attendanceMultiplier = 1.0;
-      QString present = row.present.trimmed().toLower();
-      if (present == "yes" || present == "y") {
-        // Normalize so "yes" = 1.0
-        attendanceMultiplier = 1.0;
-      } else if (present == "maybe" || present == "m") {
-        // Scale by ratio to "yes" weight
-        attendanceMultiplier =
-            options.weightYes > 0
-                ? static_cast<double>(options.weightMaybe) / options.weightYes
-                : 0.5;
-      } else if (present == "no" || present == "n") {
-        // Scale by ratio to "yes" weight
-        attendanceMultiplier =
-            options.weightYes > 0
-                ? static_cast<double>(options.weightNo) / options.weightYes
-                : 0.1;
-      } else {
-        attendanceMultiplier =
-            0; // If present field is empty or unrecognized, use 0.0
-      }
-
-      // After calculating the final weight (after line 142), store it:
-      weight = weight * attendanceMultiplier;
-
-      if (isGrade12 && weight == weightForRank(0) && present == "yes") {
-        weight *= 200.0;
-      }
-
-      varMatrix[studentIdx].push_back(
-          VarInfo{studentIdx, activityIdx, choiceRank, var,
-                  static_cast<double>(weight)}); // PASS THE WEIGHT HERE
-      solver.MutableObjective()->SetCoefficient(var,
-                                                static_cast<double>(weight));
     }
   }
 
@@ -219,7 +241,8 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   result.objectiveValue = solver.Objective().Value();
   result.message = "Solver completed successfully.";
 
-  std::vector<int> activityAssignments(activities.size(), 0);
+  std::vector<std::vector<int>> activityAssignments(
+      activities.size(), std::vector<int>(periodCount, 0));
 
   for (int studentIdx = 0; studentIdx < static_cast<int>(rows.size());
        ++studentIdx) {
@@ -238,6 +261,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         assignment.pathway = toStdString(row.pathway);
         assignment.present = toStdString(row.present);
         assignment.activity = toStdString(activities[varInfo.activityIndex]);
+        assignment.period = varInfo.periodIndex;
         assignment.choiceRank = varInfo.choiceRank;
 
         // Use the actual objective function coefficient
@@ -260,7 +284,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         }
 
         result.assignments.push_back(std::move(assignment));
-        ++activityAssignments[varInfo.activityIndex];
+        ++activityAssignments[varInfo.activityIndex][varInfo.periodIndex];
         assigned = true;
         break;
       }
@@ -279,6 +303,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       assignment.pathway = toStdString(row.pathway);
       assignment.present = toStdString(row.present);
       assignment.activity = "ERROR: Not assigned";
+      assignment.period = -1;
       assignment.choiceRank = -1;
       assignment.score = 0.0;
       result.assignments.push_back(std::move(assignment));
@@ -323,9 +348,19 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   for (int idx = 0; idx < static_cast<int>(activities.size()); ++idx) {
     ActivitySummaryRow summary;
     summary.activity = toStdString(activities[idx]);
-    summary.assigned = activityAssignments[idx];
-    summary.capacity =
-        activityCapacityMap.value(activities[idx], options.defaultCapacity);
+    int totalAssigned = 0;
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      totalAssigned += activityAssignments[idx][periodIdx];
+    }
+    summary.assigned = totalAssigned;
+    const auto capacities = activityPeriodCapacityMap.value(activities[idx]);
+    int totalCapacity = 0;
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      totalCapacity += capacities[periodIdx];
+    }
+    summary.capacity = totalCapacity;
+    summary.assignedPerPeriod = activityAssignments[idx];
+    summary.capacityPerPeriod = capacities;
     summary.presentYes = activityYes[idx];
     summary.presentNo = activityNo[idx];
     summary.presentMaybe = activityMaybe[idx];
@@ -344,15 +379,13 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
     result.message = "No student preferences loaded.";
     return result;
   }
-  if (options.activityCapacity <= 0) {
-    result.message = "Activity capacity must be greater than zero.";
-    return result;
-  }
+  const int periodCount = std::max(1, options.periodCount);
 
   QElapsedTimer timer;
   timer.start();
 
-  QHash<QString, int> usage;
+  QHash<QString, std::vector<int>> usage;
+  QHash<QString, std::vector<int>> activityCapacityMap;
   QSet<QString> activities;
   for (const auto &row : rows) {
     for (const auto &choice : row.choices) {
@@ -361,6 +394,29 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         activities.insert(normalized);
       }
     }
+  }
+
+  for (const auto &activity : activities) {
+    const std::string activityStdStr = toStdString(activity);
+    std::vector<int> capacities(periodCount, options.defaultCapacity);
+    auto it = options.activityPeriodCapacities.find(activityStdStr);
+    if (it != options.activityPeriodCapacities.end() &&
+        static_cast<int>(it->second.size()) == periodCount) {
+      capacities = it->second;
+    } else {
+      auto legacyIt = options.activityCapacities.find(activityStdStr);
+      if (legacyIt != options.activityCapacities.end()) {
+        capacities.assign(periodCount, legacyIt->second);
+      }
+    }
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      if (capacities[periodIdx] <= 0) {
+        result.message = "Activity capacity must be greater than zero.";
+        return result;
+      }
+    }
+    activityCapacityMap.insert(activity, capacities);
+    usage.insert(activity, std::vector<int>(periodCount, 0));
   }
 
   QStringList activityList = activities.values();
@@ -376,8 +432,22 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
       if (activityName.isEmpty()) {
         continue;
       }
-      if (usage.value(activityName, 0) < options.activityCapacity) {
-        usage[activityName] += 1;
+      auto usageIt = usage.find(activityName);
+      auto capacityIt = activityCapacityMap.find(activityName);
+      if (usageIt == usage.end() || capacityIt == activityCapacityMap.end()) {
+        continue;
+      }
+
+      int assignedPeriod = -1;
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        if (usageIt.value()[periodIdx] < capacityIt.value()[periodIdx]) {
+          usageIt.value()[periodIdx] += 1;
+          assignedPeriod = periodIdx;
+          break;
+        }
+      }
+
+      if (assignedPeriod >= 0) {
 
         // Calculate attendance weight multiplier
         double attendanceMultiplier = 1.0;
@@ -406,9 +476,10 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.pathway = toStdString(row.pathway);
         assignment.present = toStdString(row.present);
         assignment.activity = toStdString(activityName);
+        assignment.period = assignedPeriod;
         assignment.choiceRank = choiceIdx;
         int baseWeight = weightForRank(choiceIdx);
-        if (row.grade.trimmed() == "12" && baseWeight == 1.0) {
+        if (row.grade.trimmed() == "12") {
           baseWeight *= 2;
         }
         assignment.score = baseWeight * attendanceMultiplier;
@@ -430,6 +501,7 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
       assignment.pathway = toStdString(row.pathway);
       assignment.present = toStdString(row.present);
       assignment.activity = "";
+      assignment.period = -1;
       assignment.choiceRank = -1;
       assignment.score = 0.0;
       result.assignments.push_back(std::move(assignment));
@@ -466,8 +538,18 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
   for (const auto &activityName : activityList) {
     ActivitySummaryRow summary;
     summary.activity = toStdString(activityName);
-    summary.assigned = usage.value(activityName, 0);
-    summary.capacity = options.activityCapacity;
+    const auto assignedPerPeriod = usage.value(activityName);
+    const auto capacityPerPeriod = activityCapacityMap.value(activityName);
+    int totalAssigned = 0;
+    int totalCapacity = 0;
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      totalAssigned += assignedPerPeriod[periodIdx];
+      totalCapacity += capacityPerPeriod[periodIdx];
+    }
+    summary.assigned = totalAssigned;
+    summary.capacity = totalCapacity;
+    summary.assignedPerPeriod = assignedPerPeriod;
+    summary.capacityPerPeriod = capacityPerPeriod;
     summary.presentYes = activityYes.value(activityName, 0);
     summary.presentNo = activityNo.value(activityName, 0);
     summary.presentMaybe = activityMaybe.value(activityName, 0);

@@ -1,0 +1,41 @@
+CLICKSORT - SUMMARY REPORT
+==========================================
+
+SOLVER OPTIONS
+--------------
+Day Filter: A Day
+Default Capacity: 15
+Periods: 2
+Attendance Weighting: Enabled
+  Yes Weight: 100 (×1.00)
+  Maybe Weight: 50 (×0.50)
+  No Weight: 10 (×0.10)
+
+OVERALL RESULTS
+---------------
+Total Students: 238
+Satisfied Students: 216
+Satisfaction Rate: 90.8%
+Runtime: 50 ms
+
+CHOICE SATISFACTION SUMMARY
+---------------------------
+Rank              Total   Total %     Yes   Maybe      No
+---------------------------------------------------------------
+1st Choice          171     71.8%     125      43       3
+2nd Choice           40     16.8%      18      20       2
+3rd Choice            5      2.1%       0       4       1
+Not Satisfied        22      9.2%       0       0      22
+
+ACTIVITY SUMMARY
+----------------
+Activity                        Assigned  Capacity     Yes   Maybe      No  Exp. Util.
+--------------------------------------------------------------------------------------
+Global Cardboard Challenge            30        30      14      16       0       73.3%
+Cryptography Challenge                30        30      27       3       0       95.0%
+Create Your Own Game                  30        30      17      12       1       76.7%
+Rube Goldberg Machine                 30        30      14      16       0       73.3%
+Lego Challenge                        30        30      29       1       0       98.3%
+Stop Motion Video Challenge           30        30      20       8       2       80.0%
+Arduino Challenge                     30        30      19       9       2       78.3%
+Micro:bit Challenge                   28        30       3       2      23       13.3%

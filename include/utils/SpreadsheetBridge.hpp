@@ -16,7 +16,4 @@ bool ReadFile(const std::string &path, SpreadsheetTable &out,
 bool WriteCsv(const std::string &path, const SpreadsheetTable &table,
               std::string *errorMessage = nullptr);
 
-bool WriteXlsx(const std::string &path, const SpreadsheetTable &table,
-               std::string *errorMessage = nullptr);
-
 } // namespace SpreadsheetBridge
