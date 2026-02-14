@@ -10,6 +10,7 @@
 #include <QStringList>
 
 #include <algorithm>
+#include <random>
 
 #if HAVE_OR_TOOLS
 #include "ortools/linear_solver/linear_solver.h"
@@ -602,8 +603,20 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
 SolverResult runSolver(const std::vector<StudentPreferenceRow> &rows,
                        const SolverOptions &options) {
 #if HAVE_OR_TOOLS
-  return runWithOrTools(rows, options);
+  std::vector<StudentPreferenceRow> shuffledRows = rows;
+  if (shuffledRows.size() > 1) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::shuffle(shuffledRows.begin(), shuffledRows.end(), gen);
+  }
+  return runWithOrTools(shuffledRows, options);
 #else
-  return runGreedySolver(rows, options);
+  std::vector<StudentPreferenceRow> shuffledRows = rows;
+  if (shuffledRows.size() > 1) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::shuffle(shuffledRows.begin(), shuffledRows.end(), gen);
+  }
+  return runGreedySolver(shuffledRows, options);
 #endif
 }
