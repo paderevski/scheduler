@@ -1,0 +1,49 @@
+CLICKSORT - SUMMARY REPORT
+==========================================
+
+SOLVER OPTIONS
+--------------
+Day Filter: All Days
+Default Capacity: 20
+Periods: 3
+Attendance Weighting: Enabled
+  Yes Weight: 100 (×1.00)
+  Maybe Weight: 50 (×0.50)
+  No Weight: 10 (×0.10)
+
+OVERALL RESULTS
+---------------
+Total Students: 690
+Satisfied Students: 687
+Satisfaction Rate: 99.6%
+Runtime: 130 ms
+
+CHOICE SATISFACTION SUMMARY
+---------------------------
+Rank              Total   Total %     Yes   Maybe      No
+---------------------------------------------------------------
+1st Choice          230    100.0%     230       0       0
+2nd Choice          227     98.7%     227       0       0
+3rd Choice          195     84.8%     195       0       0
+4th Choice           33     14.3%      33       0       0
+5th Choice            2      0.9%       2       0       0
+Not Satisfied         2      0.9%       2       0       0
+
+ACTIVITY SUMMARY
+----------------
+Activity                        Assigned  Capacity     Yes   Maybe      No  Exp. Util.
+--------------------------------------------------------------------------------------
+BWXT Advanced Techno                  50        60      50       0       0       83.3%
+Data Science Storage                  56        60      56       0       0       93.3%
+Salesforce - Infrast                  47        60      47       0       0       78.3%
+Iridium Satellite Co                  60        60      60       0       0      100.0%
+HDR - Highlights of                   30        60      30       0       0       50.0%
+SAIC - Orbital Dynam                  62        90      62       0       0       68.9%
+Northrop Grumman - T                 120       300     120       0       0       40.0%
+Fabbioloi Cellars/Ne                  36        60      36       0       0       60.0%
+Pennoni - Multidisci                  35        60      35       0       0       58.3%
+Synergy Orthotics &                   60        60      60       0       0      100.0%
+CMTA, Inc. - Solar a                  38        60      38       0       0       63.3%
+TSJ - Preparing for                   30        60      30       0       0       50.0%
+Shapiro and Duncan -                  36        60      36       0       0       60.0%
+Loudoun Water - How                   30        60      30       0       0       50.0%

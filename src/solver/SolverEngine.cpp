@@ -116,6 +116,22 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       activityPeriodConstraints(
           activities.size(), std::vector<operations_research::MPConstraint *>(
                                  periodCount, nullptr));
+  auto applyMinAttendance =
+      [&](int minAttendees) {
+        for (int activityIdx = 0;
+             activityIdx < static_cast<int>(activities.size());
+             ++activityIdx) {
+          const QString &activityName = activities[activityIdx];
+          const auto capacities = activityPeriodCapacityMap.value(activityName);
+          for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+            const int capacity = capacities[periodIdx];
+            const int lowerBound = capacity >= minAttendees ? minAttendees : 0;
+            activityPeriodConstraints[activityIdx][periodIdx]->SetBounds(
+                static_cast<double>(lowerBound),
+                static_cast<double>(capacity));
+          }
+        }
+      };
   for (int activityIdx = 0; activityIdx < static_cast<int>(activities.size());
        ++activityIdx) {
     const QString &activityName = activities[activityIdx];
@@ -130,6 +146,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
                                        .toStdString());
     }
   }
+  applyMinAttendance(10);
 
   std::vector<std::vector<operations_research::MPConstraint *>>
       studentPeriodConstraints(rows.size(),
@@ -257,16 +274,28 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
 
   solver.MutableObjective()->SetMaximization();
   auto status = solver.Solve();
+  bool relaxedMinAttendance = false;
+  if (status != MPSolver::OPTIMAL && status != MPSolver::FEASIBLE) {
+    applyMinAttendance(5);
+    relaxedMinAttendance = true;
+    status = solver.Solve();
+  }
   result.runtimeMs = timer.elapsed();
 
   if (status != MPSolver::OPTIMAL && status != MPSolver::FEASIBLE) {
-    result.message = "Solver was unable to find a feasible solution.";
+    result.message =
+        "Solver was unable to find a feasible solution with minimum "
+        "attendance constraints (10, then 5).";
     return result;
   }
 
   result.success = true;
   result.objectiveValue = solver.Objective().Value();
   result.message = "Solver completed successfully.";
+  if (relaxedMinAttendance) {
+    result.warnings.push_back(
+        "Relaxed minimum attendance from 10 to 5 per activity/period.");
+  }
 
   std::vector<std::vector<int>> activityAssignments(
       activities.size(), std::vector<int>(periodCount, 0));

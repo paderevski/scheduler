@@ -54,6 +54,7 @@
 #endif
 
 #include <algorithm>
+#include <limits>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -692,9 +693,7 @@ public:
                                      QStringLiteral("Assigned"),
                                      QStringLiteral("Capacity")};
       for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-        activityHeaders.append(
-            QStringLiteral("P%1 Assigned").arg(periodIdx + 1));
-        activityHeaders.append(QStringLiteral("P%1 Cap").arg(periodIdx + 1));
+        activityHeaders.append(QStringLiteral("P%1").arg(periodIdx + 1));
       }
       activityHeaders.append(QStringLiteral("Yes"));
       activityHeaders.append(QStringLiteral("Maybe"));
@@ -1722,6 +1721,21 @@ public:
       dayFilterCombo->setCurrentIndex(dayIndex);
     }
 
+    SolverOptions loadedOptions;
+    loadedOptions.defaultCapacity = settings["defaultCapacity"].toInt();
+    loadedOptions.periodCount = settings["periodCount"].toInt(3);
+    if (settings["weightingEnabled"].toBool()) {
+      loadedOptions.weightYes = weights["yes"].toInt();
+      loadedOptions.weightMaybe = weights["maybe"].toInt();
+      loadedOptions.weightNo = weights["no"].toInt();
+    } else {
+      loadedOptions.weightYes = 1;
+      loadedOptions.weightMaybe = 1;
+      loadedOptions.weightNo = 1;
+    }
+    lastOptions = loadedOptions;
+    lastDayFilter = dayFilter;
+
     // Load student data
     QJsonArray students = root["students"].toArray();
     std::vector<StudentPreferenceRow> rows;
@@ -1765,6 +1779,20 @@ public:
           caps.append(it.value().toInt());
         }
         activityPeriodCapacities[it.key()] = caps;
+      }
+    }
+    if (lastOptions) {
+      lastOptions->activityPeriodCapacities.clear();
+      for (auto it = activityPeriodCapacities.begin();
+           it != activityPeriodCapacities.end(); ++it) {
+        const auto key = it.key().toStdString();
+        std::vector<int> caps;
+        const QJsonArray values = it.value().toArray();
+        caps.reserve(values.size());
+        for (const auto &value : values) {
+          caps.push_back(value.toInt());
+        }
+        lastOptions->activityPeriodCapacities[key] = std::move(caps);
       }
     }
     const int periodCount = periodCountSpin->value();
@@ -2214,8 +2242,7 @@ public:
                                    QStringLiteral("Assigned"),
                                    QStringLiteral("Capacity")};
     for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-      activityHeaders.append(QStringLiteral("P%1 Assigned").arg(periodIdx + 1));
-      activityHeaders.append(QStringLiteral("P%1 Cap").arg(periodIdx + 1));
+      activityHeaders.append(QStringLiteral("P%1").arg(periodIdx + 1));
     }
     activityHeaders.append(QStringLiteral("Yes"));
     activityHeaders.append(QStringLiteral("Maybe"));
@@ -2230,12 +2257,12 @@ public:
       item->setText(2, QString::number(summary.capacity));
       int col = 3;
       for (int periodIdx = 0;
-           periodIdx < static_cast<int>(summary.assignedPerPeriod.size());
-           ++periodIdx) {
+          periodIdx < static_cast<int>(summary.assignedPerPeriod.size());
+          ++periodIdx) {
+        const int assigned = summary.assignedPerPeriod[periodIdx];
+        const int capacity = summary.capacityPerPeriod[periodIdx];
         item->setText(col++,
-                      QString::number(summary.assignedPerPeriod[periodIdx]));
-        item->setText(col++,
-                      QString::number(summary.capacityPerPeriod[periodIdx]));
+                 QStringLiteral("%1/%2").arg(assigned).arg(capacity));
       }
       item->setText(col++, QString::number(summary.presentYes));
       item->setText(col++, QString::number(summary.presentMaybe));
@@ -2449,6 +2476,8 @@ public:
     out << QString(86, '-') << "\n";
 
     for (const auto &summary : lastResult->activitySummary) {
+      const QString activityName =
+        toQString(summary.activity).left(20);
       const double expectedAttendance =
           summary.presentYes + (summary.presentMaybe * 0.5);
       const double expectedUtil =
@@ -2456,7 +2485,7 @@ public:
               ? 0.0
               : expectedAttendance / static_cast<double>(summary.capacity);
 
-      out << qSetFieldWidth(30) << Qt::left << toQString(summary.activity)
+      out << qSetFieldWidth(30) << Qt::left << activityName
           << qSetFieldWidth(10) << Qt::right << summary.assigned
           << qSetFieldWidth(10) << Qt::right << summary.capacity
           << qSetFieldWidth(8) << Qt::right << summary.presentYes
@@ -2497,10 +2526,26 @@ public:
         }
       }
 
-      // Sort by last name, then first name
+      // Sort by period, then last name, then first name
       std::sort(
           students.begin(), students.end(),
           [](const StudentInfo &a, const StudentInfo &b) {
+            auto periodOrder = [](const QString &period) {
+              if (period.startsWith('P')) {
+                bool ok = false;
+                const int value = period.mid(1).toInt(&ok);
+                if (ok) {
+                  return value;
+                }
+              }
+              return std::numeric_limits<int>::max();
+            };
+
+            const int periodA = periodOrder(a.period);
+            const int periodB = periodOrder(b.period);
+            if (periodA != periodB) {
+              return periodA < periodB;
+            }
             if (a.lastName != b.lastName) {
               return a.lastName.compare(b.lastName, Qt::CaseInsensitive) < 0;
             }
