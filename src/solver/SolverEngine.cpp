@@ -37,6 +37,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
                             const SolverOptions &options) {
   SolverResult result;
   result.totalStudents = static_cast<int>(rows.size());
+  result.balanceLambda = options.balanceLambda;
 
   if (rows.empty()) {
     result.message = "No student preferences loaded.";
@@ -116,26 +117,55 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       activityPeriodConstraints(
           activities.size(), std::vector<operations_research::MPConstraint *>(
                                  periodCount, nullptr));
-  auto applyMinAttendance =
-      [&](int minAttendees) {
-        for (int activityIdx = 0;
-             activityIdx < static_cast<int>(activities.size());
-             ++activityIdx) {
-          const QString &activityName = activities[activityIdx];
-          const auto capacities = activityPeriodCapacityMap.value(activityName);
-          for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-            const int capacity = capacities[periodIdx];
-            const int lowerBound = capacity >= minAttendees ? minAttendees : 0;
-            activityPeriodConstraints[activityIdx][periodIdx]->SetBounds(
-                static_cast<double>(lowerBound),
-                static_cast<double>(capacity));
-          }
-        }
-      };
+  const bool useBalancePenalty = options.balanceLambda > 0.0;
+  std::vector<MPVariable *> activityMax(activities.size(), nullptr);
+  std::vector<MPVariable *> activityMin(activities.size(), nullptr);
+  std::vector<std::vector<operations_research::MPConstraint *>>
+      activityPeriodMaxConstraints(
+          activities.size(), std::vector<operations_research::MPConstraint *>(
+                                 periodCount, nullptr));
+  std::vector<std::vector<operations_research::MPConstraint *>>
+      activityPeriodMinConstraints(
+          activities.size(), std::vector<operations_research::MPConstraint *>(
+                                 periodCount, nullptr));
+
+  auto applyMinAttendance = [&](int minAttendees) {
+    for (int activityIdx = 0; activityIdx < static_cast<int>(activities.size());
+         ++activityIdx) {
+      const QString &activityName = activities[activityIdx];
+      const auto capacities = activityPeriodCapacityMap.value(activityName);
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        const int capacity = capacities[periodIdx];
+        const int lowerBound = capacity >= minAttendees ? minAttendees : 0;
+        activityPeriodConstraints[activityIdx][periodIdx]->SetBounds(
+            static_cast<double>(lowerBound), static_cast<double>(capacity));
+      }
+    }
+  };
   for (int activityIdx = 0; activityIdx < static_cast<int>(activities.size());
        ++activityIdx) {
     const QString &activityName = activities[activityIdx];
     const auto capacities = activityPeriodCapacityMap.value(activityName);
+    int maxCapacity = 0;
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      maxCapacity = std::max(maxCapacity, capacities[periodIdx]);
+    }
+    if (useBalancePenalty) {
+      activityMax[activityIdx] =
+          solver.MakeNumVar(0.0, static_cast<double>(maxCapacity),
+                            QStringLiteral("activity_%1_max")
+                                .arg(activityIdx)
+                                .toStdString());
+      activityMin[activityIdx] =
+          solver.MakeNumVar(0.0, static_cast<double>(maxCapacity),
+                            QStringLiteral("activity_%1_min")
+                                .arg(activityIdx)
+                                .toStdString());
+      solver.MutableObjective()->SetCoefficient(activityMax[activityIdx],
+                                                -options.balanceLambda);
+      solver.MutableObjective()->SetCoefficient(activityMin[activityIdx],
+                                                options.balanceLambda);
+    }
     for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
       const int capacity = capacities[periodIdx];
       activityPeriodConstraints[activityIdx][periodIdx] =
@@ -144,6 +174,27 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
                                        .arg(activityIdx)
                                        .arg(periodIdx)
                                        .toStdString());
+      if (useBalancePenalty) {
+        activityPeriodMaxConstraints[activityIdx][periodIdx] =
+            solver.MakeRowConstraint(-MPSolver::infinity(), 0.0,
+                                     QStringLiteral(
+                                         "activity_%1_period_%2_max")
+                                         .arg(activityIdx)
+                                         .arg(periodIdx)
+                                         .toStdString());
+        activityPeriodMaxConstraints[activityIdx][periodIdx]->SetCoefficient(
+            activityMax[activityIdx], -1.0);
+
+        activityPeriodMinConstraints[activityIdx][periodIdx] =
+            solver.MakeRowConstraint(-MPSolver::infinity(), 0.0,
+                                     QStringLiteral(
+                                         "activity_%1_period_%2_min")
+                                         .arg(activityIdx)
+                                         .arg(periodIdx)
+                                         .toStdString());
+        activityPeriodMinConstraints[activityIdx][periodIdx]->SetCoefficient(
+            activityMin[activityIdx], 1.0);
+      }
     }
   }
   applyMinAttendance(10);
@@ -210,6 +261,12 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
             var, 1.0);
         activityPeriodConstraints[activityIdx][periodIdx]->SetCoefficient(var,
                                                                           1.0);
+        if (useBalancePenalty) {
+          activityPeriodMaxConstraints[activityIdx][periodIdx]->SetCoefficient(
+            var, 1.0);
+          activityPeriodMinConstraints[activityIdx][periodIdx]->SetCoefficient(
+            var, -1.0);
+        }
 
         // Determine weight/penalty
         double weight = 1.0;
@@ -290,6 +347,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
 
   result.success = true;
   result.objectiveValue = solver.Objective().Value();
+  result.balanceLambda = options.balanceLambda;
   result.message = "Solver completed successfully.";
   if (relaxedMinAttendance) {
     result.warnings.push_back(
@@ -324,6 +382,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
 
       // Use the actual objective function coefficient
       assignment.score = varInfo.objectiveCoefficient;
+      result.satisfactionScore += varInfo.objectiveCoefficient;
 
       if (varInfo.choiceRank >= 0) {
         ++result.satisfiedStudents;
@@ -376,6 +435,19 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
               .arg(periodIdx + 1)
               .toStdString());
     }
+  }
+
+  if (useBalancePenalty) {
+    double penalty = 0.0;
+    for (int activityIdx = 0; activityIdx < static_cast<int>(activities.size());
+         ++activityIdx) {
+      if (!activityMax[activityIdx] || !activityMin[activityIdx]) {
+        continue;
+      }
+      penalty += activityMax[activityIdx]->solution_value() -
+                 activityMin[activityIdx]->solution_value();
+    }
+    result.balancePenalty = penalty;
   }
 
   // Count yes/no/maybe for each activity
@@ -542,6 +614,7 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
           baseWeight *= options.seniorWeightMultiplier;
         }
         assignment.score = baseWeight * attendanceMultiplier;
+        result.satisfactionScore += assignment.score;
         result.assignments.push_back(std::move(assignment));
         ++result.satisfiedStudents;
         assignedActivities.insert(activityName);

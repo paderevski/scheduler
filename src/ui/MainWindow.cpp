@@ -517,6 +517,7 @@ public:
         weightNoSpin(new QSpinBox(q)), weightYesNormLabel(new QLabel(q)),
         weightMaybeNormLabel(new QLabel(q)), weightNoNormLabel(new QLabel(q)),
         seniorWeightSpin(new QDoubleSpinBox(q)),
+        balanceLambdaSpin(new QDoubleSpinBox(q)),
         dayFilterCombo(new QComboBox(q)),
         runButton(new QPushButton(QStringLiteral("Calculate"), q)),
         resultsStatus(new QLabel(QStringLiteral("No solver run yet."), q)),
@@ -623,6 +624,12 @@ public:
     seniorWeightSpin->setValue(2.0);
     seniorWeightSpin->setMinimumWidth(80);
 
+    balanceLambdaSpin->setRange(0.0, 10.0);
+    balanceLambdaSpin->setDecimals(3);
+    balanceLambdaSpin->setSingleStep(0.05);
+    balanceLambdaSpin->setValue(0.0);
+    balanceLambdaSpin->setMinimumWidth(80);
+
     auto *weightGridLayout = new QGridLayout();
     weightGridLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr), 0,
                                 0);
@@ -641,6 +648,10 @@ public:
     weightGridLayout->addWidget(
       new QLabel(QStringLiteral("Senior Multiplier:"), q_ptr), 3, 0);
     weightGridLayout->addWidget(seniorWeightSpin, 3, 1);
+
+    weightGridLayout->addWidget(
+      new QLabel(QStringLiteral("Balance Lambda:"), q_ptr), 4, 0);
+    weightGridLayout->addWidget(balanceLambdaSpin, 4, 1);
 
     weightGridLayout->setColumnStretch(3, 1);
     leftLayout->addLayout(weightGridLayout);
@@ -1546,6 +1557,7 @@ public:
     weights["no"] = weightNoSpin->value();
     settings["weights"] = weights;
     settings["seniorMultiplier"] = seniorWeightSpin->value();
+    settings["balanceLambda"] = balanceLambdaSpin->value();
 
     settings["dayFilter"] = dayFilterCombo->currentData().toString();
 
@@ -1728,6 +1740,7 @@ public:
     weightMaybeSpin->setValue(weights["maybe"].toInt());
     weightNoSpin->setValue(weights["no"].toInt());
     seniorWeightSpin->setValue(settings["seniorMultiplier"].toDouble(2.0));
+    balanceLambdaSpin->setValue(settings["balanceLambda"].toDouble(0.0));
 
     QString dayFilter = settings["dayFilter"].toString();
     int dayIndex = dayFilterCombo->findData(dayFilter);
@@ -1749,6 +1762,7 @@ public:
     }
     loadedOptions.seniorWeightMultiplier =
         settings["seniorMultiplier"].toDouble(2.0);
+    loadedOptions.balanceLambda = settings["balanceLambda"].toDouble(0.0);
     lastOptions = loadedOptions;
     lastDayFilter = dayFilter;
 
@@ -1992,6 +2006,7 @@ public:
       options.weightNo = weightNoSpin->value();
     }
     options.seniorWeightMultiplier = seniorWeightSpin->value();
+    options.balanceLambda = balanceLambdaSpin->value();
 
     // Collect per-activity capacities from table
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
@@ -2058,6 +2073,13 @@ public:
             .arg(result.totalStudents)
             .arg(result.objectiveValue, 0, 'f', 1)
             .arg(result.runtimeMs));
+    if (result.balanceLambda > 0.0) {
+      appendDiagnostic(
+        QStringLiteral("Objective breakdown: S=%1, penalty=%2, lambda=%3")
+          .arg(result.satisfactionScore, 0, 'f', 1)
+          .arg(result.balancePenalty, 0, 'f', 1)
+          .arg(result.balanceLambda, 0, 'f', 2));
+    }
 
     for (const auto &warning : result.warnings) {
       appendDiagnostic(QStringLiteral("Warning: %1").arg(toQString(warning)));
@@ -2428,6 +2450,8 @@ public:
     out << "Senior Multiplier: "
         << QString::number(lastOptions->seniorWeightMultiplier, 'f', 2)
         << "\n";
+      out << "Balance Lambda: "
+        << QString::number(lastOptions->balanceLambda, 'f', 3) << "\n";
 
     auto baseWeightForRank = [](int rank) {
       constexpr int kBase = 100;
@@ -2467,6 +2491,16 @@ public:
     out << "Satisfaction Rate: " << QString::number(satisfactionRate, 'f', 1)
         << "%\n";
     out << "Runtime: " << lastResult->runtimeMs << " ms\n";
+    if (lastResult->balanceLambda > 0.0) {
+      out << "Satisfaction Score (S): "
+        << QString::number(lastResult->satisfactionScore, 'f', 1) << "\n";
+      out << "Balance Penalty: "
+        << QString::number(lastResult->balancePenalty, 'f', 1) << "\n";
+      out << "Balance Lambda: "
+        << QString::number(lastResult->balanceLambda, 'f', 2) << "\n";
+      out << "Objective (S - lambda*penalty): "
+        << QString::number(lastResult->objectiveValue, 'f', 1) << "\n";
+    }
     out << "\n";
 
     // Choice Satisfaction Summary
@@ -2784,6 +2818,7 @@ public:
   QLabel *weightMaybeNormLabel;
   QLabel *weightNoNormLabel;
   QDoubleSpinBox *seniorWeightSpin;
+  QDoubleSpinBox *balanceLambdaSpin;
   QComboBox *dayFilterCombo;
   QPushButton *runButton;
   QLabel *resultsStatus;

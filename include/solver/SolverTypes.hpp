@@ -24,6 +24,9 @@ struct SolverOptions {
 
   // Senior preference multiplier (applies when grade == 12)
   double seniorWeightMultiplier = 2.0;
+
+  // Balance penalty weight for activity-period size spread
+  double balanceLambda = 0.0;
 };
 
 struct StudentAssignment {
@@ -74,5 +77,8 @@ struct SolverResult {
   int satisfiedStudents = 0;
   int totalStudents = 0;
   double objectiveValue = 0.0;
+  double satisfactionScore = 0.0;
+  double balancePenalty = 0.0;
+  double balanceLambda = 0.0;
   long long runtimeMs = 0;
 };
