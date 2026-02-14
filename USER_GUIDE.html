@@ -1,184 +1,9 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
-<head>
-  <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>USER_GUIDE</title>
-  <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
-    html {
-      color: #1a1a1a;
-      background-color: #fdfdfd;
-    }
-    body {
-      margin: 0 auto;
-      max-width: 36em;
-      padding-left: 50px;
-      padding-right: 50px;
-      padding-top: 50px;
-      padding-bottom: 50px;
-      hyphens: auto;
-      overflow-wrap: break-word;
-      text-rendering: optimizeLegibility;
-      font-kerning: normal;
-    }
-    @media (max-width: 600px) {
-      body {
-        font-size: 0.9em;
-        padding: 12px;
-      }
-      h1 {
-        font-size: 1.8em;
-      }
-    }
-    @media print {
-      html {
-        background-color: white;
-      }
-      body {
-        background-color: transparent;
-        color: black;
-        font-size: 12pt;
-      }
-      p, h2, h3 {
-        orphans: 3;
-        widows: 3;
-      }
-      h2, h3, h4 {
-        page-break-after: avoid;
-      }
-    }
-    p {
-      margin: 1em 0;
-    }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
-    }
-    img {
-      max-width: 100%;
-    }
-    svg {
-      height: auto;
-      max-width: 100%;
-    }
-    h1, h2, h3, h4, h5, h6 {
-      margin-top: 1.4em;
-    }
-    h5, h6 {
-      font-size: 1em;
-      font-style: italic;
-    }
-    h6 {
-      font-weight: normal;
-    }
-    ol, ul {
-      padding-left: 1.7em;
-      margin-top: 1em;
-    }
-    li > ol, li > ul {
-      margin-top: 0;
-    }
-    blockquote {
-      margin: 1em 0 1em 1.7em;
-      padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
-      color: #606060;
-    }
-    code {
-      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
-      font-size: 85%;
-      margin: 0;
-      hyphens: manual;
-    }
-    pre {
-      margin: 1em 0;
-      overflow: auto;
-    }
-    pre code {
-      padding: 0;
-      overflow: visible;
-      overflow-wrap: normal;
-    }
-    .sourceCode {
-     background-color: transparent;
-     overflow: visible;
-    }
-    hr {
-      border: none;
-      border-top: 1px solid #1a1a1a;
-      height: 1px;
-      margin: 1em 0;
-    }
-    table {
-      margin: 1em 0;
-      border-collapse: collapse;
-      width: 100%;
-      overflow-x: auto;
-      display: block;
-      font-variant-numeric: lining-nums tabular-nums;
-    }
-    table caption {
-      margin-bottom: 0.75em;
-    }
-    tbody {
-      margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
-    }
-    th {
-      border-top: 1px solid #1a1a1a;
-      padding: 0.25em 0.5em 0.25em 0.5em;
-    }
-    td {
-      padding: 0.125em 0.5em 0.25em 0.5em;
-    }
-    header {
-      margin-bottom: 4em;
-      text-align: center;
-    }
-    #TOC li {
-      list-style: none;
-    }
-    #TOC ul {
-      padding-left: 1.3em;
-    }
-    #TOC > ul {
-      padding-left: 0;
-    }
-    #TOC a:not(:hover) {
-      text-decoration: none;
-    }
-    code{white-space: pre-wrap;}
-    span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
-    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-    /* The extra [class] is a hack that increases specificity enough to
-       override a similar rule in reveal.js */
-    ul.task-list[class]{list-style: none;}
-    ul.task-list li input[type="checkbox"] {
-      font-size: inherit;
-      width: 0.8em;
-      margin: 0 0.8em 0.2em -1.6em;
-      vertical-align: middle;
-    }
-  </style>
-</head>
-<body>
-<h1 id="engineering-week-scheduler---user-guide">Engineering Week
-Scheduler - User Guide</h1>
+<h1 id="clicksort---user-guide">ClickSort - User Guide</h1>
 <h2 id="overview">Overview</h2>
-<p>The Engineering Week Scheduler is a desktop application that
-optimally assigns students to activities based on their preferences,
-while respecting capacity constraints and attendance patterns. The
-application uses constraint optimization to maximize student
-satisfaction.</p>
+<p>ClickSort is a desktop application that optimally assigns students to
+activities based on their preferences, while respecting capacity
+constraints and attendance patterns. The application uses constraint
+optimization to maximize student satisfaction.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ol type="1">
 <li><a href="#getting-started">Getting Started</a></li>
@@ -197,8 +22,7 @@ satisfaction.</p>
 <strong>Results</strong>: View optimization results and activity
 assignments</p>
 <h3 id="required-data-format">Required Data Format</h3>
-<p>Your input file (CSV) should contain the following
-columns:</p>
+<p>Your input file (CSV) should contain the following columns:</p>
 <ul>
 <li><strong>Student ID</strong>: Unique identifier for each student</li>
 <li><strong>First Name</strong>: Student’s first name</li>
@@ -209,8 +33,10 @@ columns:</p>
 <li><strong>Pathway</strong>: Student’s pathway or program</li>
 <li><strong>Present</strong>: Attendance likelihood (“Yes”, “Maybe”, or
 “No”)</li>
-<li><strong>Choice 1, Choice 2, Choice 3, …</strong>: Student’s activity
-preferences in order</li>
+<li><strong>Choice 1, Choice 2, Choice 3</strong>: Student’s required
+activity preferences in order</li>
+<li><strong>Choice 4, Choice 5</strong>: Optional preferences (leave
+blank if not used)</li>
 </ul>
 <hr />
 <h2 id="data-tab">Data Tab</h2>
@@ -237,6 +63,7 @@ imported correctly - Check for any missing or incorrect data</p>
 any missing student IDs - <strong>Blank choices</strong>: Number of
 empty preference fields - <strong>Unique activities</strong>: Number of
 distinct activities detected</p>
+<p>Only Choice 1-3 are required; Choice 4-5 can be left blank.</p>
 <hr />
 <h2 id="options-tab">Options Tab</h2>
 <p>The Options tab is divided into two sections:</p>
@@ -288,8 +115,8 @@ activities</li>
 <p>Shows all detected activities with:</p>
 <ul>
 <li><strong>Activity</strong>: Activity name</li>
-<li><strong>Choice 1, 2, 3</strong>: Count of students who selected this
-as their 1st, 2nd, or 3rd choice</li>
+<li><strong>Choice 1-5</strong>: Count of students who selected this as
+their 1st through 5th choice</li>
 <li><strong>Capacity</strong>: Maximum students for this activity
 (editable)</li>
 </ul>
@@ -320,15 +147,15 @@ Total number of students - Solver runtime in milliseconds</p>
 <li><strong>Student ID, First Name, Last Name</strong></li>
 <li><strong>Grade, Day, Teacher, Pathway, Present</strong></li>
 <li><strong>Activity</strong>: Assigned activity</li>
-<li><strong>Choice</strong>: Which preference this was (1, 2, 3, or “-”
-for fallback)</li>
+<li><strong>Choice</strong>: Which preference this was (1-5, or “-” for
+fallback)</li>
 <li><strong>Score</strong>: Assignment quality score</li>
 </ul>
 <h3 id="choice-satisfaction-summary">Choice Satisfaction Summary</h3>
 <p>Table showing satisfaction breakdown:</p>
 <ul>
-<li><strong>Rank</strong>: 1st Choice, 2nd Choice, 3rd Choice, Not
-Satisfied</li>
+<li><strong>Rank</strong>: 1st Choice, 2nd Choice, 3rd Choice, 4th
+Choice, 5th Choice, Not Satisfied</li>
 <li><strong>Total</strong>: Number of students in this category</li>
 <li><strong>Total %</strong>: Percentage of all students</li>
 <li><strong>Yes, Maybe, No</strong>: Breakdown by attendance status</li>
@@ -368,10 +195,14 @@ Results tab:</p>
 <ul>
 <li><strong>results.csv</strong>: Complete assignment table</li>
 <li><strong>summary.txt</strong>: Comprehensive text report</li>
-<li><strong>[Activity Name].txt</strong>: Individual roster for each
-activity</li>
+<li><strong>[Activity Name].pdf</strong>: Individual roster for each
+activity (PDF format)</li>
 </ul></li>
 </ol>
+<p><strong>Why PDF?</strong> Activity rosters are exported as PDF files
+because they display perfectly inline in Google Drive with proper
+formatting and professional appearance. PDFs maintain formatting across
+all platforms and are ready to print or share.</p>
 <h4 id="summary-report-contents">Summary Report Contents</h4>
 <p>The <code>summary.txt</code> file includes:</p>
 <ul>
@@ -385,12 +216,14 @@ table</li>
 metrics</li>
 </ul>
 <h4 id="activity-roster-files">Activity Roster Files</h4>
-<p>Each activity gets a text file with:</p>
+<p>Each activity gets a PDF file with:</p>
 <ul>
-<li>Activity name, enrollment, and capacity</li>
-<li>Right-aligned columns: Last Name, First Name, Student ID, Pathway,
-Grade, Present</li>
+<li>Activity name as heading</li>
+<li>Enrollment and capacity information</li>
+<li>Formatted table with columns: Last Name, First Name, Student ID,
+Pathway, Grade, Period, Present</li>
 <li>Students sorted alphabetically by last name</li>
+<li>Professional formatting with alternating row colors</li>
 </ul>
 <h3 id="export-data">Export Data</h3>
 <p><strong>File menu</strong> also provides:</p>
@@ -410,13 +243,13 @@ spelling throughout</li>
 <li><strong>Attendance field</strong>: Use “Yes”, “Maybe”, or “No”
 (case-insensitive, “Y”/“M”/“N” also work)</li>
 <li><strong>Complete preferences</strong>: Students should provide at
-least 3 choices</li>
+least 3 choices (up to 5 supported)</li>
 </ol>
 <h3 id="setting-capacities">Setting Capacities</h3>
 <ol type="1">
 <li><strong>Start with Auto</strong>: Click “Auto” for an initial
 balanced distribution</li>
-<li><strong>Adjust for demand</strong>: Review Choice 1/2/3 counts and
+<li><strong>Adjust for demand</strong>: Review Choice 1-5 counts and
 increase capacity for popular activities</li>
 <li><strong>Account for attendance</strong>: Consider reducing capacity
 for activities with many “No” students</li>
@@ -440,7 +273,7 @@ over-prioritize “Yes” students</li>
 <h3 id="interpreting-results">Interpreting Results</h3>
 <ol type="1">
 <li><strong>Satisfaction rate</strong>: Percentage of students who got a
-top-3 choice</li>
+top-5 choice</li>
 <li><strong>Not Satisfied</strong>: Students assigned to fallback (none
 of their choices available)</li>
 <li><strong>Expected Utilization</strong>:
@@ -517,8 +350,10 @@ if OR-Tools solver fails</p>
 <h3 id="preference-weights">Preference Weights</h3>
 <ul>
 <li>1st choice: 100 points</li>
-<li>2nd choice: 50 points</li>
-<li>3rd choice: 25 points</li>
+<li>2nd choice: 85 points</li>
+<li>3rd choice: 70 points</li>
+<li>4th choice: 55 points</li>
+<li>5th choice: 40 points</li>
 <li>Fallback: 1 point</li>
 </ul>
 <p>These are multiplied by attendance weights when weighting is
@@ -534,5 +369,3 @@ Utilization = Expected ÷ Capacity</code></pre>
 system administrator or the development team.</p>
 <p><strong>Version</strong>: 1.0 <strong>Last Updated</strong>: December
 2025</p>
-</body>
-</html>

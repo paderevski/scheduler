@@ -41,7 +41,7 @@ To run the prototype after a successful build:
 - **Data ingestion/export**: load CSV preference sheets, edit them directly, and export back to CSV.
 - **Validation feedback**: missing IDs or blank choices are highlighted inline and surfaced in the diagnostics list.
 - **Background solver**: the Calculate action spawns an OR-Tools CBC model on a background thread, keeping the UI responsive while reporting progress.
-- **Guaranteed assignments**: Every student is assigned to an activity. The solver tries to match students to their top 3 choices (with weights 100, 85, 70), but if capacity constraints prevent this, students are assigned to non-preferred activities (weight 1) as a fallback. This ensures no student is left unassigned.
+- **Guaranteed assignments**: Every student is assigned to an activity. The solver tries to match students to their top 3-5 choices (weights decay by 15 per rank starting at 100, minimum 5), but if capacity constraints prevent this, students are assigned to non-preferred activities (weight 1) as a fallback. This ensures no student is left unassigned.
 - **Results presentation**: assignments are rendered in a sortable table with per-activity summaries, utilization metrics, and optional charts when Qt Charts is available. Results can also be exported to CSV.
 
 ## Solver Model
@@ -56,6 +56,8 @@ The OR-Tools CBC mixed-integer programming solver:
   - Choice 1: weight 100
   - Choice 2: weight 85
   - Choice 3: weight 70
+  - Choice 4: weight 55
+  - Choice 5: weight 40
   - Non-preferred: weight 1 (fallback only when necessary)
 - **Result**: All students get assigned, with preferences maximized subject to capacity constraints
 

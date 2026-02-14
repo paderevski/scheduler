@@ -60,13 +60,17 @@
 #include <vector>
 
 namespace {
+constexpr int kRequiredChoiceCount = 3;
+constexpr int kMaxChoiceCount = 5;
+
 QStringList defaultHeaders() {
   return {QStringLiteral("Student ID"), QStringLiteral("First Name"),
           QStringLiteral("Last Name"),  QStringLiteral("Grade"),
           QStringLiteral("Day"),        QStringLiteral("Teacher"),
           QStringLiteral("Pathway"),    QStringLiteral("Present"),
           QStringLiteral("Choice 1"),   QStringLiteral("Choice 2"),
-          QStringLiteral("Choice 3")};
+          QStringLiteral("Choice 3"),   QStringLiteral("Choice 4"),
+          QStringLiteral("Choice 5")};
 }
 
 QString toQString(const std::string &value) {
@@ -215,6 +219,22 @@ rowsFromTableWithMapping(const SpreadsheetTable &table,
       row.choices.append(QString());
     }
 
+    if (mapping.choice4Column >= 0 &&
+        mapping.choice4Column < static_cast<int>(line.size())) {
+      row.choices.append(
+          QString::fromStdString(line[mapping.choice4Column]).trimmed());
+    } else if (mapping.choice4Column >= 0) {
+      row.choices.append(QString());
+    }
+
+    if (mapping.choice5Column >= 0 &&
+        mapping.choice5Column < static_cast<int>(line.size())) {
+      row.choices.append(
+          QString::fromStdString(line[mapping.choice5Column]).trimmed());
+    } else if (mapping.choice5Column >= 0) {
+      row.choices.append(QString());
+    }
+
     rows.push_back(std::move(row));
   }
 
@@ -275,6 +295,8 @@ struct ChoiceSatisfactionCounts {
   int choice1Total = 0, choice1Yes = 0, choice1Maybe = 0, choice1No = 0;
   int choice2Total = 0, choice2Yes = 0, choice2Maybe = 0, choice2No = 0;
   int choice3Total = 0, choice3Yes = 0, choice3Maybe = 0, choice3No = 0;
+  int choice4Total = 0, choice4Yes = 0, choice4Maybe = 0, choice4No = 0;
+  int choice5Total = 0, choice5Yes = 0, choice5Maybe = 0, choice5No = 0;
   int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0,
       notSatisfiedNo = 0;
 };
@@ -317,6 +339,22 @@ ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
         counts.choice3Maybe++;
       else if (isNo)
         counts.choice3No++;
+    } else if (assignment.choiceRank == 3) {
+      counts.choice4Total++;
+      if (isYes)
+        counts.choice4Yes++;
+      else if (isMaybe)
+        counts.choice4Maybe++;
+      else if (isNo)
+        counts.choice4No++;
+    } else if (assignment.choiceRank == 4) {
+      counts.choice5Total++;
+      if (isYes)
+        counts.choice5Yes++;
+      else if (isMaybe)
+        counts.choice5Maybe++;
+      else if (isNo)
+        counts.choice5No++;
     } else {
       counts.notSatisfiedTotal++;
       if (isYes)
@@ -342,6 +380,8 @@ countChoiceSatisfactionByStudent(const SolverResult &result) {
     bool choice1 = false;
     bool choice2 = false;
     bool choice3 = false;
+    bool choice4 = false;
+    bool choice5 = false;
     bool other = false;
     QString attendance;
   };
@@ -379,6 +419,10 @@ countChoiceSatisfactionByStudent(const SolverResult &result) {
       flags.choice2 = true;
     } else if (assignment.choiceRank == 2) {
       flags.choice3 = true;
+    } else if (assignment.choiceRank == 3) {
+      flags.choice4 = true;
+    } else if (assignment.choiceRank == 4) {
+      flags.choice5 = true;
     } else {
       flags.other = true;
     }
@@ -418,6 +462,24 @@ countChoiceSatisfactionByStudent(const SolverResult &result) {
         summary.counts.choice3Maybe++;
       else if (isNo)
         summary.counts.choice3No++;
+    }
+    if (flags.choice4) {
+      summary.counts.choice4Total++;
+      if (isYes)
+        summary.counts.choice4Yes++;
+      else if (isMaybe)
+        summary.counts.choice4Maybe++;
+      else if (isNo)
+        summary.counts.choice4No++;
+    }
+    if (flags.choice5) {
+      summary.counts.choice5Total++;
+      if (isYes)
+        summary.counts.choice5Yes++;
+      else if (isMaybe)
+        summary.counts.choice5Maybe++;
+      else if (isNo)
+        summary.counts.choice5No++;
     }
     if (flags.other) {
       summary.counts.notSatisfiedTotal++;
@@ -1082,10 +1144,12 @@ public:
         missingIds++;
       }
 
-      for (const auto &choice : row.choices) {
-        const auto normalized = choice.trimmed();
+      for (int i = 0; i < row.choices.size(); ++i) {
+        const auto normalized = row.choices[i].trimmed();
         if (normalized.isEmpty()) {
-          blankChoices++;
+          if (i < kRequiredChoiceCount) {
+            blankChoices++;
+          }
         } else {
           activities.insert(normalized);
         }
@@ -1114,6 +1178,8 @@ public:
 
   void updateCapacityTable(const QSet<QString> &activities) {
     const int periodCount = periodCountSpin->value();
+    const int choiceColumns = kMaxChoiceCount;
+    const int periodStartCol = 1 + choiceColumns;
 
     // Store current capacities before clearing
     QMap<QString, QVector<int>> currentCapacities;
@@ -1124,7 +1190,7 @@ public:
       }
       QVector<int> capacities(periodCount, defaultCapacitySpin->value());
       for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-        const int col = 4 + periodIdx;
+        const int col = periodStartCol + periodIdx;
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         if (spinBox) {
@@ -1139,6 +1205,8 @@ public:
     QMap<QString, int> choice1Count;
     QMap<QString, int> choice2Count;
     QMap<QString, int> choice3Count;
+    QMap<QString, int> choice4Count;
+    QMap<QString, int> choice5Count;
 
     for (const auto &row : model->rows()) {
       // Apply day filter
@@ -1170,14 +1238,27 @@ public:
           choice3Count[choice]++;
         }
       }
+      if (row.choices.size() > 3) {
+        QString choice = row.choices[3].trimmed();
+        if (!choice.isEmpty()) {
+          choice4Count[choice]++;
+        }
+      }
+      if (row.choices.size() > 4) {
+        QString choice = row.choices[4].trimmed();
+        if (!choice.isEmpty()) {
+          choice5Count[choice]++;
+        }
+      }
     }
 
     // Rebuild table
     capacityTable->setRowCount(0);
-    capacityTable->setColumnCount(4 + periodCount);
+    capacityTable->setColumnCount(periodStartCol + periodCount);
     QStringList headers = {
         QStringLiteral("Activity"), QStringLiteral("Choice 1"),
-        QStringLiteral("Choice 2"), QStringLiteral("Choice 3")};
+        QStringLiteral("Choice 2"), QStringLiteral("Choice 3"),
+        QStringLiteral("Choice 4"), QStringLiteral("Choice 5")};
     for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
       headers.append(QStringLiteral("P%1").arg(periodIdx + 1));
     }
@@ -1221,6 +1302,20 @@ public:
       choice3Item->setTextAlignment(Qt::AlignCenter);
       capacityTable->setItem(row, 3, choice3Item);
 
+        // Column 4: Choice 4 count
+        auto *choice4Item = new QTableWidgetItem(
+          QString::number(choice4Count.value(activity, 0)));
+        choice4Item->setFlags(Qt::ItemIsEnabled);
+        choice4Item->setTextAlignment(Qt::AlignCenter);
+        capacityTable->setItem(row, 4, choice4Item);
+
+        // Column 5: Choice 5 count
+        auto *choice5Item = new QTableWidgetItem(
+          QString::number(choice5Count.value(activity, 0)));
+        choice5Item->setFlags(Qt::ItemIsEnabled);
+        choice5Item->setTextAlignment(Qt::AlignCenter);
+        capacityTable->setItem(row, 5, choice5Item);
+
       // Period capacity spinboxes
       const QVector<int> storedCaps = currentCapacities.value(
           activity, QVector<int>(periodCount, defaultCapacitySpin->value()));
@@ -1234,7 +1329,7 @@ public:
         QObject::connect(spinBox, QOverload<int>::of(&QSpinBox::valueChanged),
                          q_ptr, [this]() { updateTotalCapacity(); });
 
-        capacityTable->setCellWidget(row, 4 + periodIdx, spinBox);
+        capacityTable->setCellWidget(row, periodStartCol + periodIdx, spinBox);
       }
     }
 
@@ -1243,8 +1338,9 @@ public:
 
   void updateTotalCapacity() {
     int totalCapacity = 0;
+    const int periodStartCol = 1 + kMaxChoiceCount;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      for (int col = 4; col < capacityTable->columnCount(); ++col) {
+      for (int col = periodStartCol; col < capacityTable->columnCount(); ++col) {
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         if (spinBox) {
@@ -1299,8 +1395,9 @@ public:
 
   void setAllCapacities() {
     int defaultValue = defaultCapacitySpin->value();
+    const int periodStartCol = 1 + kMaxChoiceCount;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      for (int col = 4; col < capacityTable->columnCount(); ++col) {
+      for (int col = periodStartCol; col < capacityTable->columnCount(); ++col) {
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         if (spinBox) {
@@ -1443,6 +1540,7 @@ public:
     // Save activity capacities per period
     QJsonObject activityPeriodCapacities;
     const int periodCount = periodCountSpin->value();
+    const int periodStartCol = 1 + kMaxChoiceCount;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
       if (!activityItem) {
@@ -1450,7 +1548,7 @@ public:
       }
       QJsonArray caps;
       for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-        const int col = 4 + periodIdx;
+        const int col = periodStartCol + periodIdx;
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         caps.append(spinBox ? spinBox->value() : defaultCapacitySpin->value());
@@ -1670,6 +1768,7 @@ public:
       }
     }
     const int periodCount = periodCountSpin->value();
+    const int periodStartCol = 1 + kMaxChoiceCount;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
       auto *activityItem = capacityTable->item(row, 0);
       if (!activityItem) {
@@ -1681,7 +1780,7 @@ public:
       }
       QJsonArray caps = activityPeriodCapacities[activity].toArray();
       for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-        const int col = 4 + periodIdx;
+        const int col = periodStartCol + periodIdx;
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         if (spinBox && periodIdx < caps.size()) {
@@ -1809,8 +1908,9 @@ public:
 
     // Check total capacity against filtered students
     int totalCapacity = 0;
+    const int periodStartCol = 1 + kMaxChoiceCount;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      for (int col = 4; col < capacityTable->columnCount(); ++col) {
+      for (int col = periodStartCol; col < capacityTable->columnCount(); ++col) {
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         if (spinBox) {
@@ -1858,7 +1958,7 @@ public:
       std::vector<int> capacities;
       capacities.reserve(options.periodCount);
       for (int periodIdx = 0; periodIdx < options.periodCount; ++periodIdx) {
-        const int col = 4 + periodIdx;
+        const int col = periodStartCol + periodIdx;
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         capacities.push_back(spinBox ? spinBox->value()
@@ -1978,91 +2078,131 @@ public:
       return item;
     };
 
-    satisfactionSummary->setRowCount(4);
+    satisfactionSummary->setRowCount(6);
 
     // Row 0: 1st Choice
     satisfactionSummary->setItem(
-        0, 0, makeSatisfactionItem(QStringLiteral("1st Choice")));
+      0, 0, makeSatisfactionItem(QStringLiteral("1st Choice")));
     satisfactionSummary->setItem(
-        0, 1, makeSatisfactionItem(QString::number(counts.choice1Total), true));
+      0, 1, makeSatisfactionItem(QString::number(counts.choice1Total), true));
     satisfactionSummary->setItem(
-        0, 2,
-        makeSatisfactionItem(
-            totalStudents > 0
-                ? QStringLiteral("%1%").arg(
-                      counts.choice1Total * 100.0 / totalStudents, 0, 'f', 1)
-                : QStringLiteral("0%"),
-            true));
+      0, 2,
+      makeSatisfactionItem(
+        totalStudents > 0
+          ? QStringLiteral("%1%").arg(
+              counts.choice1Total * 100.0 / totalStudents, 0, 'f', 1)
+          : QStringLiteral("0%"),
+        true));
     satisfactionSummary->setItem(
-        0, 3, makeSatisfactionItem(QString::number(counts.choice1Yes), true));
+      0, 3, makeSatisfactionItem(QString::number(counts.choice1Yes), true));
     satisfactionSummary->setItem(
-        0, 4, makeSatisfactionItem(QString::number(counts.choice1Maybe), true));
+      0, 4, makeSatisfactionItem(QString::number(counts.choice1Maybe), true));
     satisfactionSummary->setItem(
-        0, 5, makeSatisfactionItem(QString::number(counts.choice1No), true));
+      0, 5, makeSatisfactionItem(QString::number(counts.choice1No), true));
 
     // Row 1: 2nd Choice
     satisfactionSummary->setItem(
-        1, 0, makeSatisfactionItem(QStringLiteral("2nd Choice")));
+      1, 0, makeSatisfactionItem(QStringLiteral("2nd Choice")));
     satisfactionSummary->setItem(
-        1, 1, makeSatisfactionItem(QString::number(counts.choice2Total), true));
+      1, 1, makeSatisfactionItem(QString::number(counts.choice2Total), true));
     satisfactionSummary->setItem(
-        1, 2,
-        makeSatisfactionItem(
-            totalStudents > 0
-                ? QStringLiteral("%1%").arg(
-                      counts.choice2Total * 100.0 / totalStudents, 0, 'f', 1)
-                : QStringLiteral("0%"),
-            true));
+      1, 2,
+      makeSatisfactionItem(
+        totalStudents > 0
+          ? QStringLiteral("%1%").arg(
+              counts.choice2Total * 100.0 / totalStudents, 0, 'f', 1)
+          : QStringLiteral("0%"),
+        true));
     satisfactionSummary->setItem(
-        1, 3, makeSatisfactionItem(QString::number(counts.choice2Yes), true));
+      1, 3, makeSatisfactionItem(QString::number(counts.choice2Yes), true));
     satisfactionSummary->setItem(
-        1, 4, makeSatisfactionItem(QString::number(counts.choice2Maybe), true));
+      1, 4, makeSatisfactionItem(QString::number(counts.choice2Maybe), true));
     satisfactionSummary->setItem(
-        1, 5, makeSatisfactionItem(QString::number(counts.choice2No), true));
+      1, 5, makeSatisfactionItem(QString::number(counts.choice2No), true));
 
     // Row 2: 3rd Choice
     satisfactionSummary->setItem(
-        2, 0, makeSatisfactionItem(QStringLiteral("3rd Choice")));
+      2, 0, makeSatisfactionItem(QStringLiteral("3rd Choice")));
     satisfactionSummary->setItem(
-        2, 1, makeSatisfactionItem(QString::number(counts.choice3Total), true));
+      2, 1, makeSatisfactionItem(QString::number(counts.choice3Total), true));
     satisfactionSummary->setItem(
-        2, 2,
-        makeSatisfactionItem(
-            totalStudents > 0
-                ? QStringLiteral("%1%").arg(
-                      counts.choice3Total * 100.0 / totalStudents, 0, 'f', 1)
-                : QStringLiteral("0%"),
-            true));
+      2, 2,
+      makeSatisfactionItem(
+        totalStudents > 0
+          ? QStringLiteral("%1%").arg(
+              counts.choice3Total * 100.0 / totalStudents, 0, 'f', 1)
+          : QStringLiteral("0%"),
+        true));
     satisfactionSummary->setItem(
-        2, 3, makeSatisfactionItem(QString::number(counts.choice3Yes), true));
+      2, 3, makeSatisfactionItem(QString::number(counts.choice3Yes), true));
     satisfactionSummary->setItem(
-        2, 4, makeSatisfactionItem(QString::number(counts.choice3Maybe), true));
+      2, 4, makeSatisfactionItem(QString::number(counts.choice3Maybe), true));
     satisfactionSummary->setItem(
-        2, 5, makeSatisfactionItem(QString::number(counts.choice3No), true));
+      2, 5, makeSatisfactionItem(QString::number(counts.choice3No), true));
 
-    // Row 3: Not Satisfied (fallback)
+    // Row 3: 4th Choice
     satisfactionSummary->setItem(
-        3, 0, makeSatisfactionItem(QStringLiteral("Not Satisfied")));
+      3, 0, makeSatisfactionItem(QStringLiteral("4th Choice")));
     satisfactionSummary->setItem(
-        3, 1,
-        makeSatisfactionItem(QString::number(counts.notSatisfiedTotal), true));
+      3, 1, makeSatisfactionItem(QString::number(counts.choice4Total), true));
     satisfactionSummary->setItem(
-        3, 2,
-        makeSatisfactionItem(totalStudents > 0 ? QStringLiteral("%1%").arg(
-                                                     counts.notSatisfiedTotal *
-                                                         100.0 / totalStudents,
-                                                     0, 'f', 1)
-                                               : QStringLiteral("0%"),
-                             true));
+      3, 2,
+      makeSatisfactionItem(
+        totalStudents > 0
+          ? QStringLiteral("%1%").arg(
+              counts.choice4Total * 100.0 / totalStudents, 0, 'f', 1)
+          : QStringLiteral("0%"),
+        true));
     satisfactionSummary->setItem(
-        3, 3,
-        makeSatisfactionItem(QString::number(counts.notSatisfiedYes), true));
+      3, 3, makeSatisfactionItem(QString::number(counts.choice4Yes), true));
     satisfactionSummary->setItem(
-        3, 4,
-        makeSatisfactionItem(QString::number(counts.notSatisfiedMaybe), true));
+      3, 4, makeSatisfactionItem(QString::number(counts.choice4Maybe), true));
     satisfactionSummary->setItem(
-        3, 5,
-        makeSatisfactionItem(QString::number(counts.notSatisfiedNo), true));
+      3, 5, makeSatisfactionItem(QString::number(counts.choice4No), true));
+
+    // Row 4: 5th Choice
+    satisfactionSummary->setItem(
+      4, 0, makeSatisfactionItem(QStringLiteral("5th Choice")));
+    satisfactionSummary->setItem(
+      4, 1, makeSatisfactionItem(QString::number(counts.choice5Total), true));
+    satisfactionSummary->setItem(
+      4, 2,
+      makeSatisfactionItem(
+        totalStudents > 0
+          ? QStringLiteral("%1%").arg(
+              counts.choice5Total * 100.0 / totalStudents, 0, 'f', 1)
+          : QStringLiteral("0%"),
+        true));
+    satisfactionSummary->setItem(
+      4, 3, makeSatisfactionItem(QString::number(counts.choice5Yes), true));
+    satisfactionSummary->setItem(
+      4, 4, makeSatisfactionItem(QString::number(counts.choice5Maybe), true));
+    satisfactionSummary->setItem(
+      4, 5, makeSatisfactionItem(QString::number(counts.choice5No), true));
+
+    // Row 5: Not Satisfied (fallback)
+    satisfactionSummary->setItem(
+      5, 0, makeSatisfactionItem(QStringLiteral("Not Satisfied")));
+    satisfactionSummary->setItem(
+      5, 1,
+      makeSatisfactionItem(QString::number(counts.notSatisfiedTotal), true));
+    satisfactionSummary->setItem(
+      5, 2,
+      makeSatisfactionItem(totalStudents > 0 ? QStringLiteral("%1%").arg(
+                             counts.notSatisfiedTotal *
+                               100.0 / totalStudents,
+                             0, 'f', 1)
+                           : QStringLiteral("0%"),
+                 true));
+    satisfactionSummary->setItem(
+      5, 3,
+      makeSatisfactionItem(QString::number(counts.notSatisfiedYes), true));
+    satisfactionSummary->setItem(
+      5, 4,
+      makeSatisfactionItem(QString::number(counts.notSatisfiedMaybe), true));
+    satisfactionSummary->setItem(
+      5, 5,
+      makeSatisfactionItem(QString::number(counts.notSatisfiedNo), true));
 
     activitySummary->clear();
     int periodCount = 0;
@@ -2121,7 +2261,8 @@ public:
 #if HAVE_QT_CHARTS
     // Create pie charts for choice satisfaction breakdown by attendance group
     auto createPieChart = [](const QString &title, int choice1, int choice2,
-                             int choice3, int other) -> QChart * {
+                 int choice3, int choice4, int choice5,
+                 int other) -> QChart * {
       auto *series = new QPieSeries();
 
       if (choice1 > 0) {
@@ -2138,6 +2279,16 @@ public:
         auto *slice3 = series->append(QStringLiteral("3rd Choice"), choice3);
         slice3->setBrush(QColor(255, 152, 0)); // Orange
         slice3->setLabelVisible(false);
+      }
+      if (choice4 > 0) {
+        auto *slice4 = series->append(QStringLiteral("4th Choice"), choice4);
+        slice4->setBrush(QColor(33, 150, 243)); // Blue
+        slice4->setLabelVisible(false);
+      }
+      if (choice5 > 0) {
+        auto *slice5 = series->append(QStringLiteral("5th Choice"), choice5);
+        slice5->setBrush(QColor(0, 150, 136)); // Teal
+        slice5->setLabelVisible(false);
       }
       if (other > 0) {
         auto *sliceOther = series->append(QStringLiteral("Other"), other);
@@ -2160,17 +2311,21 @@ public:
     };
 
     overallChart->setChart(createPieChart(
-        QStringLiteral("Overall"), counts.choice1Total, counts.choice2Total,
-        counts.choice3Total, counts.notSatisfiedTotal));
+      QStringLiteral("Overall"), counts.choice1Total, counts.choice2Total,
+      counts.choice3Total, counts.choice4Total, counts.choice5Total,
+      counts.notSatisfiedTotal));
     yesChart->setChart(createPieChart(
-        QStringLiteral("'Yes' Attendees"), counts.choice1Yes, counts.choice2Yes,
-        counts.choice3Yes, counts.notSatisfiedYes));
+      QStringLiteral("'Yes' Attendees"), counts.choice1Yes, counts.choice2Yes,
+      counts.choice3Yes, counts.choice4Yes, counts.choice5Yes,
+      counts.notSatisfiedYes));
     maybeChart->setChart(createPieChart(
-        QStringLiteral("'Maybe' Attendees"), counts.choice1Maybe,
-        counts.choice2Maybe, counts.choice3Maybe, counts.notSatisfiedMaybe));
+      QStringLiteral("'Maybe' Attendees"), counts.choice1Maybe,
+      counts.choice2Maybe, counts.choice3Maybe, counts.choice4Maybe,
+      counts.choice5Maybe, counts.notSatisfiedMaybe));
     noChart->setChart(createPieChart(QStringLiteral("'No' Attendees"),
-                                     counts.choice1No, counts.choice2No,
-                                     counts.choice3No, counts.notSatisfiedNo));
+                     counts.choice1No, counts.choice2No,
+                     counts.choice3No, counts.choice4No,
+                     counts.choice5No, counts.notSatisfiedNo));
 #endif
   }
 
@@ -2274,6 +2429,10 @@ public:
               counts.choice2Maybe, counts.choice2No);
     formatRow("3rd Choice", counts.choice3Total, counts.choice3Yes,
               counts.choice3Maybe, counts.choice3No);
+    formatRow("4th Choice", counts.choice4Total, counts.choice4Yes,
+          counts.choice4Maybe, counts.choice4No);
+    formatRow("5th Choice", counts.choice5Total, counts.choice5Yes,
+          counts.choice5Maybe, counts.choice5No);
     formatRow("Not Satisfied", counts.notSatisfiedTotal, counts.notSatisfiedYes,
               counts.notSatisfiedMaybe, counts.notSatisfiedNo);
     out << "\n";

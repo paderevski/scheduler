@@ -26,6 +26,8 @@ ColumnMapping ColumnMapDialog::getMapping() const {
   mapping.choice1Column = m_choice1Combo->currentIndex() - 1;
   mapping.choice2Column = m_choice2Combo->currentIndex() - 1;
   mapping.choice3Column = m_choice3Combo->currentIndex() - 1;
+  mapping.choice4Column = m_choice4Combo->currentIndex() - 1;
+  mapping.choice5Column = m_choice5Combo->currentIndex() - 1;
   return mapping;
 }
 
@@ -66,6 +68,12 @@ void ColumnMapDialog::setupUi() {
   // Optional fields
   auto *optionalLabel = new QLabel(QStringLiteral("<br><b>Optional fields</b>"), this);
   formLayout->addRow(optionalLabel);
+
+  m_choice4Combo = createColumnCombo();
+  formLayout->addRow(QStringLiteral("Choice 4 (optional):"), m_choice4Combo);
+
+  m_choice5Combo = createColumnCombo();
+  formLayout->addRow(QStringLiteral("Choice 5 (optional):"), m_choice5Combo);
 
   m_gradeCombo = createColumnCombo();
   formLayout->addRow(QStringLiteral("Grade (optional):"), m_gradeCombo);
@@ -187,6 +195,16 @@ void ColumnMapDialog::tryAutoMap() {
              header == "3rd choice" || header == "third choice" ||
              header == "preference 3" || header == "preference3") {
       m_choice3Combo->setCurrentIndex(i + 1);
+    }
+    else if (header == "choice 4" || header == "choice4" ||
+             header == "4th choice" || header == "fourth choice" ||
+             header == "preference 4" || header == "preference4") {
+      m_choice4Combo->setCurrentIndex(i + 1);
+    }
+    else if (header == "choice 5" || header == "choice5" ||
+             header == "5th choice" || header == "fifth choice" ||
+             header == "preference 5" || header == "preference5") {
+      m_choice5Combo->setCurrentIndex(i + 1);
     }
   }
 }

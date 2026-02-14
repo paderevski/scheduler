@@ -18,6 +18,8 @@ struct ColumnMapping {
   int choice1Column = -1;
   int choice2Column = -1;
   int choice3Column = -1;
+  int choice4Column = -1;
+  int choice5Column = -1;
 
   bool isValid() const {
     return studentIdColumn >= 0 &&
@@ -55,4 +57,6 @@ private:
   QComboBox *m_choice1Combo;
   QComboBox *m_choice2Combo;
   QComboBox *m_choice3Combo;
+  QComboBox *m_choice4Combo;
+  QComboBox *m_choice5Combo;
 };

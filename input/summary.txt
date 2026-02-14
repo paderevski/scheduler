@@ -1,0 +1,49 @@
+CLICKSORT - SUMMARY REPORT
+==========================================
+
+SOLVER OPTIONS
+--------------
+Day Filter: All Days
+Default Capacity: 25
+Periods: 3
+Attendance Weighting: Enabled
+  Yes Weight: 100 (×1.00)
+  Maybe Weight: 50 (×0.50)
+  No Weight: 10 (×0.10)
+
+OVERALL RESULTS
+---------------
+Total Students: 690
+Satisfied Students: 687
+Satisfaction Rate: 99.6%
+Runtime: 126 ms
+
+CHOICE SATISFACTION SUMMARY
+---------------------------
+Rank              Total   Total %     Yes   Maybe      No
+---------------------------------------------------------------
+1st Choice          230    100.0%     230       0       0
+2nd Choice          228     99.1%     228       0       0
+3rd Choice          228     99.1%     228       0       0
+4th Choice            0      0.0%       0       0       0
+5th Choice            1      0.4%       1       0       0
+Not Satisfied         2      0.9%       2       0       0
+
+ACTIVITY SUMMARY
+----------------
+Activity                        Assigned  Capacity     Yes   Maybe      No  Exp. Util.
+--------------------------------------------------------------------------------------
+BWXT Advanced Technologies LLC - People Strong, Innovation Driven        48        75      48       0       0       64.0%
+Data Science Storage - Using the Tools of Tomorrow        57        75      57       0       0       76.0%
+Iridium Satellite Communications        75        75      75       0       0      100.0%
+Salesforce - Infrastructure Engineering: The Code Behind The Code        47        75      47       0       0       62.7%
+TSJ - Preparing for the Next Generation        25        75      25       0       0       33.3%
+Synergy Orthotics & Prosthetics        70        75      70       0       0       93.3%
+Loudoun Water - How environmental engineers at Loudoun Water are protecting the Potomac River        22        75      22       0       0       29.3%
+Northrop Grumman - The Moon is Yours!       121       300     121       0       0       40.3%
+Pennoni - Multidisciplinary Engineering        35        75      35       0       0       46.7%
+CMTA, Inc. - Solar at LCPS            37        75      37       0       0       49.3%
+HDR - Highlights of Civil Engineering        18        75      18       0       0       24.0%
+Shapiro and Duncan - Integrated Design and Build: Looking at ACL        40        75      40       0       0       53.3%
+SAIC - Orbital Dynamics 101           59       150      59       0       0       39.3%
+Fabbioloi Cellars/New Ag - Let's Make a Farm Product        36        75      36       0       0       48.0%

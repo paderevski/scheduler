@@ -36,7 +36,8 @@ Your input file (CSV) should contain the following columns:
 - **Teacher**: Teacher name
 - **Pathway**: Student's pathway or program
 - **Present**: Attendance likelihood ("Yes", "Maybe", or "No")
-- **Choice 1, Choice 2, Choice 3, ...**: Student's activity preferences in order
+- **Choice 1, Choice 2, Choice 3**: Student's required activity preferences in order
+- **Choice 4, Choice 5**: Optional preferences (leave blank if not used)
 
 ---
 
@@ -69,6 +70,8 @@ The left panel shows:
 - **Students**: Total count and any missing student IDs
 - **Blank choices**: Number of empty preference fields
 - **Unique activities**: Number of distinct activities detected
+
+Only Choice 1-3 are required; Choice 4-5 can be left blank.
 
 ---
 
@@ -128,7 +131,7 @@ When enabled, set weights for each attendance status:
 Shows all detected activities with:
 
 - **Activity**: Activity name
-- **Choice 1, 2, 3**: Count of students who selected this as their 1st, 2nd, or 3rd choice
+- **Choice 1-5**: Count of students who selected this as their 1st through 5th choice
 - **Capacity**: Maximum students for this activity (editable)
 
 **Tips:**
@@ -165,14 +168,14 @@ Displays all assignments with columns:
 - **Student ID, First Name, Last Name**
 - **Grade, Day, Teacher, Pathway, Present**
 - **Activity**: Assigned activity
-- **Choice**: Which preference this was (1, 2, 3, or "-" for fallback)
+- **Choice**: Which preference this was (1-5, or "-" for fallback)
 - **Score**: Assignment quality score
 
 ### Choice Satisfaction Summary
 
 Table showing satisfaction breakdown:
 
-- **Rank**: 1st Choice, 2nd Choice, 3rd Choice, Not Satisfied
+- **Rank**: 1st Choice, 2nd Choice, 3rd Choice, 4th Choice, 5th Choice, Not Satisfied
 - **Total**: Number of students in this category
 - **Total %**: Percentage of all students
 - **Yes, Maybe, No**: Breakdown by attendance status
@@ -251,12 +254,12 @@ Use these to save a modified dataset or share input data.
 1. **Clean your data**: Remove duplicate student IDs, fix typos in activity names
 2. **Consistent naming**: Use the same activity name spelling throughout
 3. **Attendance field**: Use "Yes", "Maybe", or "No" (case-insensitive, "Y"/"M"/"N" also work)
-4. **Complete preferences**: Students should provide at least 3 choices
+4. **Complete preferences**: Students should provide at least 3 choices (up to 5 supported)
 
 ### Setting Capacities
 
 1. **Start with Auto**: Click "Auto" for an initial balanced distribution
-2. **Adjust for demand**: Review Choice 1/2/3 counts and increase capacity for popular activities
+2. **Adjust for demand**: Review Choice 1-5 counts and increase capacity for popular activities
 3. **Account for attendance**: Consider reducing capacity for activities with many "No" students
 4. **Buffer room**: Consider setting total capacity slightly above student count
 
@@ -271,7 +274,7 @@ Use these to save a modified dataset or share input data.
 
 ### Interpreting Results
 
-1. **Satisfaction rate**: Percentage of students who got a top-3 choice
+1. **Satisfaction rate**: Percentage of students who got a top-5 choice
 2. **Not Satisfied**: Students assigned to fallback (none of their choices available)
 3. **Expected Utilization**:
    - <80%: Consider reducing capacity or combining with similar activities
@@ -343,8 +346,10 @@ The solver uses OR-Tools' CBC (Coin-or Branch and Cut) mixed-integer programming
 ### Preference Weights
 
 - 1st choice: 100 points
-- 2nd choice: 50 points
-- 3rd choice: 25 points
+- 2nd choice: 85 points
+- 3rd choice: 70 points
+- 4th choice: 55 points
+- 5th choice: 40 points
 - Fallback: 1 point
 
 These are multiplied by attendance weights when weighting is enabled.

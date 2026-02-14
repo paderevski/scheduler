@@ -75,7 +75,7 @@ QVariant PreferenceModel::data(const QModelIndex &index, int role) const {
       if (choiceIndex >= 0 && choiceIndex < row.choices.size()) {
         choice = row.choices[choiceIndex];
       }
-      if (choice.trimmed().isEmpty()) {
+      if (choiceIndex >= 0 && choiceIndex < 3 && choice.trimmed().isEmpty()) {
         return QColor(255, 250, 205);
       }
     }
@@ -180,8 +180,10 @@ PreferenceSummary PreferenceModel::summarize() const {
     }
     summary.maxChoices =
         std::max(summary.maxChoices, static_cast<int>(row.choices.size()));
-    for (const auto &choice : row.choices) {
-      if (choice.trimmed().isEmpty()) {
+    const int requiredChoices =
+      std::min(3, static_cast<int>(row.choices.size()));
+    for (int i = 0; i < requiredChoices; ++i) {
+      if (row.choices[i].trimmed().isEmpty()) {
         summary.missingChoices++;
       }
     }
