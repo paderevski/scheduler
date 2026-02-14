@@ -212,7 +212,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
                                                                           1.0);
 
         // Determine weight/penalty
-        int weight = 1;
+        double weight = 1.0;
         int choiceRank = -1;
         // Check if grade is 12 (double weight)
         const bool isGrade12 = (row.grade.trimmed() == "12");
@@ -222,7 +222,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         for (int choiceIdx = 0; choiceIdx < choices.size(); ++choiceIdx) {
           if (choices[choiceIdx].trimmed() == activityName) {
             // Preferred activity - high weight
-            weight = weightForRank(choiceIdx);
+            weight = static_cast<double>(weightForRank(choiceIdx));
             choiceRank = choiceIdx;
             break;
           }
@@ -231,12 +231,12 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         if (choiceRank < 0) {
           // Non-preferred activity - low weight (penalty)
           // Use weight of 1 so it's only chosen as last resort
-          weight = 1;
+          weight = 1.0;
           choiceRank = -1; // Mark as non-preferred
         }
 
         if (isGrade12) {
-          weight *= 2;
+          weight *= options.seniorWeightMultiplier;
         }
 
         // Apply attendance weighting
@@ -262,8 +262,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
               0; // If present field is empty or unrecognized, use 0.0
         }
 
-        const double finalWeight =
-            static_cast<double>(weight) * attendanceMultiplier;
+        const double finalWeight = weight * attendanceMultiplier;
 
         varMatrix[studentIdx].push_back(VarInfo{
             studentIdx, activityIdx, periodIdx, choiceRank, var, finalWeight});
@@ -538,9 +537,9 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.activity = toStdString(activityName);
         assignment.period = periodIdx;
         assignment.choiceRank = choiceIdx;
-        int baseWeight = weightForRank(choiceIdx);
+        double baseWeight = static_cast<double>(weightForRank(choiceIdx));
         if (row.grade.trimmed() == "12") {
-          baseWeight *= 2;
+          baseWeight *= options.seniorWeightMultiplier;
         }
         assignment.score = baseWeight * attendanceMultiplier;
         result.assignments.push_back(std::move(assignment));

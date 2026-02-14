@@ -10,40 +10,43 @@ Attendance Weighting: Enabled
   Yes Weight: 100 (×1.00)
   Maybe Weight: 50 (×0.50)
   No Weight: 10 (×0.10)
+Senior Multiplier: 2.00
+Preference Weights (Base): 1:100, 2:85, 3:70, 4:55, 5:40
+Preference Weights (Senior): 1:200.0, 2:170.0, 3:140.0, 4:110.0, 5:80.0
 
 OVERALL RESULTS
 ---------------
 Total Students: 690
 Satisfied Students: 687
 Satisfaction Rate: 99.6%
-Runtime: 130 ms
+Runtime: 141 ms
 
 CHOICE SATISFACTION SUMMARY
 ---------------------------
 Rank              Total   Total %     Yes   Maybe      No
 ---------------------------------------------------------------
 1st Choice          230    100.0%     230       0       0
-2nd Choice          227     98.7%     227       0       0
-3rd Choice          195     84.8%     195       0       0
-4th Choice           33     14.3%      33       0       0
-5th Choice            2      0.9%       2       0       0
+2nd Choice          228     99.1%     228       0       0
+3rd Choice          192     83.5%     192       0       0
+4th Choice           36     15.7%      36       0       0
+5th Choice            1      0.4%       1       0       0
 Not Satisfied         2      0.9%       2       0       0
 
 ACTIVITY SUMMARY
 ----------------
 Activity                        Assigned  Capacity     Yes   Maybe      No  Exp. Util.
 --------------------------------------------------------------------------------------
-BWXT Advanced Techno                  50        60      50       0       0       83.3%
-Data Science Storage                  56        60      56       0       0       93.3%
-Salesforce - Infrast                  47        60      47       0       0       78.3%
+Northrop Grumman - T                 119       300     119       0       0       39.7%
 Iridium Satellite Co                  60        60      60       0       0      100.0%
-HDR - Highlights of                   30        60      30       0       0       50.0%
-SAIC - Orbital Dynam                  62        90      62       0       0       68.9%
-Northrop Grumman - T                 120       300     120       0       0       40.0%
-Fabbioloi Cellars/Ne                  36        60      36       0       0       60.0%
-Pennoni - Multidisci                  35        60      35       0       0       58.3%
-Synergy Orthotics &                   60        60      60       0       0      100.0%
-CMTA, Inc. - Solar a                  38        60      38       0       0       63.3%
+SAIC - Orbital Dynam                  64        90      64       0       0       71.1%
 TSJ - Preparing for                   30        60      30       0       0       50.0%
+CMTA, Inc. - Solar a                  36        60      36       0       0       60.0%
+Synergy Orthotics &                   60        60      60       0       0      100.0%
+Salesforce - Infrast                  47        60      47       0       0       78.3%
 Shapiro and Duncan -                  36        60      36       0       0       60.0%
+BWXT Advanced Techno                  48        60      48       0       0       80.0%
+Data Science Storage                  57        60      57       0       0       95.0%
+Pennoni - Multidisci                  37        60      37       0       0       61.7%
 Loudoun Water - How                   30        60      30       0       0       50.0%
+HDR - Highlights of                   30        60      30       0       0       50.0%
+Fabbioloi Cellars/Ne                  36        60      36       0       0       60.0%

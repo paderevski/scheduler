@@ -21,6 +21,9 @@ struct SolverOptions {
   int weightYes = 100;
   int weightMaybe = 50;
   int weightNo = 10;
+
+  // Senior preference multiplier (applies when grade == 12)
+  double seniorWeightMultiplier = 2.0;
 };
 
 struct StudentAssignment {

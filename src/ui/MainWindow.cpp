@@ -9,6 +9,7 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QComboBox>
+#include <QDoubleSpinBox>
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
@@ -515,6 +516,7 @@ public:
         weightYesSpin(new QSpinBox(q)), weightMaybeSpin(new QSpinBox(q)),
         weightNoSpin(new QSpinBox(q)), weightYesNormLabel(new QLabel(q)),
         weightMaybeNormLabel(new QLabel(q)), weightNoNormLabel(new QLabel(q)),
+        seniorWeightSpin(new QDoubleSpinBox(q)),
         dayFilterCombo(new QComboBox(q)),
         runButton(new QPushButton(QStringLiteral("Calculate"), q)),
         resultsStatus(new QLabel(QStringLiteral("No solver run yet."), q)),
@@ -615,6 +617,12 @@ public:
     weightNoSpin->setValue(10);
     weightNoSpin->setMinimumWidth(80);
 
+    seniorWeightSpin->setRange(1.0, 3.0);
+    seniorWeightSpin->setDecimals(2);
+    seniorWeightSpin->setSingleStep(0.05);
+    seniorWeightSpin->setValue(2.0);
+    seniorWeightSpin->setMinimumWidth(80);
+
     auto *weightGridLayout = new QGridLayout();
     weightGridLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr), 0,
                                 0);
@@ -629,6 +637,10 @@ public:
     weightGridLayout->addWidget(new QLabel(QStringLiteral("No:"), q_ptr), 2, 0);
     weightGridLayout->addWidget(weightNoSpin, 2, 1);
     weightGridLayout->addWidget(weightNoNormLabel, 2, 2);
+
+    weightGridLayout->addWidget(
+      new QLabel(QStringLiteral("Senior Multiplier:"), q_ptr), 3, 0);
+    weightGridLayout->addWidget(seniorWeightSpin, 3, 1);
 
     weightGridLayout->setColumnStretch(3, 1);
     leftLayout->addLayout(weightGridLayout);
@@ -1533,6 +1545,7 @@ public:
     weights["maybe"] = weightMaybeSpin->value();
     weights["no"] = weightNoSpin->value();
     settings["weights"] = weights;
+    settings["seniorMultiplier"] = seniorWeightSpin->value();
 
     settings["dayFilter"] = dayFilterCombo->currentData().toString();
 
@@ -1714,6 +1727,7 @@ public:
     weightYesSpin->setValue(weights["yes"].toInt());
     weightMaybeSpin->setValue(weights["maybe"].toInt());
     weightNoSpin->setValue(weights["no"].toInt());
+    seniorWeightSpin->setValue(settings["seniorMultiplier"].toDouble(2.0));
 
     QString dayFilter = settings["dayFilter"].toString();
     int dayIndex = dayFilterCombo->findData(dayFilter);
@@ -1733,6 +1747,8 @@ public:
       loadedOptions.weightMaybe = 1;
       loadedOptions.weightNo = 1;
     }
+    loadedOptions.seniorWeightMultiplier =
+        settings["seniorMultiplier"].toDouble(2.0);
     lastOptions = loadedOptions;
     lastDayFilter = dayFilter;
 
@@ -1975,6 +1991,7 @@ public:
       options.weightMaybe = weightMaybeSpin->value();
       options.weightNo = weightNoSpin->value();
     }
+    options.seniorWeightMultiplier = seniorWeightSpin->value();
 
     // Collect per-activity capacities from table
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
@@ -2408,6 +2425,34 @@ public:
       out << "  No Weight: " << lastOptions->weightNo << " (×"
           << QString::number(normNo, 'f', 2) << ")\n";
     }
+    out << "Senior Multiplier: "
+        << QString::number(lastOptions->seniorWeightMultiplier, 'f', 2)
+        << "\n";
+
+    auto baseWeightForRank = [](int rank) {
+      constexpr int kBase = 100;
+      constexpr int kDecay = 15;
+      const int weight = kBase - (rank * kDecay);
+      return weight > 5 ? weight : 5;
+    };
+    out << "Preference Weights (Base): ";
+    for (int rank = 0; rank < 5; ++rank) {
+      if (rank > 0) {
+        out << ", ";
+      }
+      out << (rank + 1) << ":" << baseWeightForRank(rank);
+    }
+    out << "\n";
+    out << "Preference Weights (Senior): ";
+    for (int rank = 0; rank < 5; ++rank) {
+      if (rank > 0) {
+        out << ", ";
+      }
+      const double seniorWeight =
+          baseWeightForRank(rank) * lastOptions->seniorWeightMultiplier;
+      out << (rank + 1) << ":" << QString::number(seniorWeight, 'f', 1);
+    }
+    out << "\n";
     out << "\n";
 
     // Overall Results
@@ -2738,6 +2783,7 @@ public:
   QLabel *weightYesNormLabel;
   QLabel *weightMaybeNormLabel;
   QLabel *weightNoNormLabel;
+  QDoubleSpinBox *seniorWeightSpin;
   QComboBox *dayFilterCombo;
   QPushButton *runButton;
   QLabel *resultsStatus;
