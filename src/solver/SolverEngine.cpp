@@ -65,6 +65,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   }
 
   const int periodCount = std::max(1, options.periodCount);
+  result.totalStudents = static_cast<int>(rows.size()) * periodCount;
   QMap<QString, std::vector<int>> activityPeriodCapacityMap;
   for (const auto &activity : activities) {
     const std::string activityStdStr = toStdString(activity);
@@ -129,15 +130,37 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
     }
   }
 
-  std::vector<operations_research::MPConstraint *> studentConstraints(
-      rows.size(), nullptr);
+  std::vector<std::vector<operations_research::MPConstraint *>>
+      studentPeriodConstraints(rows.size(),
+                               std::vector<operations_research::MPConstraint *>(
+                                   periodCount, nullptr));
+  std::vector<std::vector<operations_research::MPConstraint *>>
+      studentActivityConstraints(
+          rows.size(), std::vector<operations_research::MPConstraint *>(
+                           activities.size(), nullptr));
   for (int studentIdx = 0; studentIdx < static_cast<int>(rows.size());
        ++studentIdx) {
     const auto &row = rows[studentIdx];
-    // Each student MUST be assigned exactly 1 activity
-    auto *constraint = solver.MakeRowConstraint(
-        1.0, 1.0, QStringLiteral("student_%1").arg(studentIdx).toStdString());
-    studentConstraints[studentIdx] = constraint;
+    // Each student MUST be assigned exactly 1 activity per period
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      studentPeriodConstraints[studentIdx][periodIdx] =
+          solver.MakeRowConstraint(1.0, 1.0,
+                                   QStringLiteral("student_%1_period_%2")
+                                       .arg(studentIdx)
+                                       .arg(periodIdx)
+                                       .toStdString());
+    }
+
+    // Each student can take an activity at most once across all periods.
+    for (int activityIdx = 0; activityIdx < static_cast<int>(activities.size());
+         ++activityIdx) {
+      studentActivityConstraints[studentIdx][activityIdx] =
+          solver.MakeRowConstraint(0.0, 1.0,
+                                   QStringLiteral("student_%1_activity_%2")
+                                       .arg(studentIdx)
+                                       .arg(activityIdx)
+                                       .toStdString());
+    }
 
     // Build a set of preferred activities for this student
     QSet<int> preferredActivityIndices;
@@ -163,7 +186,10 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
                                           .arg(activityIdx)
                                           .arg(periodIdx)
                                           .toStdString());
-        constraint->SetCoefficient(var, 1.0);
+        studentPeriodConstraints[studentIdx][periodIdx]->SetCoefficient(var,
+                                                                        1.0);
+        studentActivityConstraints[studentIdx][activityIdx]->SetCoefficient(
+            var, 1.0);
         activityPeriodConstraints[activityIdx][periodIdx]->SetCoefficient(var,
                                                                           1.0);
 
@@ -247,52 +273,55 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   for (int studentIdx = 0; studentIdx < static_cast<int>(rows.size());
        ++studentIdx) {
     const auto &row = rows[studentIdx];
-    bool assigned = false;
+    std::vector<bool> assignedPeriod(periodCount, false);
 
     for (const auto &varInfo : varMatrix[studentIdx]) {
-      if (varInfo.var->solution_value() >= 0.5) {
-        StudentAssignment assignment;
-        assignment.studentId = toStdString(row.studentId);
-        assignment.firstName = toStdString(row.firstName);
-        assignment.lastName = toStdString(row.lastName);
-        assignment.grade = toStdString(row.grade);
-        assignment.day = toStdString(row.day);
-        assignment.teacher = toStdString(row.teacher);
-        assignment.pathway = toStdString(row.pathway);
-        assignment.present = toStdString(row.present);
-        assignment.activity = toStdString(activities[varInfo.activityIndex]);
-        assignment.period = varInfo.periodIndex;
-        assignment.choiceRank = varInfo.choiceRank;
+      if (varInfo.var->solution_value() < 0.5) {
+        continue;
+      }
 
-        // Use the actual objective function coefficient
-        assignment.score = varInfo.objectiveCoefficient;
+      StudentAssignment assignment;
+      assignment.studentId = toStdString(row.studentId);
+      assignment.firstName = toStdString(row.firstName);
+      assignment.lastName = toStdString(row.lastName);
+      assignment.grade = toStdString(row.grade);
+      assignment.day = toStdString(row.day);
+      assignment.teacher = toStdString(row.teacher);
+      assignment.pathway = toStdString(row.pathway);
+      assignment.present = toStdString(row.present);
+      assignment.activity = toStdString(activities[varInfo.activityIndex]);
+      assignment.period = varInfo.periodIndex;
+      assignment.choiceRank = varInfo.choiceRank;
 
-        if (varInfo.choiceRank >= 0) {
-          ++result.satisfiedStudents;
-        } else {
-          // Non-preferred fallback activity
-          QString displayName = row.fullName();
-          if (displayName.isEmpty()) {
-            displayName = row.studentId;
-          }
-          result.warnings.push_back(
-              QStringLiteral(
-                  "Student %1 assigned to non-preferred activity: %2")
-                  .arg(displayName)
-                  .arg(activities[varInfo.activityIndex])
-                  .toStdString());
+      // Use the actual objective function coefficient
+      assignment.score = varInfo.objectiveCoefficient;
+
+      if (varInfo.choiceRank >= 0) {
+        ++result.satisfiedStudents;
+      } else {
+        // Non-preferred fallback activity
+        QString displayName = row.fullName();
+        if (displayName.isEmpty()) {
+          displayName = row.studentId;
         }
+        result.warnings.push_back(
+            QStringLiteral("Student %1 assigned to non-preferred activity: %2")
+                .arg(displayName)
+                .arg(activities[varInfo.activityIndex])
+                .toStdString());
+      }
 
-        result.assignments.push_back(std::move(assignment));
-        ++activityAssignments[varInfo.activityIndex][varInfo.periodIndex];
-        assigned = true;
-        break;
+      result.assignments.push_back(std::move(assignment));
+      ++activityAssignments[varInfo.activityIndex][varInfo.periodIndex];
+      if (varInfo.periodIndex >= 0 && varInfo.periodIndex < periodCount) {
+        assignedPeriod[varInfo.periodIndex] = true;
       }
     }
 
-    if (!assigned) {
-      // This should never happen with the constraint requiring exactly 1
-      // assignment
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      if (assignedPeriod[periodIdx]) {
+        continue;
+      }
       StudentAssignment assignment;
       assignment.studentId = toStdString(row.studentId);
       assignment.firstName = toStdString(row.firstName);
@@ -303,7 +332,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       assignment.pathway = toStdString(row.pathway);
       assignment.present = toStdString(row.present);
       assignment.activity = "ERROR: Not assigned";
-      assignment.period = -1;
+      assignment.period = periodIdx;
       assignment.choiceRank = -1;
       assignment.score = 0.0;
       result.assignments.push_back(std::move(assignment));
@@ -312,9 +341,10 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         displayName = row.studentId;
       }
       result.warnings.push_back(
-          QStringLiteral(
-              "ERROR: Student %1 could not be assigned (solver bug).")
+          QStringLiteral("ERROR: Student %1 could not be assigned in period %2 "
+                         "(solver bug).")
               .arg(displayName)
+              .arg(periodIdx + 1)
               .toStdString());
     }
   }
@@ -380,6 +410,7 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
     return result;
   }
   const int periodCount = std::max(1, options.periodCount);
+  result.totalStudents = static_cast<int>(rows.size()) * periodCount;
 
   QElapsedTimer timer;
   timer.start();
@@ -426,28 +457,27 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
             });
 
   for (const auto &row : rows) {
-    bool assigned = false;
-    for (int choiceIdx = 0; choiceIdx < row.choices.size(); ++choiceIdx) {
-      const auto activityName = row.choices[choiceIdx].trimmed();
-      if (activityName.isEmpty()) {
-        continue;
-      }
-      auto usageIt = usage.find(activityName);
-      auto capacityIt = activityCapacityMap.find(activityName);
-      if (usageIt == usage.end() || capacityIt == activityCapacityMap.end()) {
-        continue;
-      }
-
-      int assignedPeriod = -1;
-      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-        if (usageIt.value()[periodIdx] < capacityIt.value()[periodIdx]) {
-          usageIt.value()[periodIdx] += 1;
-          assignedPeriod = periodIdx;
-          break;
+    QSet<QString> assignedActivities;
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      bool assigned = false;
+      for (int choiceIdx = 0; choiceIdx < row.choices.size(); ++choiceIdx) {
+        const auto activityName = row.choices[choiceIdx].trimmed();
+        if (activityName.isEmpty()) {
+          continue;
         }
-      }
+        if (assignedActivities.contains(activityName)) {
+          continue;
+        }
+        auto usageIt = usage.find(activityName);
+        auto capacityIt = activityCapacityMap.find(activityName);
+        if (usageIt == usage.end() || capacityIt == activityCapacityMap.end()) {
+          continue;
+        }
 
-      if (assignedPeriod >= 0) {
+        if (usageIt.value()[periodIdx] >= capacityIt.value()[periodIdx]) {
+          continue;
+        }
+        usageIt.value()[periodIdx] += 1;
 
         // Calculate attendance weight multiplier
         double attendanceMultiplier = 1.0;
@@ -476,7 +506,7 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.pathway = toStdString(row.pathway);
         assignment.present = toStdString(row.present);
         assignment.activity = toStdString(activityName);
-        assignment.period = assignedPeriod;
+        assignment.period = periodIdx;
         assignment.choiceRank = choiceIdx;
         int baseWeight = weightForRank(choiceIdx);
         if (row.grade.trimmed() == "12") {
@@ -485,34 +515,37 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.score = baseWeight * attendanceMultiplier;
         result.assignments.push_back(std::move(assignment));
         ++result.satisfiedStudents;
+        assignedActivities.insert(activityName);
         assigned = true;
         break;
       }
-    }
 
-    if (!assigned) {
-      StudentAssignment assignment;
-      assignment.studentId = toStdString(row.studentId);
-      assignment.firstName = toStdString(row.firstName);
-      assignment.lastName = toStdString(row.lastName);
-      assignment.grade = toStdString(row.grade);
-      assignment.day = toStdString(row.day);
-      assignment.teacher = toStdString(row.teacher);
-      assignment.pathway = toStdString(row.pathway);
-      assignment.present = toStdString(row.present);
-      assignment.activity = "";
-      assignment.period = -1;
-      assignment.choiceRank = -1;
-      assignment.score = 0.0;
-      result.assignments.push_back(std::move(assignment));
-      QString displayName = row.fullName();
-      if (displayName.isEmpty()) {
-        displayName = row.studentId;
+      if (!assigned) {
+        StudentAssignment assignment;
+        assignment.studentId = toStdString(row.studentId);
+        assignment.firstName = toStdString(row.firstName);
+        assignment.lastName = toStdString(row.lastName);
+        assignment.grade = toStdString(row.grade);
+        assignment.day = toStdString(row.day);
+        assignment.teacher = toStdString(row.teacher);
+        assignment.pathway = toStdString(row.pathway);
+        assignment.present = toStdString(row.present);
+        assignment.activity = "";
+        assignment.period = periodIdx;
+        assignment.choiceRank = -1;
+        assignment.score = 0.0;
+        result.assignments.push_back(std::move(assignment));
+        QString displayName = row.fullName();
+        if (displayName.isEmpty()) {
+          displayName = row.studentId;
+        }
+        result.warnings.push_back(
+            QStringLiteral(
+                "Student %1 could not be greedily assigned in period %2.")
+                .arg(displayName)
+                .arg(periodIdx + 1)
+                .toStdString());
       }
-      result.warnings.push_back(
-          QStringLiteral("Student %1 could not be greedily assigned.")
-              .arg(displayName)
-              .toStdString());
     }
   }
 

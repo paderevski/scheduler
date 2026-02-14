@@ -186,6 +186,9 @@ rowsFromTableWithMapping(const SpreadsheetTable &table,
       row.present =
           QString::fromStdString(line[mapping.presentColumn]).trimmed();
     }
+    if (row.present.trimmed().isEmpty()) {
+      row.present = QStringLiteral("yes");
+    }
 
     // Extract choices
     if (mapping.choice1Column >= 0 &&
@@ -276,6 +279,11 @@ struct ChoiceSatisfactionCounts {
       notSatisfiedNo = 0;
 };
 
+struct ChoiceSatisfactionSummary {
+  ChoiceSatisfactionCounts counts;
+  int studentCount = 0;
+};
+
 ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
   ChoiceSatisfactionCounts counts;
 
@@ -321,6 +329,108 @@ ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
   }
 
   return counts;
+}
+
+ChoiceSatisfactionSummary
+countChoiceSatisfactionByStudent(const SolverResult &result) {
+  ChoiceSatisfactionSummary summary;
+  if (result.assignments.empty()) {
+    return summary;
+  }
+
+  struct StudentFlags {
+    bool choice1 = false;
+    bool choice2 = false;
+    bool choice3 = false;
+    bool other = false;
+    QString attendance;
+  };
+
+  QHash<QString, StudentFlags> perStudent;
+  perStudent.reserve(static_cast<int>(result.assignments.size()));
+
+  for (const auto &assignment : result.assignments) {
+    const QString studentId = toQString(assignment.studentId).trimmed();
+    const QString firstName = toQString(assignment.firstName).trimmed();
+    const QString lastName = toQString(assignment.lastName).trimmed();
+    const QString grade = toQString(assignment.grade).trimmed();
+    const QString day = toQString(assignment.day).trimmed();
+    const QString teacher = toQString(assignment.teacher).trimmed();
+    const QString pathway = toQString(assignment.pathway).trimmed();
+    const QString present = toQString(assignment.present).trimmed().toLower();
+
+    QString key;
+    if (!studentId.isEmpty()) {
+      key = studentId;
+    } else {
+      key =
+          QStringLiteral("%1|%2|%3|%4|%5|%6|%7")
+              .arg(firstName, lastName, grade, day, teacher, pathway, present);
+    }
+
+    auto &flags = perStudent[key];
+    if (flags.attendance.isEmpty()) {
+      flags.attendance = present;
+    }
+
+    if (assignment.choiceRank == 0) {
+      flags.choice1 = true;
+    } else if (assignment.choiceRank == 1) {
+      flags.choice2 = true;
+    } else if (assignment.choiceRank == 2) {
+      flags.choice3 = true;
+    } else {
+      flags.other = true;
+    }
+  }
+
+  summary.studentCount = perStudent.size();
+  for (auto it = perStudent.cbegin(); it != perStudent.cend(); ++it) {
+    const auto &flags = it.value();
+    const bool isYes = (flags.attendance == "yes" || flags.attendance == "y");
+    const bool isMaybe =
+        (flags.attendance == "maybe" || flags.attendance == "m");
+    const bool isNo = (flags.attendance == "no" || flags.attendance == "n");
+
+    if (flags.choice1) {
+      summary.counts.choice1Total++;
+      if (isYes)
+        summary.counts.choice1Yes++;
+      else if (isMaybe)
+        summary.counts.choice1Maybe++;
+      else if (isNo)
+        summary.counts.choice1No++;
+    }
+    if (flags.choice2) {
+      summary.counts.choice2Total++;
+      if (isYes)
+        summary.counts.choice2Yes++;
+      else if (isMaybe)
+        summary.counts.choice2Maybe++;
+      else if (isNo)
+        summary.counts.choice2No++;
+    }
+    if (flags.choice3) {
+      summary.counts.choice3Total++;
+      if (isYes)
+        summary.counts.choice3Yes++;
+      else if (isMaybe)
+        summary.counts.choice3Maybe++;
+      else if (isNo)
+        summary.counts.choice3No++;
+    }
+    if (flags.other) {
+      summary.counts.notSatisfiedTotal++;
+      if (isYes)
+        summary.counts.notSatisfiedYes++;
+      else if (isMaybe)
+        summary.counts.notSatisfiedMaybe++;
+      else if (isNo)
+        summary.counts.notSatisfiedNo++;
+    }
+  }
+
+  return summary;
 }
 
 } // namespace
@@ -958,7 +1068,11 @@ public:
 
       // Skip students with invalid attendance values
       QString attendance = row.present.trimmed().toLower();
-      if (attendance != "yes" && attendance != "no" && attendance != "maybe") {
+      const bool validAttendance = attendance.isEmpty() ||
+                                   attendance == "yes" || attendance == "no" ||
+                                   attendance == "maybe" || attendance == "y" ||
+                                   attendance == "n" || attendance == "m";
+      if (!validAttendance) {
         continue;
       }
 
@@ -1140,12 +1254,14 @@ public:
     }
 
     const int studentCount = countFilteredStudents();
-    bool sufficient = totalCapacity >= studentCount;
+    const int periodCount = periodCountSpin->value();
+    const int requiredCapacity = studentCount * periodCount;
+    bool sufficient = totalCapacity >= requiredCapacity;
 
     QString labelText =
-        QStringLiteral("<b>Total Capacity:</b> %1 / %2 students")
+        QStringLiteral("<b>Total Capacity:</b> %1 / %2 assignments")
             .arg(totalCapacity)
-            .arg(studentCount);
+            .arg(requiredCapacity);
 
     if (studentCount > 0) {
       if (sufficient) {
@@ -1522,6 +1638,9 @@ public:
       row.teacher = student["teacher"].toString();
       row.pathway = student["pathway"].toString();
       row.present = student["present"].toString();
+      if (row.present.trimmed().isEmpty()) {
+        row.present = QStringLiteral("yes");
+      }
 
       QJsonArray choices = student["choices"].toArray();
       for (const auto &choiceValue : choices) {
@@ -1682,6 +1801,12 @@ public:
       return;
     }
 
+    diagnostics->clear();
+
+    SolverOptions options;
+    options.defaultCapacity = defaultCapacitySpin->value();
+    options.periodCount = periodCountSpin->value();
+
     // Check total capacity against filtered students
     int totalCapacity = 0;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
@@ -1694,26 +1819,23 @@ public:
       }
     }
 
-    int studentCount = static_cast<int>(filteredRows.size());
-    if (totalCapacity < studentCount) {
+    const int studentCount = static_cast<int>(filteredRows.size());
+    const int requiredCapacity = studentCount * options.periodCount;
+    if (totalCapacity < requiredCapacity) {
       auto reply = QMessageBox::warning(
           q_ptr, QStringLiteral("Insufficient Capacity"),
           QStringLiteral(
-              "Total capacity (%1) is less than number of students (%2).\n\n"
+              "Total capacity (%1) is less than number of assignments (%2).\n\n"
               "The solver will fail to assign all students.\n\n"
               "Do you want to proceed anyway?")
               .arg(totalCapacity)
-              .arg(studentCount),
+              .arg(requiredCapacity),
           QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 
       if (reply != QMessageBox::Yes) {
         return;
       }
     }
-
-    SolverOptions options;
-    options.defaultCapacity = defaultCapacitySpin->value();
-    options.periodCount = periodCountSpin->value();
 
     // If weighting is disabled, set all weights to 1
     if (!weightingEnabledCheck->isChecked()) {
@@ -1843,8 +1965,9 @@ public:
     }
 
     // Populate satisfaction summary using helper function
-    const auto counts = countChoiceSatisfaction(result);
-    const int totalStudents = result.assignments.size();
+    const auto summary = countChoiceSatisfactionByStudent(result);
+    const auto &counts = summary.counts;
+    const int totalStudents = summary.studentCount;
 
     auto makeSatisfactionItem = [](const QString &text, bool center = false) {
       auto *item = new QTableWidgetItem(text);
@@ -2124,9 +2247,10 @@ public:
     out << "---------------------------\n";
 
     // Use helper function to count choice satisfaction
-    const auto counts = countChoiceSatisfaction(*lastResult);
+    const auto summary = countChoiceSatisfactionByStudent(*lastResult);
+    const auto &counts = summary.counts;
 
-    const int totalStudents = lastResult->totalStudents;
+    const int totalStudents = summary.studentCount;
     auto formatRow = [&out, totalStudents](const QString &rank, int total,
                                            int yes, int maybe, int no) {
       double pct = totalStudents > 0 ? (total * 100.0 / totalStudents) : 0.0;
