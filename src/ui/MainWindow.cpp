@@ -9,9 +9,9 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QComboBox>
-#include <QDoubleSpinBox>
 #include <QDateTime>
 #include <QDir>
+#include <QDoubleSpinBox>
 #include <QFile>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -36,13 +36,13 @@
 #include <QSettings>
 #include <QSpinBox>
 #include <QStackedWidget>
-#include <QToolButton>
 #include <QString>
 #include <QStringList>
 #include <QTabWidget>
 #include <QTableView>
 #include <QTableWidget>
 #include <QTextStream>
+#include <QToolButton>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QtConcurrent>
@@ -81,7 +81,7 @@ QString toQString(const std::string &value) {
 }
 
 class NumericTableWidgetItem : public QTableWidgetItem {
- public:
+public:
   NumericTableWidgetItem(const QString &text, double value)
       : QTableWidgetItem(text) {
     setData(Qt::UserRole, value);
@@ -98,7 +98,7 @@ class NumericTableWidgetItem : public QTableWidgetItem {
 };
 
 class NumericTreeWidgetItem : public QTreeWidgetItem {
- public:
+public:
   using QTreeWidgetItem::QTreeWidgetItem;
 
   bool operator<(const QTreeWidgetItem &other) const override {
@@ -679,11 +679,11 @@ public:
     weightGridLayout->addWidget(weightNoNormLabel, 2, 2);
 
     weightGridLayout->addWidget(
-      new QLabel(QStringLiteral("Senior Multiplier:"), q_ptr), 3, 0);
+        new QLabel(QStringLiteral("Senior Multiplier:"), q_ptr), 3, 0);
     weightGridLayout->addWidget(seniorWeightSpin, 3, 1);
 
     weightGridLayout->addWidget(
-      new QLabel(QStringLiteral("Balance Lambda:"), q_ptr), 4, 0);
+        new QLabel(QStringLiteral("Balance Lambda:"), q_ptr), 4, 0);
     weightGridLayout->addWidget(balanceLambdaSpin, 4, 1);
 
     weightGridLayout->setColumnStretch(3, 1);
@@ -777,7 +777,7 @@ public:
     resultsLayout->addWidget(resultsStatus);
 
     auto addCollapsible = [this, resultsLayout](const QString &title,
-                          QWidget *content) {
+                                                QWidget *content) {
       auto *toggle = new QToolButton(q_ptr);
       toggle->setText(title);
       toggle->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -789,11 +789,11 @@ public:
       resultsLayout->addWidget(content);
 
       QObject::connect(toggle, &QToolButton::toggled, q_ptr,
-               [toggle, content](bool checked) {
-               content->setVisible(checked);
-               toggle->setArrowType(checked ? Qt::DownArrow
-                              : Qt::RightArrow);
-               });
+                       [toggle, content](bool checked) {
+                         content->setVisible(checked);
+                         toggle->setArrowType(checked ? Qt::DownArrow
+                                                      : Qt::RightArrow);
+                       });
     };
 
     addCollapsible(QStringLiteral("Choice Satisfaction"), satisfactionSummary);
@@ -813,7 +813,7 @@ public:
     auto *chartsContainer = new QWidget(q_ptr);
     chartsContainer->setLayout(chartsGrid);
     addCollapsible(QStringLiteral("Choice Satisfaction by Attendance"),
-             chartsContainer);
+                   chartsContainer);
 #endif
     auto *resultsButtonLayout = new QHBoxLayout();
     resultsButtonLayout->addStretch();
@@ -1374,19 +1374,19 @@ public:
       choice3Item->setTextAlignment(Qt::AlignCenter);
       capacityTable->setItem(row, 3, choice3Item);
 
-        // Column 4: Choice 4 count
-        auto *choice4Item = new QTableWidgetItem(
+      // Column 4: Choice 4 count
+      auto *choice4Item = new QTableWidgetItem(
           QString::number(choice4Count.value(activity, 0)));
-        choice4Item->setFlags(Qt::ItemIsEnabled);
-        choice4Item->setTextAlignment(Qt::AlignCenter);
-        capacityTable->setItem(row, 4, choice4Item);
+      choice4Item->setFlags(Qt::ItemIsEnabled);
+      choice4Item->setTextAlignment(Qt::AlignCenter);
+      capacityTable->setItem(row, 4, choice4Item);
 
-        // Column 5: Choice 5 count
-        auto *choice5Item = new QTableWidgetItem(
+      // Column 5: Choice 5 count
+      auto *choice5Item = new QTableWidgetItem(
           QString::number(choice5Count.value(activity, 0)));
-        choice5Item->setFlags(Qt::ItemIsEnabled);
-        choice5Item->setTextAlignment(Qt::AlignCenter);
-        capacityTable->setItem(row, 5, choice5Item);
+      choice5Item->setFlags(Qt::ItemIsEnabled);
+      choice5Item->setTextAlignment(Qt::AlignCenter);
+      capacityTable->setItem(row, 5, choice5Item);
 
       // Period capacity spinboxes
       const QVector<int> storedCaps = currentCapacities.value(
@@ -1412,7 +1412,8 @@ public:
     int totalCapacity = 0;
     const int periodStartCol = 1 + kMaxChoiceCount;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      for (int col = periodStartCol; col < capacityTable->columnCount(); ++col) {
+      for (int col = periodStartCol; col < capacityTable->columnCount();
+           ++col) {
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         if (spinBox) {
@@ -1469,7 +1470,8 @@ public:
     int defaultValue = defaultCapacitySpin->value();
     const int periodStartCol = 1 + kMaxChoiceCount;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      for (int col = periodStartCol; col < capacityTable->columnCount(); ++col) {
+      for (int col = periodStartCol; col < capacityTable->columnCount();
+           ++col) {
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         if (spinBox) {
@@ -2018,7 +2020,8 @@ public:
     int totalCapacity = 0;
     const int periodStartCol = 1 + kMaxChoiceCount;
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
-      for (int col = periodStartCol; col < capacityTable->columnCount(); ++col) {
+      for (int col = periodStartCol; col < capacityTable->columnCount();
+           ++col) {
         auto *spinBox =
             qobject_cast<QSpinBox *>(capacityTable->cellWidget(row, col));
         if (spinBox) {
@@ -2125,10 +2128,10 @@ public:
             .arg(result.runtimeMs));
     if (result.balanceLambda > 0.0) {
       appendDiagnostic(
-        QStringLiteral("Objective breakdown: S=%1, penalty=%2, lambda=%3")
-          .arg(result.satisfactionScore, 0, 'f', 1)
-          .arg(result.balancePenalty, 0, 'f', 1)
-          .arg(result.balanceLambda, 0, 'f', 2));
+          QStringLiteral("Objective breakdown: S=%1, penalty=%2, lambda=%3")
+              .arg(result.satisfactionScore, 0, 'f', 1)
+              .arg(result.balancePenalty, 0, 'f', 1)
+              .arg(result.balanceLambda, 0, 'f', 2));
     }
 
     for (const auto &warning : result.warnings) {
@@ -2192,16 +2195,16 @@ public:
       resultsTable->setItem(rowIndex, 8, makeItem(activity));
       resultsTable->setItem(
           rowIndex, 9,
-          makeNumericItem(period, assignment.period >= 0
-                                      ? static_cast<double>(assignment.period +
-                                                            1)
-                                      : -1.0));
+          makeNumericItem(period,
+                          assignment.period >= 0
+                              ? static_cast<double>(assignment.period + 1)
+                              : -1.0));
       resultsTable->setItem(
           rowIndex, 10,
-          makeNumericItem(rank, assignment.choiceRank >= 0
-                                    ? static_cast<double>(
-                                          assignment.choiceRank + 1)
-                                    : -1.0));
+          makeNumericItem(rank,
+                          assignment.choiceRank >= 0
+                              ? static_cast<double>(assignment.choiceRank + 1)
+                              : -1.0));
       resultsTable->setItem(
           rowIndex, 11,
           makeNumericItem(score, static_cast<double>(assignment.score)));
@@ -2236,190 +2239,184 @@ public:
 
     // Row 0: 1st Choice
     satisfactionSummary->setItem(
-      0, 0, makeSatisfactionItem(QStringLiteral("1st Choice")));
+        0, 0, makeSatisfactionItem(QStringLiteral("1st Choice")));
     satisfactionSummary->setItem(
-      0, 1,
-      makeNumericSatisfactionItem(QString::number(counts.choice1Total),
-                                  counts.choice1Total, true));
+        0, 1,
+        makeNumericSatisfactionItem(QString::number(counts.choice1Total),
+                                    counts.choice1Total, true));
     satisfactionSummary->setItem(
-      0, 2,
-      makeNumericSatisfactionItem(
-        totalStudents > 0
-          ? QStringLiteral("%1%").arg(
-              counts.choice1Total * 100.0 / totalStudents, 0, 'f', 1)
-          : QStringLiteral("0%"),
-        totalStudents > 0
-          ? counts.choice1Total * 100.0 / totalStudents
-          : 0.0,
-        true));
+        0, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.choice1Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.choice1Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
     satisfactionSummary->setItem(
-      0, 3,
-      makeNumericSatisfactionItem(QString::number(counts.choice1Yes),
-                                  counts.choice1Yes, true));
+        0, 3,
+        makeNumericSatisfactionItem(QString::number(counts.choice1Yes),
+                                    counts.choice1Yes, true));
     satisfactionSummary->setItem(
-      0, 4,
-      makeNumericSatisfactionItem(QString::number(counts.choice1Maybe),
-                                  counts.choice1Maybe, true));
+        0, 4,
+        makeNumericSatisfactionItem(QString::number(counts.choice1Maybe),
+                                    counts.choice1Maybe, true));
     satisfactionSummary->setItem(
-      0, 5,
-      makeNumericSatisfactionItem(QString::number(counts.choice1No),
-                                  counts.choice1No, true));
+        0, 5,
+        makeNumericSatisfactionItem(QString::number(counts.choice1No),
+                                    counts.choice1No, true));
 
     // Row 1: 2nd Choice
     satisfactionSummary->setItem(
-      1, 0, makeSatisfactionItem(QStringLiteral("2nd Choice")));
+        1, 0, makeSatisfactionItem(QStringLiteral("2nd Choice")));
     satisfactionSummary->setItem(
-      1, 1,
-      makeNumericSatisfactionItem(QString::number(counts.choice2Total),
-                                  counts.choice2Total, true));
+        1, 1,
+        makeNumericSatisfactionItem(QString::number(counts.choice2Total),
+                                    counts.choice2Total, true));
     satisfactionSummary->setItem(
-      1, 2,
-      makeNumericSatisfactionItem(
-        totalStudents > 0
-          ? QStringLiteral("%1%").arg(
-              counts.choice2Total * 100.0 / totalStudents, 0, 'f', 1)
-          : QStringLiteral("0%"),
-        totalStudents > 0
-          ? counts.choice2Total * 100.0 / totalStudents
-          : 0.0,
-        true));
+        1, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.choice2Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.choice2Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
     satisfactionSummary->setItem(
-      1, 3,
-      makeNumericSatisfactionItem(QString::number(counts.choice2Yes),
-                                  counts.choice2Yes, true));
+        1, 3,
+        makeNumericSatisfactionItem(QString::number(counts.choice2Yes),
+                                    counts.choice2Yes, true));
     satisfactionSummary->setItem(
-      1, 4,
-      makeNumericSatisfactionItem(QString::number(counts.choice2Maybe),
-                                  counts.choice2Maybe, true));
+        1, 4,
+        makeNumericSatisfactionItem(QString::number(counts.choice2Maybe),
+                                    counts.choice2Maybe, true));
     satisfactionSummary->setItem(
-      1, 5,
-      makeNumericSatisfactionItem(QString::number(counts.choice2No),
-                                  counts.choice2No, true));
+        1, 5,
+        makeNumericSatisfactionItem(QString::number(counts.choice2No),
+                                    counts.choice2No, true));
 
     // Row 2: 3rd Choice
     satisfactionSummary->setItem(
-      2, 0, makeSatisfactionItem(QStringLiteral("3rd Choice")));
+        2, 0, makeSatisfactionItem(QStringLiteral("3rd Choice")));
     satisfactionSummary->setItem(
-      2, 1,
-      makeNumericSatisfactionItem(QString::number(counts.choice3Total),
-                                  counts.choice3Total, true));
+        2, 1,
+        makeNumericSatisfactionItem(QString::number(counts.choice3Total),
+                                    counts.choice3Total, true));
     satisfactionSummary->setItem(
-      2, 2,
-      makeNumericSatisfactionItem(
-        totalStudents > 0
-          ? QStringLiteral("%1%").arg(
-              counts.choice3Total * 100.0 / totalStudents, 0, 'f', 1)
-          : QStringLiteral("0%"),
-        totalStudents > 0
-          ? counts.choice3Total * 100.0 / totalStudents
-          : 0.0,
-        true));
+        2, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.choice3Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.choice3Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
     satisfactionSummary->setItem(
-      2, 3,
-      makeNumericSatisfactionItem(QString::number(counts.choice3Yes),
-                                  counts.choice3Yes, true));
+        2, 3,
+        makeNumericSatisfactionItem(QString::number(counts.choice3Yes),
+                                    counts.choice3Yes, true));
     satisfactionSummary->setItem(
-      2, 4,
-      makeNumericSatisfactionItem(QString::number(counts.choice3Maybe),
-                                  counts.choice3Maybe, true));
+        2, 4,
+        makeNumericSatisfactionItem(QString::number(counts.choice3Maybe),
+                                    counts.choice3Maybe, true));
     satisfactionSummary->setItem(
-      2, 5,
-      makeNumericSatisfactionItem(QString::number(counts.choice3No),
-                                  counts.choice3No, true));
+        2, 5,
+        makeNumericSatisfactionItem(QString::number(counts.choice3No),
+                                    counts.choice3No, true));
 
     // Row 3: 4th Choice
     satisfactionSummary->setItem(
-      3, 0, makeSatisfactionItem(QStringLiteral("4th Choice")));
+        3, 0, makeSatisfactionItem(QStringLiteral("4th Choice")));
     satisfactionSummary->setItem(
-      3, 1,
-      makeNumericSatisfactionItem(QString::number(counts.choice4Total),
-                                  counts.choice4Total, true));
+        3, 1,
+        makeNumericSatisfactionItem(QString::number(counts.choice4Total),
+                                    counts.choice4Total, true));
     satisfactionSummary->setItem(
-      3, 2,
-      makeNumericSatisfactionItem(
-        totalStudents > 0
-          ? QStringLiteral("%1%").arg(
-              counts.choice4Total * 100.0 / totalStudents, 0, 'f', 1)
-          : QStringLiteral("0%"),
-        totalStudents > 0
-          ? counts.choice4Total * 100.0 / totalStudents
-          : 0.0,
-        true));
+        3, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.choice4Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.choice4Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
     satisfactionSummary->setItem(
-      3, 3,
-      makeNumericSatisfactionItem(QString::number(counts.choice4Yes),
-                                  counts.choice4Yes, true));
+        3, 3,
+        makeNumericSatisfactionItem(QString::number(counts.choice4Yes),
+                                    counts.choice4Yes, true));
     satisfactionSummary->setItem(
-      3, 4,
-      makeNumericSatisfactionItem(QString::number(counts.choice4Maybe),
-                                  counts.choice4Maybe, true));
+        3, 4,
+        makeNumericSatisfactionItem(QString::number(counts.choice4Maybe),
+                                    counts.choice4Maybe, true));
     satisfactionSummary->setItem(
-      3, 5,
-      makeNumericSatisfactionItem(QString::number(counts.choice4No),
-                                  counts.choice4No, true));
+        3, 5,
+        makeNumericSatisfactionItem(QString::number(counts.choice4No),
+                                    counts.choice4No, true));
 
     // Row 4: 5th Choice
     satisfactionSummary->setItem(
-      4, 0, makeSatisfactionItem(QStringLiteral("5th Choice")));
+        4, 0, makeSatisfactionItem(QStringLiteral("5th Choice")));
     satisfactionSummary->setItem(
-      4, 1,
-      makeNumericSatisfactionItem(QString::number(counts.choice5Total),
-                                  counts.choice5Total, true));
+        4, 1,
+        makeNumericSatisfactionItem(QString::number(counts.choice5Total),
+                                    counts.choice5Total, true));
     satisfactionSummary->setItem(
-      4, 2,
-      makeNumericSatisfactionItem(
-        totalStudents > 0
-          ? QStringLiteral("%1%").arg(
-              counts.choice5Total * 100.0 / totalStudents, 0, 'f', 1)
-          : QStringLiteral("0%"),
-        totalStudents > 0
-          ? counts.choice5Total * 100.0 / totalStudents
-          : 0.0,
-        true));
+        4, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.choice5Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.choice5Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
     satisfactionSummary->setItem(
-      4, 3,
-      makeNumericSatisfactionItem(QString::number(counts.choice5Yes),
-                                  counts.choice5Yes, true));
+        4, 3,
+        makeNumericSatisfactionItem(QString::number(counts.choice5Yes),
+                                    counts.choice5Yes, true));
     satisfactionSummary->setItem(
-      4, 4,
-      makeNumericSatisfactionItem(QString::number(counts.choice5Maybe),
-                                  counts.choice5Maybe, true));
+        4, 4,
+        makeNumericSatisfactionItem(QString::number(counts.choice5Maybe),
+                                    counts.choice5Maybe, true));
     satisfactionSummary->setItem(
-      4, 5,
-      makeNumericSatisfactionItem(QString::number(counts.choice5No),
-                                  counts.choice5No, true));
+        4, 5,
+        makeNumericSatisfactionItem(QString::number(counts.choice5No),
+                                    counts.choice5No, true));
 
     // Row 5: Not Satisfied (fallback)
     satisfactionSummary->setItem(
-      5, 0, makeSatisfactionItem(QStringLiteral("Not Satisfied")));
+        5, 0, makeSatisfactionItem(QStringLiteral("Not Satisfied")));
     satisfactionSummary->setItem(
-      5, 1,
-      makeNumericSatisfactionItem(QString::number(counts.notSatisfiedTotal),
-                                  counts.notSatisfiedTotal, true));
+        5, 1,
+        makeNumericSatisfactionItem(QString::number(counts.notSatisfiedTotal),
+                                    counts.notSatisfiedTotal, true));
     satisfactionSummary->setItem(
-      5, 2,
-      makeNumericSatisfactionItem(
-        totalStudents > 0 ? QStringLiteral("%1%").arg(
-                             counts.notSatisfiedTotal *
-                               100.0 / totalStudents,
-                             0, 'f', 1)
-                           : QStringLiteral("0%"),
-        totalStudents > 0
-          ? counts.notSatisfiedTotal * 100.0 / totalStudents
-          : 0.0,
-        true));
+        5, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(counts.notSatisfiedTotal * 100.0 /
+                                                totalStudents,
+                                            0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.notSatisfiedTotal * 100.0 / totalStudents
+                              : 0.0,
+            true));
     satisfactionSummary->setItem(
-      5, 3,
-      makeNumericSatisfactionItem(QString::number(counts.notSatisfiedYes),
-                                  counts.notSatisfiedYes, true));
+        5, 3,
+        makeNumericSatisfactionItem(QString::number(counts.notSatisfiedYes),
+                                    counts.notSatisfiedYes, true));
     satisfactionSummary->setItem(
-      5, 4,
-      makeNumericSatisfactionItem(QString::number(counts.notSatisfiedMaybe),
-                                  counts.notSatisfiedMaybe, true));
+        5, 4,
+        makeNumericSatisfactionItem(QString::number(counts.notSatisfiedMaybe),
+                                    counts.notSatisfiedMaybe, true));
     satisfactionSummary->setItem(
-      5, 5,
-      makeNumericSatisfactionItem(QString::number(counts.notSatisfiedNo),
-                                  counts.notSatisfiedNo, true));
+        5, 5,
+        makeNumericSatisfactionItem(QString::number(counts.notSatisfiedNo),
+                                    counts.notSatisfiedNo, true));
 
     activitySummary->clear();
     int periodCount = 0;
@@ -2448,12 +2445,12 @@ public:
       item->setData(2, Qt::UserRole, summary.capacity);
       int col = 3;
       for (int periodIdx = 0;
-          periodIdx < static_cast<int>(summary.assignedPerPeriod.size());
-          ++periodIdx) {
+           periodIdx < static_cast<int>(summary.assignedPerPeriod.size());
+           ++periodIdx) {
         const int assigned = summary.assignedPerPeriod[periodIdx];
         const int capacity = summary.capacityPerPeriod[periodIdx];
         item->setText(col++,
-                 QStringLiteral("%1/%2").arg(assigned).arg(capacity));
+                      QStringLiteral("%1/%2").arg(assigned).arg(capacity));
         item->setData(col - 1, Qt::UserRole, assigned);
       }
       item->setText(col++, QString::number(summary.presentYes));
@@ -2472,7 +2469,7 @@ public:
               : expectedAttendance / static_cast<double>(summary.capacity);
       item->setText(col,
                     QStringLiteral("%1%").arg(expectedUtil * 100.0, 0, 'f', 1));
-        item->setData(col, Qt::UserRole, expectedUtil * 100.0);
+      item->setData(col, Qt::UserRole, expectedUtil * 100.0);
     }
     activitySummary->resizeColumnToContents(0);
 
@@ -2484,8 +2481,8 @@ public:
 #if HAVE_QT_CHARTS
     // Create pie charts for choice satisfaction breakdown by attendance group
     auto createPieChart = [](const QString &title, int choice1, int choice2,
-                 int choice3, int choice4, int choice5,
-                 int other) -> QChart * {
+                             int choice3, int choice4, int choice5,
+                             int other) -> QChart * {
       auto *series = new QPieSeries();
 
       if (choice1 > 0) {
@@ -2534,21 +2531,21 @@ public:
     };
 
     overallChart->setChart(createPieChart(
-      QStringLiteral("Overall"), counts.choice1Total, counts.choice2Total,
-      counts.choice3Total, counts.choice4Total, counts.choice5Total,
-      counts.notSatisfiedTotal));
-    yesChart->setChart(createPieChart(
-      QStringLiteral("'Yes' Attendees"), counts.choice1Yes, counts.choice2Yes,
-      counts.choice3Yes, counts.choice4Yes, counts.choice5Yes,
-      counts.notSatisfiedYes));
+        QStringLiteral("Overall"), counts.choice1Total, counts.choice2Total,
+        counts.choice3Total, counts.choice4Total, counts.choice5Total,
+        counts.notSatisfiedTotal));
+    yesChart->setChart(
+        createPieChart(QStringLiteral("'Yes' Attendees"), counts.choice1Yes,
+                       counts.choice2Yes, counts.choice3Yes, counts.choice4Yes,
+                       counts.choice5Yes, counts.notSatisfiedYes));
     maybeChart->setChart(createPieChart(
-      QStringLiteral("'Maybe' Attendees"), counts.choice1Maybe,
-      counts.choice2Maybe, counts.choice3Maybe, counts.choice4Maybe,
-      counts.choice5Maybe, counts.notSatisfiedMaybe));
+        QStringLiteral("'Maybe' Attendees"), counts.choice1Maybe,
+        counts.choice2Maybe, counts.choice3Maybe, counts.choice4Maybe,
+        counts.choice5Maybe, counts.notSatisfiedMaybe));
     noChart->setChart(createPieChart(QStringLiteral("'No' Attendees"),
-                     counts.choice1No, counts.choice2No,
-                     counts.choice3No, counts.choice4No,
-                     counts.choice5No, counts.notSatisfiedNo));
+                                     counts.choice1No, counts.choice2No,
+                                     counts.choice3No, counts.choice4No,
+                                     counts.choice5No, counts.notSatisfiedNo));
 #endif
   }
 
@@ -2605,9 +2602,8 @@ public:
           << QString::number(normNo, 'f', 2) << ")\n";
     }
     out << "Senior Multiplier: "
-        << QString::number(lastOptions->seniorWeightMultiplier, 'f', 2)
-        << "\n";
-      out << "Balance Lambda: "
+        << QString::number(lastOptions->seniorWeightMultiplier, 'f', 2) << "\n";
+    out << "Balance Lambda: "
         << QString::number(lastOptions->balanceLambda, 'f', 3) << "\n";
 
     auto baseWeightForRank = [](int rank) {
@@ -2650,13 +2646,13 @@ public:
     out << "Runtime: " << lastResult->runtimeMs << " ms\n";
     if (lastResult->balanceLambda > 0.0) {
       out << "Satisfaction Score (S): "
-        << QString::number(lastResult->satisfactionScore, 'f', 1) << "\n";
+          << QString::number(lastResult->satisfactionScore, 'f', 1) << "\n";
       out << "Balance Penalty: "
-        << QString::number(lastResult->balancePenalty, 'f', 1) << "\n";
+          << QString::number(lastResult->balancePenalty, 'f', 1) << "\n";
       out << "Balance Lambda: "
-        << QString::number(lastResult->balanceLambda, 'f', 2) << "\n";
+          << QString::number(lastResult->balanceLambda, 'f', 2) << "\n";
       out << "Objective (S - lambda*penalty): "
-        << QString::number(lastResult->objectiveValue, 'f', 1) << "\n";
+          << QString::number(lastResult->objectiveValue, 'f', 1) << "\n";
     }
     out << "\n";
 
@@ -2693,9 +2689,9 @@ public:
     formatRow("3rd Choice", counts.choice3Total, counts.choice3Yes,
               counts.choice3Maybe, counts.choice3No);
     formatRow("4th Choice", counts.choice4Total, counts.choice4Yes,
-          counts.choice4Maybe, counts.choice4No);
+              counts.choice4Maybe, counts.choice4No);
     formatRow("5th Choice", counts.choice5Total, counts.choice5Yes,
-          counts.choice5Maybe, counts.choice5No);
+              counts.choice5Maybe, counts.choice5No);
     formatRow("Not Satisfied", counts.notSatisfiedTotal, counts.notSatisfiedYes,
               counts.notSatisfiedMaybe, counts.notSatisfiedNo);
     out << "\n";
@@ -2712,8 +2708,7 @@ public:
     out << QString(86, '-') << "\n";
 
     for (const auto &summary : lastResult->activitySummary) {
-      const QString activityName =
-        toQString(summary.activity).left(20);
+      const QString activityName = toQString(summary.activity).left(20);
       const double expectedAttendance =
           summary.presentYes + (summary.presentMaybe * 0.5);
       const double expectedUtil =
