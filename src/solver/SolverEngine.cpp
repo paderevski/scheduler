@@ -234,11 +234,13 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
     // Build a set of preferred activities for this student
     QSet<int> preferredActivityIndices;
     const auto &choices = row.choices;
+    bool hasAnyChoice = false;
     for (int choiceIdx = 0; choiceIdx < choices.size(); ++choiceIdx) {
       const auto activityName = choices[choiceIdx].trimmed();
       if (activityName.isEmpty()) {
         continue;
       }
+      hasAnyChoice = true;
       const int activityIdx = activityIndex.value(activityName, -1);
       if (activityIdx >= 0) {
         preferredActivityIndices.insert(activityIdx);
@@ -286,9 +288,9 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         }
 
         if (choiceRank < 0) {
-          // Non-preferred activity - low weight (penalty)
-          // Use weight of 1 so it's only chosen as last resort
-          weight = 1.0;
+          // Non-preferred activity - low weight (penalty).
+          // If the student provided no choices, keep weight at 0.0.
+          weight = hasAnyChoice ? 1.0 : 0.0;
           choiceRank = -1; // Mark as non-preferred
         }
 
