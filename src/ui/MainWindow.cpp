@@ -551,6 +551,7 @@ public:
         weightMaybeNormLabel(new QLabel(q)), weightNoNormLabel(new QLabel(q)),
         seniorWeightSpin(new QDoubleSpinBox(q)),
         balanceLambdaSpin(new QDoubleSpinBox(q)),
+        timeLimitSpin(new QSpinBox(q)),
         dayFilterCombo(new QComboBox(q)),
         runButton(new QPushButton(QStringLiteral("Calculate"), q)),
         resultsStatus(new QLabel(QStringLiteral("No solver run yet."), q)),
@@ -663,6 +664,12 @@ public:
     balanceLambdaSpin->setValue(0.0);
     balanceLambdaSpin->setMinimumWidth(80);
 
+    timeLimitSpin->setRange(0, 3600);
+    timeLimitSpin->setValue(0);
+    timeLimitSpin->setMinimumWidth(80);
+    timeLimitSpin->setToolTip(
+      QStringLiteral("Time limit in seconds (0 = no limit)"));
+
     auto *weightGridLayout = new QGridLayout();
     weightGridLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr), 0,
                                 0);
@@ -685,6 +692,10 @@ public:
     weightGridLayout->addWidget(
         new QLabel(QStringLiteral("Balance Lambda:"), q_ptr), 4, 0);
     weightGridLayout->addWidget(balanceLambdaSpin, 4, 1);
+
+    weightGridLayout->addWidget(
+      new QLabel(QStringLiteral("Time Limit (sec):"), q_ptr), 5, 0);
+    weightGridLayout->addWidget(timeLimitSpin, 5, 1);
 
     weightGridLayout->setColumnStretch(3, 1);
     leftLayout->addLayout(weightGridLayout);
@@ -835,7 +846,8 @@ public:
 
     exportResultsCsvButton->setEnabled(false);
 
-    progressDialog->setCancelButton(nullptr);
+    cancelSolveButton = new QPushButton(QStringLiteral("Cancel"), progressDialog);
+    progressDialog->setCancelButton(cancelSolveButton);
     progressDialog->setWindowModality(Qt::WindowModal);
     progressDialog->setMinimumDuration(INT_MAX); // Prevent auto-show
     progressDialog->setAutoReset(false);
@@ -851,6 +863,8 @@ public:
                      [this]() { autoSetCapacity(); });
     QObject::connect(exportResultsCsvButton, &QPushButton::clicked, q_ptr,
                      [this]() { exportResultsCsv(); });
+    QObject::connect(progressDialog, &QProgressDialog::canceled, q_ptr,
+             [this]() { requestSolverCancel(); });
   }
 
   void setupWelcomeScreen() {
@@ -1610,6 +1624,7 @@ public:
     settings["weights"] = weights;
     settings["seniorMultiplier"] = seniorWeightSpin->value();
     settings["balanceLambda"] = balanceLambdaSpin->value();
+    settings["timeLimitSeconds"] = timeLimitSpin->value();
 
     settings["dayFilter"] = dayFilterCombo->currentData().toString();
 
@@ -1793,6 +1808,7 @@ public:
     weightNoSpin->setValue(weights["no"].toInt());
     seniorWeightSpin->setValue(settings["seniorMultiplier"].toDouble(2.0));
     balanceLambdaSpin->setValue(settings["balanceLambda"].toDouble(0.0));
+    timeLimitSpin->setValue(settings["timeLimitSeconds"].toInt(0));
 
     QString dayFilter = settings["dayFilter"].toString();
     int dayIndex = dayFilterCombo->findData(dayFilter);
@@ -1815,6 +1831,7 @@ public:
     loadedOptions.seniorWeightMultiplier =
         settings["seniorMultiplier"].toDouble(2.0);
     loadedOptions.balanceLambda = settings["balanceLambda"].toDouble(0.0);
+    loadedOptions.timeLimitSeconds = settings["timeLimitSeconds"].toInt(0);
     lastOptions = loadedOptions;
     lastDayFilter = dayFilter;
 
@@ -1980,6 +1997,21 @@ public:
     q_ptr->setWindowTitle(title);
   }
 
+  void requestSolverCancel() {
+    if (!solverWatcher->isRunning()) {
+      return;
+    }
+    const bool sent = interruptSolver();
+    if (sent) {
+      progressDialog->setLabelText(
+          QStringLiteral("Canceling solver..."));
+      if (cancelSolveButton) {
+        cancelSolveButton->setEnabled(false);
+        cancelSolveButton->setText(QStringLiteral("Canceling..."));
+      }
+    }
+  }
+
   void onRunClicked() {
     if (solverWatcher->isRunning()) {
       return;
@@ -2060,6 +2092,7 @@ public:
     }
     options.seniorWeightMultiplier = seniorWeightSpin->value();
     options.balanceLambda = balanceLambdaSpin->value();
+    options.timeLimitSeconds = timeLimitSpin->value();
 
     // Collect per-activity capacities from table
     for (int row = 0; row < capacityTable->rowCount(); ++row) {
@@ -2087,11 +2120,22 @@ public:
     QString filterMsg = dayFilter.isEmpty()
                             ? QStringLiteral("all students")
                             : QStringLiteral("Day %1 students").arg(dayFilter);
+  #if HAVE_OR_TOOLS
+    appendDiagnostic(
+      QStringLiteral("Solver backend: OR-Tools MPSolver (CBC)."));
+  #else
+    appendDiagnostic(
+      QStringLiteral("Solver backend: Greedy fallback (OR-Tools not available)."));
+  #endif
     appendDiagnostic(
         QStringLiteral(
             "Launching solver for %1 with per-activity capacities...")
             .arg(filterMsg));
     progressDialog->setLabelText(QStringLiteral("Calculating assignments..."));
+    if (cancelSolveButton) {
+      cancelSolveButton->setEnabled(true);
+      cancelSolveButton->setText(QStringLiteral("Cancel"));
+    }
     progressDialog->show();
     runButton->setEnabled(false);
 
@@ -2104,6 +2148,10 @@ public:
 
   void handleSolverFinished() {
     progressDialog->hide();
+    if (cancelSolveButton) {
+      cancelSolveButton->setEnabled(true);
+      cancelSolveButton->setText(QStringLiteral("Cancel"));
+    }
     runButton->setEnabled(model->rowCount() > 0);
 
     const auto result = solverWatcher->result();
@@ -2605,6 +2653,11 @@ public:
         << QString::number(lastOptions->seniorWeightMultiplier, 'f', 2) << "\n";
     out << "Balance Lambda: "
         << QString::number(lastOptions->balanceLambda, 'f', 3) << "\n";
+    if (lastOptions->timeLimitSeconds > 0) {
+      out << "Time Limit: " << lastOptions->timeLimitSeconds << " sec\n";
+    } else {
+      out << "Time Limit: None\n";
+    }
 
     auto baseWeightForRank = [](int rank) {
       constexpr int kBase = 100;
@@ -2971,6 +3024,7 @@ public:
   QLabel *weightNoNormLabel;
   QDoubleSpinBox *seniorWeightSpin;
   QDoubleSpinBox *balanceLambdaSpin;
+  QSpinBox *timeLimitSpin;
   QComboBox *dayFilterCombo;
   QPushButton *runButton;
   QLabel *resultsStatus;
@@ -2986,6 +3040,7 @@ public:
 #endif
   QFutureWatcher<SolverResult> *solverWatcher;
   QProgressDialog *progressDialog;
+  QPushButton *cancelSolveButton = nullptr;
   QString lastDataPath;
   QString currentProjectPath;
   QWidget *welcomeWidget;

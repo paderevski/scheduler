@@ -10,13 +10,37 @@
 #include <QStringList>
 
 #include <algorithm>
+#include <atomic>
 #include <random>
 
 #if HAVE_OR_TOOLS
 #include "ortools/linear_solver/linear_solver.h"
+#include "absl/time/time.h"
 #endif
 
 namespace {
+
+#if HAVE_OR_TOOLS
+std::atomic<operations_research::MPSolver *> g_activeSolver(nullptr);
+std::atomic<bool> g_interruptRequested(false);
+
+class ActiveSolverGuard {
+public:
+  explicit ActiveSolverGuard(operations_research::MPSolver *solver)
+      : solver_(solver) {
+    g_interruptRequested.store(false, std::memory_order_release);
+    g_activeSolver.store(solver_, std::memory_order_release);
+  }
+
+  ~ActiveSolverGuard() {
+    g_activeSolver.store(nullptr, std::memory_order_release);
+    g_interruptRequested.store(false, std::memory_order_release);
+  }
+
+private:
+  operations_research::MPSolver *solver_;
+};
+#endif
 
 std::string toStdString(const QString &value) {
   return value.trimmed().toStdString();
@@ -38,6 +62,9 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   SolverResult result;
   result.totalStudents = static_cast<int>(rows.size());
   result.balanceLambda = options.balanceLambda;
+  result.warnings.push_back(
+      "Solver backend: OR-Tools MPSolver (CBC)."
+  );
 
   if (rows.empty()) {
     result.message = "No student preferences loaded.";
@@ -100,6 +127,16 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
 
   MPSolver solver("engineering_week_scheduler",
                   MPSolver::CBC_MIXED_INTEGER_PROGRAMMING);
+  ActiveSolverGuard solverGuard(&solver);
+
+  if (options.timeLimitSeconds > 0) {
+    const auto limitMs =
+      static_cast<int64_t>(options.timeLimitSeconds) * 1000;
+    solver.SetTimeLimit(absl::Milliseconds(limitMs));
+    result.warnings.push_back(
+        "Solver time limit: " + std::to_string(options.timeLimitSeconds) +
+        "s.");
+  }
 
   struct VarInfo {
     int studentIndex;
@@ -333,10 +370,31 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   solver.MutableObjective()->SetMaximization();
   auto status = solver.Solve();
   bool relaxedMinAttendance = false;
-  if (status != MPSolver::OPTIMAL && status != MPSolver::FEASIBLE) {
+  bool interrupted = g_interruptRequested.load(std::memory_order_acquire);
+  if (interrupted) {
+    if (status == MPSolver::OPTIMAL || status == MPSolver::FEASIBLE) {
+      result.warnings.push_back(
+          "Solver interrupted; using best feasible solution.");
+    } else {
+      result.message =
+          "Solver interrupted before a feasible solution was found.";
+      return result;
+    }
+  } else if (status != MPSolver::OPTIMAL && status != MPSolver::FEASIBLE) {
     applyMinAttendance(5);
     relaxedMinAttendance = true;
     status = solver.Solve();
+    interrupted = g_interruptRequested.load(std::memory_order_acquire);
+    if (interrupted) {
+      if (status == MPSolver::OPTIMAL || status == MPSolver::FEASIBLE) {
+        result.warnings.push_back(
+            "Solver interrupted; using best feasible solution.");
+      } else {
+        result.message =
+            "Solver interrupted before a feasible solution was found.";
+        return result;
+      }
+    }
   }
   result.runtimeMs = timer.elapsed();
 
@@ -351,6 +409,11 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   result.objectiveValue = solver.Objective().Value();
   result.balanceLambda = options.balanceLambda;
   result.message = "Solver completed successfully.";
+  if (!interrupted && options.timeLimitSeconds > 0 &&
+      status == MPSolver::FEASIBLE) {
+    result.warnings.push_back(
+        "Time limit reached; using best feasible solution.");
+  }
   if (relaxedMinAttendance) {
     result.warnings.push_back(
         "Relaxed minimum attendance from 10 to 5 per activity/period.");
@@ -507,6 +570,13 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
                              const SolverOptions &options) {
   SolverResult result;
   result.totalStudents = static_cast<int>(rows.size());
+  result.warnings.push_back(
+      "Solver backend: Greedy fallback (OR-Tools not available)."
+  );
+  if (options.timeLimitSeconds > 0) {
+    result.warnings.push_back(
+        "Solver time limit ignored (not supported without OR-Tools).");
+  }
 
   if (rows.empty()) {
     result.message = "No student preferences loaded.";
@@ -702,6 +772,20 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
 #endif
 
 } // namespace
+
+bool interruptSolver() {
+#if HAVE_OR_TOOLS
+  g_interruptRequested.store(true, std::memory_order_release);
+  auto *solver = g_activeSolver.load(std::memory_order_acquire);
+  if (!solver) {
+    return false;
+  }
+  solver->InterruptSolve();
+  return true;
+#else
+  return false;
+#endif
+}
 
 SolverResult runSolver(const std::vector<StudentPreferenceRow> &rows,
                        const SolverOptions &options) {

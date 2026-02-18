@@ -27,6 +27,9 @@ struct SolverOptions {
 
   // Balance penalty weight for activity-period size spread
   double balanceLambda = 0.0;
+
+  // Solver time limit in seconds (0 = no limit)
+  int timeLimitSeconds = 0;
 };
 
 struct StudentAssignment {
