@@ -14,8 +14,8 @@
 #include <random>
 
 #if HAVE_OR_TOOLS
-#include "ortools/linear_solver/linear_solver.h"
 #include "absl/time/time.h"
+#include "ortools/linear_solver/linear_solver.h"
 #endif
 
 namespace {
@@ -62,9 +62,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   SolverResult result;
   result.totalStudents = static_cast<int>(rows.size());
   result.balanceLambda = options.balanceLambda;
-  result.warnings.push_back(
-      "Solver backend: OR-Tools MPSolver (CBC)."
-  );
+  result.warnings.push_back("Solver backend: OR-Tools MPSolver (CBC).");
 
   if (rows.empty()) {
     result.message = "No student preferences loaded.";
@@ -130,12 +128,10 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   ActiveSolverGuard solverGuard(&solver);
 
   if (options.timeLimitSeconds > 0) {
-    const auto limitMs =
-      static_cast<int64_t>(options.timeLimitSeconds) * 1000;
+    const auto limitMs = static_cast<int64_t>(options.timeLimitSeconds) * 1000;
     solver.SetTimeLimit(absl::Milliseconds(limitMs));
-    result.warnings.push_back(
-        "Solver time limit: " + std::to_string(options.timeLimitSeconds) +
-        "s.");
+    result.warnings.push_back("Solver time limit: " +
+                              std::to_string(options.timeLimitSeconds) + "s.");
   }
 
   struct VarInfo {
@@ -188,16 +184,12 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       maxCapacity = std::max(maxCapacity, capacities[periodIdx]);
     }
     if (useBalancePenalty) {
-      activityMax[activityIdx] =
-          solver.MakeNumVar(0.0, static_cast<double>(maxCapacity),
-                            QStringLiteral("activity_%1_max")
-                                .arg(activityIdx)
-                                .toStdString());
-      activityMin[activityIdx] =
-          solver.MakeNumVar(0.0, static_cast<double>(maxCapacity),
-                            QStringLiteral("activity_%1_min")
-                                .arg(activityIdx)
-                                .toStdString());
+      activityMax[activityIdx] = solver.MakeNumVar(
+          0.0, static_cast<double>(maxCapacity),
+          QStringLiteral("activity_%1_max").arg(activityIdx).toStdString());
+      activityMin[activityIdx] = solver.MakeNumVar(
+          0.0, static_cast<double>(maxCapacity),
+          QStringLiteral("activity_%1_min").arg(activityIdx).toStdString());
       solver.MutableObjective()->SetCoefficient(activityMax[activityIdx],
                                                 -options.balanceLambda);
       solver.MutableObjective()->SetCoefficient(activityMin[activityIdx],
@@ -214,8 +206,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       if (useBalancePenalty) {
         activityPeriodMaxConstraints[activityIdx][periodIdx] =
             solver.MakeRowConstraint(-MPSolver::infinity(), 0.0,
-                                     QStringLiteral(
-                                         "activity_%1_period_%2_max")
+                                     QStringLiteral("activity_%1_period_%2_max")
                                          .arg(activityIdx)
                                          .arg(periodIdx)
                                          .toStdString());
@@ -224,8 +215,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
 
         activityPeriodMinConstraints[activityIdx][periodIdx] =
             solver.MakeRowConstraint(-MPSolver::infinity(), 0.0,
-                                     QStringLiteral(
-                                         "activity_%1_period_%2_min")
+                                     QStringLiteral("activity_%1_period_%2_min")
                                          .arg(activityIdx)
                                          .arg(periodIdx)
                                          .toStdString());
@@ -302,9 +292,9 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
                                                                           1.0);
         if (useBalancePenalty) {
           activityPeriodMaxConstraints[activityIdx][periodIdx]->SetCoefficient(
-            var, 1.0);
+              var, 1.0);
           activityPeriodMinConstraints[activityIdx][periodIdx]->SetCoefficient(
-            var, -1.0);
+              var, -1.0);
         }
 
         // Determine weight/penalty
@@ -571,8 +561,7 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
   SolverResult result;
   result.totalStudents = static_cast<int>(rows.size());
   result.warnings.push_back(
-      "Solver backend: Greedy fallback (OR-Tools not available)."
-  );
+      "Solver backend: Greedy fallback (OR-Tools not available).");
   if (options.timeLimitSeconds > 0) {
     result.warnings.push_back(
         "Solver time limit ignored (not supported without OR-Tools).");

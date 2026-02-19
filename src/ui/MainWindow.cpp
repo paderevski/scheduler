@@ -551,8 +551,7 @@ public:
         weightMaybeNormLabel(new QLabel(q)), weightNoNormLabel(new QLabel(q)),
         seniorWeightSpin(new QDoubleSpinBox(q)),
         balanceLambdaSpin(new QDoubleSpinBox(q)),
-        timeLimitSpin(new QSpinBox(q)),
-        dayFilterCombo(new QComboBox(q)),
+        timeLimitSpin(new QSpinBox(q)), dayFilterCombo(new QComboBox(q)),
         runButton(new QPushButton(QStringLiteral("Calculate"), q)),
         resultsStatus(new QLabel(QStringLiteral("No solver run yet."), q)),
         resultsTable(new QTableWidget(q)),
@@ -668,7 +667,7 @@ public:
     timeLimitSpin->setValue(0);
     timeLimitSpin->setMinimumWidth(80);
     timeLimitSpin->setToolTip(
-      QStringLiteral("Time limit in seconds (0 = no limit)"));
+        QStringLiteral("Time limit in seconds (0 = no limit)"));
 
     auto *weightGridLayout = new QGridLayout();
     weightGridLayout->addWidget(new QLabel(QStringLiteral("Yes:"), q_ptr), 0,
@@ -694,7 +693,7 @@ public:
     weightGridLayout->addWidget(balanceLambdaSpin, 4, 1);
 
     weightGridLayout->addWidget(
-      new QLabel(QStringLiteral("Time Limit (sec):"), q_ptr), 5, 0);
+        new QLabel(QStringLiteral("Time Limit (sec):"), q_ptr), 5, 0);
     weightGridLayout->addWidget(timeLimitSpin, 5, 1);
 
     weightGridLayout->setColumnStretch(3, 1);
@@ -846,7 +845,8 @@ public:
 
     exportResultsCsvButton->setEnabled(false);
 
-    cancelSolveButton = new QPushButton(QStringLiteral("Cancel"), progressDialog);
+    cancelSolveButton =
+        new QPushButton(QStringLiteral("Cancel"), progressDialog);
     progressDialog->setCancelButton(cancelSolveButton);
     progressDialog->setWindowModality(Qt::WindowModal);
     progressDialog->setMinimumDuration(INT_MAX); // Prevent auto-show
@@ -864,7 +864,7 @@ public:
     QObject::connect(exportResultsCsvButton, &QPushButton::clicked, q_ptr,
                      [this]() { exportResultsCsv(); });
     QObject::connect(progressDialog, &QProgressDialog::canceled, q_ptr,
-             [this]() { requestSolverCancel(); });
+                     [this]() { requestSolverCancel(); });
   }
 
   void setupWelcomeScreen() {
@@ -2003,8 +2003,7 @@ public:
     }
     const bool sent = interruptSolver();
     if (sent) {
-      progressDialog->setLabelText(
-          QStringLiteral("Canceling solver..."));
+      progressDialog->setLabelText(QStringLiteral("Canceling solver..."));
       if (cancelSolveButton) {
         cancelSolveButton->setEnabled(false);
         cancelSolveButton->setText(QStringLiteral("Canceling..."));
@@ -2120,13 +2119,13 @@ public:
     QString filterMsg = dayFilter.isEmpty()
                             ? QStringLiteral("all students")
                             : QStringLiteral("Day %1 students").arg(dayFilter);
-  #if HAVE_OR_TOOLS
+#if HAVE_OR_TOOLS
     appendDiagnostic(
-      QStringLiteral("Solver backend: OR-Tools MPSolver (CBC)."));
-  #else
-    appendDiagnostic(
-      QStringLiteral("Solver backend: Greedy fallback (OR-Tools not available)."));
-  #endif
+        QStringLiteral("Solver backend: OR-Tools MPSolver (CBC)."));
+#else
+    appendDiagnostic(QStringLiteral(
+        "Solver backend: Greedy fallback (OR-Tools not available)."));
+#endif
     appendDiagnostic(
         QStringLiteral(
             "Launching solver for %1 with per-activity capacities...")
@@ -2752,16 +2751,29 @@ public:
     // Activity Summary
     out << "ACTIVITY SUMMARY\n";
     out << "----------------\n";
+    int periodCount = 0;
+    if (!lastResult->activitySummary.empty()) {
+      periodCount = static_cast<int>(
+          lastResult->activitySummary.front().assignedPerPeriod.size());
+    }
+
+    constexpr int kPeriodWidth = 10;
+    const int dashCount = 86 + (periodCount * kPeriodWidth);
     out << qSetFieldWidth(30) << Qt::left << "Activity" << qSetFieldWidth(10)
-        << Qt::right << "Assigned" << qSetFieldWidth(10) << Qt::right
-        << "Capacity" << qSetFieldWidth(8) << Qt::right << "Yes"
-        << qSetFieldWidth(8) << Qt::right << "Maybe" << qSetFieldWidth(8)
-        << Qt::right << "No" << qSetFieldWidth(12) << Qt::right << "Exp. Util."
-        << qSetFieldWidth(0) << "\n";
-    out << QString(86, '-') << "\n";
+      << Qt::right << "Assigned" << qSetFieldWidth(10) << Qt::right
+      << "Capacity";
+    for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+      out << qSetFieldWidth(kPeriodWidth) << Qt::right
+          << QStringLiteral("P%1").arg(periodIdx + 1);
+    }
+    out << qSetFieldWidth(8) << Qt::right << "Yes" << qSetFieldWidth(8)
+      << Qt::right << "Maybe" << qSetFieldWidth(8) << Qt::right << "No"
+      << qSetFieldWidth(12) << Qt::right << "Exp. Util."
+      << qSetFieldWidth(0) << "\n";
+    out << QString(dashCount, '-') << "\n";
 
     for (const auto &summary : lastResult->activitySummary) {
-      const QString activityName = toQString(summary.activity).left(20);
+      const QString activityName = toQString(summary.activity).left(30);
       const double expectedAttendance =
           summary.presentYes + (summary.presentMaybe * 0.5);
       const double expectedUtil =
@@ -2771,8 +2783,18 @@ public:
 
       out << qSetFieldWidth(30) << Qt::left << activityName
           << qSetFieldWidth(10) << Qt::right << summary.assigned
-          << qSetFieldWidth(10) << Qt::right << summary.capacity
-          << qSetFieldWidth(8) << Qt::right << summary.presentYes
+          << qSetFieldWidth(10) << Qt::right << summary.capacity;
+      for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
+        QString periodValue = QStringLiteral("-");
+        if (periodIdx < static_cast<int>(summary.assignedPerPeriod.size()) &&
+            periodIdx < static_cast<int>(summary.capacityPerPeriod.size())) {
+          periodValue = QStringLiteral("%1/%2")
+                            .arg(summary.assignedPerPeriod[periodIdx])
+                            .arg(summary.capacityPerPeriod[periodIdx]);
+        }
+        out << qSetFieldWidth(kPeriodWidth) << Qt::right << periodValue;
+      }
+      out << qSetFieldWidth(8) << Qt::right << summary.presentYes
           << qSetFieldWidth(8) << Qt::right << summary.presentMaybe
           << qSetFieldWidth(8) << Qt::right << summary.presentNo
           << qSetFieldWidth(12) << Qt::right
