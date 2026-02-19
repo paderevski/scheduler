@@ -2760,16 +2760,16 @@ public:
     constexpr int kPeriodWidth = 10;
     const int dashCount = 86 + (periodCount * kPeriodWidth);
     out << qSetFieldWidth(30) << Qt::left << "Activity" << qSetFieldWidth(10)
-      << Qt::right << "Assigned" << qSetFieldWidth(10) << Qt::right
-      << "Capacity";
+        << Qt::right << "Assigned" << qSetFieldWidth(10) << Qt::right
+        << "Capacity";
     for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
       out << qSetFieldWidth(kPeriodWidth) << Qt::right
           << QStringLiteral("P%1").arg(periodIdx + 1);
     }
     out << qSetFieldWidth(8) << Qt::right << "Yes" << qSetFieldWidth(8)
-      << Qt::right << "Maybe" << qSetFieldWidth(8) << Qt::right << "No"
-      << qSetFieldWidth(12) << Qt::right << "Exp. Util."
-      << qSetFieldWidth(0) << "\n";
+        << Qt::right << "Maybe" << qSetFieldWidth(8) << Qt::right << "No"
+        << qSetFieldWidth(12) << Qt::right << "Exp. Util." << qSetFieldWidth(0)
+        << "\n";
     out << QString(dashCount, '-') << "\n";
 
     for (const auto &summary : lastResult->activitySummary) {
