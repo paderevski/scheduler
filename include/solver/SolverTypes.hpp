@@ -45,6 +45,7 @@ struct StudentAssignment {
   int period = -1;
   int choiceRank = -1; // 0-based index into the student's preference list
   double score = 0.0;
+  bool hasBlankChoices = false;
 
   std::string fullName() const {
     if (firstName.empty() && lastName.empty()) {

@@ -341,6 +341,16 @@ struct ChoiceSatisfactionSummary {
   int studentCount = 0;
 };
 
+int countBlankNonPreferredAssignments(const SolverResult &result) {
+  int count = 0;
+  for (const auto &assignment : result.assignments) {
+    if (assignment.choiceRank < 0 && assignment.hasBlankChoices) {
+      ++count;
+    }
+  }
+  return count;
+}
+
 ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
   ChoiceSatisfactionCounts counts;
 
@@ -349,6 +359,8 @@ ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
     bool isYes = (present == "yes" || present == "y");
     bool isMaybe = (present == "maybe" || present == "m");
     bool isNo = (present == "no" || present == "n");
+    const bool excludeFromNonPreferred =
+        assignment.choiceRank < 0 && assignment.hasBlankChoices;
 
     if (assignment.choiceRank == 0) {
       counts.choice1Total++;
@@ -390,7 +402,7 @@ ChoiceSatisfactionCounts countChoiceSatisfaction(const SolverResult &result) {
         counts.choice5Maybe++;
       else if (isNo)
         counts.choice5No++;
-    } else {
+    } else if (!excludeFromNonPreferred) {
       counts.notSatisfiedTotal++;
       if (isYes)
         counts.notSatisfiedYes++;
@@ -418,6 +430,7 @@ countChoiceSatisfactionByStudent(const SolverResult &result) {
     bool choice4 = false;
     bool choice5 = false;
     bool other = false;
+    bool hasBlankChoices = false;
     QString attendance;
   };
 
@@ -447,6 +460,9 @@ countChoiceSatisfactionByStudent(const SolverResult &result) {
     if (flags.attendance.isEmpty()) {
       flags.attendance = present;
     }
+    if (assignment.hasBlankChoices) {
+      flags.hasBlankChoices = true;
+    }
 
     if (assignment.choiceRank == 0) {
       flags.choice1 = true;
@@ -458,14 +474,18 @@ countChoiceSatisfactionByStudent(const SolverResult &result) {
       flags.choice4 = true;
     } else if (assignment.choiceRank == 4) {
       flags.choice5 = true;
-    } else {
+    } else if (!(assignment.choiceRank < 0 && assignment.hasBlankChoices)) {
       flags.other = true;
     }
   }
 
-  summary.studentCount = perStudent.size();
+  summary.studentCount = 0;
   for (auto it = perStudent.cbegin(); it != perStudent.cend(); ++it) {
     const auto &flags = it.value();
+    if (flags.hasBlankChoices) {
+      continue;
+    }
+    summary.studentCount++;
     const bool isYes = (flags.attendance == "yes" || flags.attendance == "y");
     const bool isMaybe =
         (flags.attendance == "maybe" || flags.attendance == "m");
@@ -1694,6 +1714,7 @@ public:
         assgn["period"] = assignment.period;
         assgn["choiceRank"] = assignment.choiceRank;
         assgn["score"] = assignment.score;
+        assgn["hasBlankChoices"] = assignment.hasBlankChoices;
         assignments.append(assgn);
       }
       solution["assignments"] = assignments;
@@ -1940,6 +1961,7 @@ public:
         assignment.period = assgn["period"].toInt(-1);
         assignment.choiceRank = assgn["choiceRank"].toInt();
         assignment.score = assgn["score"].toDouble();
+        assignment.hasBlankChoices = assgn["hasBlankChoices"].toBool(false);
         result.assignments.push_back(assignment);
       }
 
@@ -2167,10 +2189,12 @@ public:
     hasResult = true;
 
     populateResults(result);
+    const int blankExcluded = countBlankNonPreferredAssignments(result);
+    const int reportTotal = result.totalStudents - blankExcluded;
     appendDiagnostic(
         QStringLiteral("Solver satisfied %1/%2 students (objective %3, %4 ms)")
             .arg(result.satisfiedStudents)
-            .arg(result.totalStudents)
+            .arg(reportTotal)
             .arg(result.objectiveValue, 0, 'f', 1)
             .arg(result.runtimeMs));
     if (result.balanceLambda > 0.0) {
@@ -2520,9 +2544,11 @@ public:
     }
     activitySummary->resizeColumnToContents(0);
 
+    const int blankExcluded = countBlankNonPreferredAssignments(result);
+    const int reportTotal = result.totalStudents - blankExcluded;
     resultsStatus->setText(QStringLiteral("Satisfied %1/%2 students in %3 ms")
                                .arg(result.satisfiedStudents)
-                               .arg(result.totalStudents)
+                               .arg(reportTotal)
                                .arg(result.runtimeMs));
 
 #if HAVE_QT_CHARTS
@@ -2687,12 +2713,13 @@ public:
     // Overall Results
     out << "OVERALL RESULTS\n";
     out << "---------------\n";
-    out << "Total Students: " << lastResult->totalStudents << "\n";
+    const int blankExcluded = countBlankNonPreferredAssignments(*lastResult);
+    const int reportTotal = lastResult->totalStudents - blankExcluded;
+    out << "Total Students: " << reportTotal << "\n";
     out << "Satisfied Students: " << lastResult->satisfiedStudents << "\n";
-    double satisfactionRate = lastResult->totalStudents > 0
-                                  ? (lastResult->satisfiedStudents * 100.0 /
-                                     lastResult->totalStudents)
-                                  : 0.0;
+    double satisfactionRate =
+        reportTotal > 0 ? (lastResult->satisfiedStudents * 100.0 / reportTotal)
+                        : 0.0;
     out << "Satisfaction Rate: " << QString::number(satisfactionRate, 'f', 1)
         << "%\n";
     out << "Runtime: " << lastResult->runtimeMs << " ms\n";

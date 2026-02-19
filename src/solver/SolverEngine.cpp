@@ -109,8 +109,8 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
     }
 
     for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-      if (capacities[periodIdx] <= 0) {
-        result.message = "Activity capacity must be greater than zero for " +
+      if (capacities[periodIdx] < 0) {
+        result.message = "Activity capacity must be zero or greater for " +
                          activityStdStr + " period " +
                          std::to_string(periodIdx + 1);
         return result;
@@ -234,6 +234,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       studentActivityConstraints(
           rows.size(), std::vector<operations_research::MPConstraint *>(
                            activities.size(), nullptr));
+  std::vector<bool> hasBlankChoices(rows.size(), false);
   for (int studentIdx = 0; studentIdx < static_cast<int>(rows.size());
        ++studentIdx) {
     const auto &row = rows[studentIdx];
@@ -262,9 +263,11 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
     QSet<int> preferredActivityIndices;
     const auto &choices = row.choices;
     bool hasAnyChoice = false;
+    bool hasBlankChoiceSlot = false;
     for (int choiceIdx = 0; choiceIdx < choices.size(); ++choiceIdx) {
       const auto activityName = choices[choiceIdx].trimmed();
       if (activityName.isEmpty()) {
+        hasBlankChoiceSlot = true;
         continue;
       }
       hasAnyChoice = true;
@@ -273,6 +276,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
         preferredActivityIndices.insert(activityIdx);
       }
     }
+    hasBlankChoices[studentIdx] = hasBlankChoiceSlot;
 
     // Create variables for ALL activities and periods
     for (int activityIdx = 0; activityIdx < static_cast<int>(activities.size());
@@ -415,6 +419,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
   for (int studentIdx = 0; studentIdx < static_cast<int>(rows.size());
        ++studentIdx) {
     const auto &row = rows[studentIdx];
+    const bool hasBlankChoiceSlot = hasBlankChoices[studentIdx];
     std::vector<bool> assignedPeriod(periodCount, false);
 
     for (const auto &varInfo : varMatrix[studentIdx]) {
@@ -434,6 +439,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       assignment.activity = toStdString(activities[varInfo.activityIndex]);
       assignment.period = varInfo.periodIndex;
       assignment.choiceRank = varInfo.choiceRank;
+      assignment.hasBlankChoices = hasBlankChoiceSlot;
 
       // Use the actual objective function coefficient
       assignment.score = varInfo.objectiveCoefficient;
@@ -441,7 +447,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
 
       if (varInfo.choiceRank >= 0) {
         ++result.satisfiedStudents;
-      } else {
+      } else if (!hasBlankChoiceSlot) {
         // Non-preferred fallback activity
         QString displayName = row.fullName();
         if (displayName.isEmpty()) {
@@ -478,6 +484,7 @@ SolverResult runWithOrTools(const std::vector<StudentPreferenceRow> &rows,
       assignment.period = periodIdx;
       assignment.choiceRank = -1;
       assignment.score = 0.0;
+      assignment.hasBlankChoices = hasBlankChoiceSlot;
       result.assignments.push_back(std::move(assignment));
       QString displayName = row.fullName();
       if (displayName.isEmpty()) {
@@ -603,8 +610,8 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
       }
     }
     for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
-      if (capacities[periodIdx] <= 0) {
-        result.message = "Activity capacity must be greater than zero.";
+      if (capacities[periodIdx] < 0) {
+        result.message = "Activity capacity must be zero or greater.";
         return result;
       }
     }
@@ -619,6 +626,13 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
             });
 
   for (const auto &row : rows) {
+    bool hasBlankChoiceSlot = false;
+    for (const auto &choice : row.choices) {
+      if (choice.trimmed().isEmpty()) {
+        hasBlankChoiceSlot = true;
+        break;
+      }
+    }
     QSet<QString> assignedActivities;
     for (int periodIdx = 0; periodIdx < periodCount; ++periodIdx) {
       bool assigned = false;
@@ -670,6 +684,7 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.activity = toStdString(activityName);
         assignment.period = periodIdx;
         assignment.choiceRank = choiceIdx;
+        assignment.hasBlankChoices = hasBlankChoiceSlot;
         double baseWeight = static_cast<double>(weightForRank(choiceIdx));
         if (row.grade.trimmed() == "12") {
           baseWeight *= options.seniorWeightMultiplier;
@@ -697,6 +712,7 @@ SolverResult runGreedySolver(const std::vector<StudentPreferenceRow> &rows,
         assignment.period = periodIdx;
         assignment.choiceRank = -1;
         assignment.score = 0.0;
+        assignment.hasBlankChoices = hasBlankChoiceSlot;
         result.assignments.push_back(std::move(assignment));
         QString displayName = row.fullName();
         if (displayName.isEmpty()) {
