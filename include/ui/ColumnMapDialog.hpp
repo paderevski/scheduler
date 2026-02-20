@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QDialog>
 #include <QComboBox>
+#include <QDialog>
 #include <QLabel>
 #include <QStringList>
 #include <optional>
@@ -22,11 +22,8 @@ struct ColumnMapping {
   int choice5Column = -1;
 
   bool isValid() const {
-    return studentIdColumn >= 0 &&
-           firstNameColumn >= 0 &&
-           lastNameColumn >= 0 &&
-           choice1Column >= 0 &&
-           choice2Column >= 0 &&
+    return studentIdColumn >= 0 && firstNameColumn >= 0 &&
+           lastNameColumn >= 0 && choice1Column >= 0 && choice2Column >= 0 &&
            choice3Column >= 0;
   }
 };
@@ -36,14 +33,14 @@ class ColumnMapDialog : public QDialog {
 
 public:
   explicit ColumnMapDialog(const QStringList &columnHeaders,
-                          QWidget *parent = nullptr);
+                           QWidget *parent = nullptr);
 
   ColumnMapping getMapping() const;
 
 private:
   void setupUi();
   void tryAutoMap();
-  QComboBox* createColumnCombo();
+  QComboBox *createColumnCombo();
 
   QStringList m_columnHeaders;
   QComboBox *m_studentIdCombo;

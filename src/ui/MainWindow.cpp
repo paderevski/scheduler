@@ -334,6 +334,10 @@ struct ChoiceSatisfactionCounts {
   int choice5Total = 0, choice5Yes = 0, choice5Maybe = 0, choice5No = 0;
   int notSatisfiedTotal = 0, notSatisfiedYes = 0, notSatisfiedMaybe = 0,
       notSatisfiedNo = 0;
+  int combo123Total = 0, combo123Yes = 0, combo123Maybe = 0, combo123No = 0;
+  int combo12Total = 0, combo12Yes = 0, combo12Maybe = 0, combo12No = 0;
+  int combo13Total = 0, combo13Yes = 0, combo13Maybe = 0, combo13No = 0;
+  int combo23Total = 0, combo23Yes = 0, combo23Maybe = 0, combo23No = 0;
 };
 
 struct ChoiceSatisfactionSummary {
@@ -545,6 +549,43 @@ countChoiceSatisfactionByStudent(const SolverResult &result) {
       else if (isNo)
         summary.counts.notSatisfiedNo++;
     }
+
+    const bool has1 = flags.choice1;
+    const bool has2 = flags.choice2;
+    const bool has3 = flags.choice3;
+    if (has1 && has2 && has3) {
+      summary.counts.combo123Total++;
+      if (isYes)
+        summary.counts.combo123Yes++;
+      else if (isMaybe)
+        summary.counts.combo123Maybe++;
+      else if (isNo)
+        summary.counts.combo123No++;
+    } else if (has1 && has2 && !has3) {
+      summary.counts.combo12Total++;
+      if (isYes)
+        summary.counts.combo12Yes++;
+      else if (isMaybe)
+        summary.counts.combo12Maybe++;
+      else if (isNo)
+        summary.counts.combo12No++;
+    } else if (has1 && !has2 && has3) {
+      summary.counts.combo13Total++;
+      if (isYes)
+        summary.counts.combo13Yes++;
+      else if (isMaybe)
+        summary.counts.combo13Maybe++;
+      else if (isNo)
+        summary.counts.combo13No++;
+    } else if (!has1 && has2 && has3) {
+      summary.counts.combo23Total++;
+      if (isYes)
+        summary.counts.combo23Yes++;
+      else if (isMaybe)
+        summary.counts.combo23Maybe++;
+      else if (isNo)
+        summary.counts.combo23No++;
+    }
   }
 
   return summary;
@@ -677,7 +718,7 @@ public:
     seniorWeightSpin->setValue(2.0);
     seniorWeightSpin->setMinimumWidth(80);
 
-    balanceLambdaSpin->setRange(0.0, 10.0);
+    balanceLambdaSpin->setRange(0.0, 100.0);
     balanceLambdaSpin->setDecimals(3);
     balanceLambdaSpin->setSingleStep(0.05);
     balanceLambdaSpin->setValue(0.0);
@@ -2306,7 +2347,7 @@ public:
       return item;
     };
 
-    satisfactionSummary->setRowCount(6);
+    satisfactionSummary->setRowCount(10);
 
     // Row 0: 1st Choice
     satisfactionSummary->setItem(
@@ -2488,6 +2529,126 @@ public:
         5, 5,
         makeNumericSatisfactionItem(QString::number(counts.notSatisfiedNo),
                                     counts.notSatisfiedNo, true));
+
+    // Row 6: 1st + 2nd + 3rd
+    satisfactionSummary->setItem(
+        6, 0, makeSatisfactionItem(QStringLiteral("1st + 2nd + 3rd")));
+    satisfactionSummary->setItem(
+        6, 1,
+        makeNumericSatisfactionItem(QString::number(counts.combo123Total),
+                                    counts.combo123Total, true));
+    satisfactionSummary->setItem(
+        6, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.combo123Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.combo123Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
+    satisfactionSummary->setItem(
+        6, 3,
+        makeNumericSatisfactionItem(QString::number(counts.combo123Yes),
+                                    counts.combo123Yes, true));
+    satisfactionSummary->setItem(
+        6, 4,
+        makeNumericSatisfactionItem(QString::number(counts.combo123Maybe),
+                                    counts.combo123Maybe, true));
+    satisfactionSummary->setItem(
+        6, 5,
+        makeNumericSatisfactionItem(QString::number(counts.combo123No),
+                                    counts.combo123No, true));
+
+    // Row 7: 1st + 2nd (no 3rd)
+    satisfactionSummary->setItem(
+        7, 0, makeSatisfactionItem(QStringLiteral("1st + 2nd (no 3rd)")));
+    satisfactionSummary->setItem(
+        7, 1,
+        makeNumericSatisfactionItem(QString::number(counts.combo12Total),
+                                    counts.combo12Total, true));
+    satisfactionSummary->setItem(
+        7, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.combo12Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.combo12Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
+    satisfactionSummary->setItem(
+        7, 3,
+        makeNumericSatisfactionItem(QString::number(counts.combo12Yes),
+                                    counts.combo12Yes, true));
+    satisfactionSummary->setItem(
+        7, 4,
+        makeNumericSatisfactionItem(QString::number(counts.combo12Maybe),
+                                    counts.combo12Maybe, true));
+    satisfactionSummary->setItem(
+        7, 5,
+        makeNumericSatisfactionItem(QString::number(counts.combo12No),
+                                    counts.combo12No, true));
+
+    // Row 8: 1st + 3rd (no 2nd)
+    satisfactionSummary->setItem(
+        8, 0, makeSatisfactionItem(QStringLiteral("1st + 3rd (no 2nd)")));
+    satisfactionSummary->setItem(
+        8, 1,
+        makeNumericSatisfactionItem(QString::number(counts.combo13Total),
+                                    counts.combo13Total, true));
+    satisfactionSummary->setItem(
+        8, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.combo13Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.combo13Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
+    satisfactionSummary->setItem(
+        8, 3,
+        makeNumericSatisfactionItem(QString::number(counts.combo13Yes),
+                                    counts.combo13Yes, true));
+    satisfactionSummary->setItem(
+        8, 4,
+        makeNumericSatisfactionItem(QString::number(counts.combo13Maybe),
+                                    counts.combo13Maybe, true));
+    satisfactionSummary->setItem(
+        8, 5,
+        makeNumericSatisfactionItem(QString::number(counts.combo13No),
+                                    counts.combo13No, true));
+
+    // Row 9: 2nd + 3rd (no 1st)
+    satisfactionSummary->setItem(
+        9, 0, makeSatisfactionItem(QStringLiteral("2nd + 3rd (no 1st)")));
+    satisfactionSummary->setItem(
+        9, 1,
+        makeNumericSatisfactionItem(QString::number(counts.combo23Total),
+                                    counts.combo23Total, true));
+    satisfactionSummary->setItem(
+        9, 2,
+        makeNumericSatisfactionItem(
+            totalStudents > 0
+                ? QStringLiteral("%1%").arg(
+                      counts.combo23Total * 100.0 / totalStudents, 0, 'f', 1)
+                : QStringLiteral("0%"),
+            totalStudents > 0 ? counts.combo23Total * 100.0 / totalStudents
+                              : 0.0,
+            true));
+    satisfactionSummary->setItem(
+        9, 3,
+        makeNumericSatisfactionItem(QString::number(counts.combo23Yes),
+                                    counts.combo23Yes, true));
+    satisfactionSummary->setItem(
+        9, 4,
+        makeNumericSatisfactionItem(QString::number(counts.combo23Maybe),
+                                    counts.combo23Maybe, true));
+    satisfactionSummary->setItem(
+        9, 5,
+        makeNumericSatisfactionItem(QString::number(counts.combo23No),
+                                    counts.combo23No, true));
 
     activitySummary->clear();
     int periodCount = 0;
@@ -2744,22 +2905,35 @@ public:
     const auto &counts = summary.counts;
 
     const int totalStudents = summary.studentCount;
+    constexpr int kRankWidth = 24;
+    constexpr int kTotalWidth = 8;
+    constexpr int kPctWidth = 10;
+    constexpr int kYesWidth = 8;
+    constexpr int kMaybeWidth = 8;
+    constexpr int kNoWidth = 8;
+    int dashCount = kRankWidth + kTotalWidth + kPctWidth + kYesWidth +
+                    kMaybeWidth + kNoWidth;
+
     auto formatRow = [&out, totalStudents](const QString &rank, int total,
                                            int yes, int maybe, int no) {
       double pct = totalStudents > 0 ? (total * 100.0 / totalStudents) : 0.0;
-      out << qSetFieldWidth(15) << Qt::left << rank << qSetFieldWidth(8)
-          << Qt::right << total << qSetFieldWidth(10) << Qt::right
-          << QString::number(pct, 'f', 1) + "%" << qSetFieldWidth(8)
-          << Qt::right << yes << qSetFieldWidth(8) << Qt::right << maybe
-          << qSetFieldWidth(8) << Qt::right << no << qSetFieldWidth(0) << "\n";
+      out << qSetFieldWidth(kRankWidth) << Qt::left << rank
+          << qSetFieldWidth(kTotalWidth) << Qt::right << total
+          << qSetFieldWidth(kPctWidth) << Qt::right
+          << QString::number(pct, 'f', 1) + "%" << qSetFieldWidth(kYesWidth)
+          << Qt::right << yes << qSetFieldWidth(kMaybeWidth) << Qt::right
+          << maybe << qSetFieldWidth(kNoWidth) << Qt::right << no
+          << qSetFieldWidth(0) << "\n";
     };
 
-    out << qSetFieldWidth(15) << Qt::left << "Rank" << qSetFieldWidth(8)
-        << Qt::right << "Total" << qSetFieldWidth(10) << Qt::right << "Total %"
-        << qSetFieldWidth(8) << Qt::right << "Yes" << qSetFieldWidth(8)
-        << Qt::right << "Maybe" << qSetFieldWidth(8) << Qt::right << "No"
-        << qSetFieldWidth(0) << "\n";
-    out << QString(63, '-') << "\n";
+    out << qSetFieldWidth(kRankWidth) << Qt::left << "Rank"
+        << qSetFieldWidth(kTotalWidth) << Qt::right << "Total"
+        << qSetFieldWidth(kPctWidth) << Qt::right << "Total %"
+        << qSetFieldWidth(kYesWidth) << Qt::right << "Yes"
+        << qSetFieldWidth(kMaybeWidth) << Qt::right << "Maybe"
+        << qSetFieldWidth(kNoWidth) << Qt::right << "No" << qSetFieldWidth(0)
+        << "\n";
+    out << QString(dashCount, '-') << "\n";
 
     formatRow("1st Choice", counts.choice1Total, counts.choice1Yes,
               counts.choice1Maybe, counts.choice1No);
@@ -2773,6 +2947,14 @@ public:
               counts.choice5Maybe, counts.choice5No);
     formatRow("Not Satisfied", counts.notSatisfiedTotal, counts.notSatisfiedYes,
               counts.notSatisfiedMaybe, counts.notSatisfiedNo);
+    formatRow("1st + 2nd + 3rd", counts.combo123Total, counts.combo123Yes,
+              counts.combo123Maybe, counts.combo123No);
+    formatRow("1st + 2nd (no 3rd)", counts.combo12Total, counts.combo12Yes,
+              counts.combo12Maybe, counts.combo12No);
+    formatRow("1st + 3rd (no 2nd)", counts.combo13Total, counts.combo13Yes,
+              counts.combo13Maybe, counts.combo13No);
+    formatRow("2nd + 3rd (no 1st)", counts.combo23Total, counts.combo23Yes,
+              counts.combo23Maybe, counts.combo23No);
     out << "\n";
 
     // Activity Summary
@@ -2785,7 +2967,7 @@ public:
     }
 
     constexpr int kPeriodWidth = 10;
-    const int dashCount = 86 + (periodCount * kPeriodWidth);
+    dashCount = 86 + (periodCount * kPeriodWidth);
     out << qSetFieldWidth(30) << Qt::left << "Activity" << qSetFieldWidth(10)
         << Qt::right << "Assigned" << qSetFieldWidth(10) << Qt::right
         << "Capacity";
